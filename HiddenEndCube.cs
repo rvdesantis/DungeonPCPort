@@ -5,6 +5,10 @@ using UnityEngine;
 public class HiddenEndCube : DeadEndCube
 {
     public DunChest chest;
+    public DunPortal secretPortal;
+    public enum SecretSize { end, room, massive}
+    public SecretSize secretSize;
+
     void Start()
     {
         if (distanceC == null)

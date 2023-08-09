@@ -1,32 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Sockets;
 using UnityEngine;
 
-public class DunChest : MonoBehaviour
+public class DunNPC : MonoBehaviour
 {
     public Animator anim;
     public bool opened;
     public bool inRange;
-    public bool cursed;
-    public bool locked;
     public AudioSource audioSource;
     public List<AudioClip> audioClips;
     public FakeWall fakeWall;
 
-    public void OpenChest()
+
+    public virtual void NPCTrigger()
     {
-        if (inRange && !opened && !locked)
+        if (inRange && !opened)
         {
             if (fakeWall == null)
             {
                 opened = true;
                 if (anim != null)
                 {
-                    anim.SetTrigger("openLid");
+                    
                 }
                 if (audioSource != null)
                 {
-                    audioSource.PlayOneShot(audioClips[0]);
+                    if (audioClips.Count > 0)
+                    {
+                        audioSource.PlayOneShot(audioClips[0]);
+                    }
                 }
             }
             if (fakeWall != null)
@@ -36,18 +39,20 @@ public class DunChest : MonoBehaviour
                     opened = true;
                     if (anim != null)
                     {
-                        anim.SetTrigger("openLid");
+
                     }
                     if (audioSource != null)
                     {
-                        audioSource.PlayOneShot(audioClips[0]);
+                        if (audioClips.Count > 0)
+                        {
+                            audioSource.PlayOneShot(audioClips[0]);
+                        }
                     }
                 }
             }
         }
-        if (inRange && !opened && locked)
-        {
-            audioSource.PlayOneShot(audioClips[1]);
-        }
     }
+
+
+
 }

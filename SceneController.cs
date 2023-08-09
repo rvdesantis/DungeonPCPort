@@ -22,7 +22,6 @@ public class SceneController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = false;
         active = true;
-        Debug.Log("Scene Controller Start");
         StartCoroutine(SceneStarter());
     }
 
@@ -41,10 +40,12 @@ public class SceneController : MonoBehaviour
         uiController.uiActive = false;
         uiController.compassObj.SetActive(true);
 
-        Debug.Log("Importing Map Info");
+        uiController.loadingBar.skullSlider.value = .5f;
+        uiController.loadingBar.text.text = "Building Map...";
         mapController.GatherMap(); 
-        yield return new WaitForSeconds(.5f);
+        yield return new WaitForSeconds(.1f);
         mapController.GatherLayers();
+        yield return new WaitForSeconds(.1f);
         Debug.Log("Filling Rooms...");
         StartCoroutine(RoomFiller()); 
         // triggers SwapHallwayCubes() at end owf RoomFiller()
@@ -52,6 +53,8 @@ public class SceneController : MonoBehaviour
 
     private IEnumerator RoomFiller()
     {
+        uiController.loadingBar.skullSlider.value = .6f;
+        uiController.loadingBar.text.text = "Filling Rooms...";
         CubeRoom targetRoom = null;
         foreach (CubeRoom room in builder.createdRooms)
         {
@@ -66,12 +69,31 @@ public class SceneController : MonoBehaviour
             // fill target room
             targetRoom.roomAssigned = true;
             int x = Enum.GetValues(typeof(CubeRoom.RoomType)).Length;
-            int roomNum = UnityEngine.Random.Range(0, x);
-            targetRoom.roomType = (CubeRoom.RoomType)roomNum;
-            targetRoom.mapIcon.icon.sprite = mapController.iconMasterList[roomNum];
+            int roomTypeNum = UnityEngine.Random.Range(0, x);
 
-            targetRoom.FillRoom();
-            yield return new WaitForSeconds(.1f);
+            // portal distance check
+            if (roomTypeNum == x - 1)
+            {
+                int roomIndex = builder.createdRooms.IndexOf(targetRoom);
+                if (roomIndex == 0 || roomIndex == 1 || roomIndex == 2) // checks to make sure room isn't connected to Sanctuary
+                {
+                    Debug.Log("Portal closed, too close to Sanctuary.  Set to Battle");
+                    roomTypeNum = 1;
+                }
+
+                Cube bossRoom = builder.createdBossRooms[0];
+                if (Vector3.Distance(targetRoom.transform.position, bossRoom.transform.position) < 60)
+                {
+                    Debug.Log("Portal closed, too close to Boss Room.  Set to Battle");
+                    roomTypeNum = 1;
+                }
+            }
+
+            targetRoom.roomType = (CubeRoom.RoomType)roomTypeNum;
+            targetRoom.mapIcon.icon.sprite = mapController.iconMasterList[roomTypeNum];
+
+            targetRoom.FillRoom(); // portal room set to last option for distance check
+            yield return new WaitForSeconds(.15f);
             StartCoroutine(RoomFiller());
         }
         if (targetRoom == null)
@@ -84,7 +106,9 @@ public class SceneController : MonoBehaviour
 
     private IEnumerator SwapTrapCubes()
     {
-        Debug.Log("Starting Traps...");
+        uiController.loadingBar.skullSlider.value = .9f;
+        uiController.loadingBar.text.text = "Filling Traps...";
+
         Cube targetHall = null;
         HallStarterCube starter = null;
         List<HallStarterCube> openHalls = new List<HallStarterCube>();
@@ -108,7 +132,9 @@ public class SceneController : MonoBehaviour
         starter = openHalls[x];
         int z = starter.generatedHallway.Count;
 
-        targetHall = starter.generatedHallway[UnityEngine.Random.Range(1, z - 1)];
+        int hallIndex = UnityEngine.Random.Range(1, z - 1);
+
+        targetHall = starter.generatedHallway[hallIndex];
 
         if (targetHall == null)
         {
@@ -133,9 +159,13 @@ public class SceneController : MonoBehaviour
                 {
                     hallPos = targetHall.transform.position;
                     hallRot = targetHall.transform.rotation;
+
                     TrapHallCube trapHallCube = Instantiate(builder.trapHallCube, hallPos, hallRot);
                     builder.createdTrapHalls.Add(trapHallCube);
-                    starter.generatedHallway.Add(trapHallCube);
+
+                    starter.generatedHallway.RemoveAt(hallIndex);
+                    starter.generatedHallway.Insert(hallIndex, trapHallCube);
+
                     trapHallCube.filled = true;
                     foreach (GameObject tube in trapHallCube.fallTubes)
                     {
@@ -155,6 +185,9 @@ public class SceneController : MonoBehaviour
                     if (zz == (builder.createdHallCubes.Count / 30))
                     {
                         Debug.Log("Trap Swap Finished");
+                        uiController.loadingBar.skullSlider.value = 1;
+                        uiController.loadingBar.text.text = "Opening...";
+
                         foreach (GameObject fog in sanctuary.fogWalls)
                         {
                             fog.GetComponent<ParticleSystem>().Stop();
@@ -162,6 +195,9 @@ public class SceneController : MonoBehaviour
                             playerController.audioSource.PlayOneShot(playerController.audioClips[0]);
                         }
                     }
+
+                    yield return new WaitForSeconds(3);
+                    uiController.loadingBar.gameObject.SetActive(false);
                 }
             }
         }
@@ -169,6 +205,9 @@ public class SceneController : MonoBehaviour
 
     private IEnumerator SwapHallwayCubes() // lowers fog walls at end
     {
+        uiController.loadingBar.skullSlider.value = .75f;
+        uiController.loadingBar.text.text = "Adding Secrets...";
+
         Cube targetHall = null;
         HallStarterCube starter = null;
         List<HallStarterCube> openHalls = new List<HallStarterCube>();
@@ -197,7 +236,9 @@ public class SceneController : MonoBehaviour
 
         int z = starter.generatedHallway.Count;
 
-        targetHall = starter.generatedHallway[UnityEngine.Random.Range(1, z - 1)];
+        int hallIndex = UnityEngine.Random.Range(1, z - 1);
+
+        targetHall = starter.generatedHallway[hallIndex];
 
         if (targetHall == null)
         {
@@ -213,12 +254,10 @@ public class SceneController : MonoBehaviour
             if (targetHall.LeftBoxChecker())
             {
                 left = true;
-                Debug.Log("TargetHall Left Box Collision");
             }
             if (targetHall.RightBoxChecker())
             {
                 right = true;
-                Debug.Log("TargetHall Left Box Collision");
             }
 
             if (!left || !right)
@@ -227,7 +266,10 @@ public class SceneController : MonoBehaviour
                 hallRot = targetHall.transform.rotation;
                 SideExtenderCube sideExtender = Instantiate(builder.sideCubeExtender, hallPos, hallRot);
                 builder.createdHallSideCubes.Add(sideExtender);
-                starter.generatedHallway.Add(sideExtender);
+
+                starter.generatedHallway.RemoveAt(hallIndex);
+                starter.generatedHallway.Insert(hallIndex, sideExtender);
+
                 sideExtender.filled = true;
                 targetHall.filled = true;
                 int zz = builder.createdHallSideCubes.Count;

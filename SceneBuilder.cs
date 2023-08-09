@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Linq.Expressions;
 
+
 public class SceneBuilder : MonoBehaviour
 {
     public Camera buildCam;
@@ -33,6 +34,8 @@ public class SceneBuilder : MonoBehaviour
     public PlayerController playerController;
     public SceneController sceneController;
 
+    public LoadingBarUI loadingBar;
+
     private void Start()
     {
         PreBuild();
@@ -60,6 +63,7 @@ public class SceneBuilder : MonoBehaviour
         {
             fog.SetActive(true);
         }
+        loadingBar.text.text = "Building Dungeon...";
         StartCoroutine(StarterCubeCheck());
     }
 
@@ -152,6 +156,8 @@ public class SceneBuilder : MonoBehaviour
         if (currentSize >= targetSize)
         {
             Debug.Log("Target Size Reached, Closing Hallway");
+            loadingBar.skullSlider.value = .1f;
+            loadingBar.text.text = "Closing Dungeon...";
             DeadEndCube newDeadEnd = lastHallCube.cap;
             createdDeadEnds.Add(newDeadEnd);
             newDeadEnd.gameObject.SetActive(true);
@@ -161,22 +167,10 @@ public class SceneBuilder : MonoBehaviour
         {
             List<Cube> availTurns = new List<Cube>();
             Vector3 position = lastHallCube.transform.position + lastHallCube.transform.forward;
- 
 
-            foreach (Cube turn in allTurns)
-            {
-                Cube turnBase = Instantiate(turn, position, lastHallCube.transform.rotation);
-                TurnCube turnCheck = turnBase.GetComponent<TurnCube>();
-                turnCheck.turnCollider.gameObject.SetActive(true);
-                if (!turnCheck.TurnChecker())
-                {
-                    availTurns.Add(turn);
-                }
-                turnCheck.turnCollider.gameObject.SetActive(false);
-                Destroy(turnCheck.gameObject);
+            int turnCount = createdTurns.Count;
+            int roomCount = createdRooms.Count;
 
-                availTurns.Add(turn);
-            }
             foreach (Cube roomCube in allRooms)
             {
                 Cube checkRoom = Instantiate(roomCube, position, lastHallCube.transform.rotation);
@@ -188,7 +182,7 @@ public class SceneBuilder : MonoBehaviour
                 }
                 if (roomCheck.RoomChecker())
                 {
-                    
+
                 }
                 roomCheck.roomCollider.gameObject.SetActive(false);
                 Destroy(checkRoom.gameObject);
@@ -196,7 +190,29 @@ public class SceneBuilder : MonoBehaviour
 
             if (availTurns.Count > 0)
             {
+                if (turnCount < roomCount)
+                {
+                    foreach (Cube turn in allTurns)
+                    {
+                        Cube turnBase = Instantiate(turn, position, lastHallCube.transform.rotation);
+                        TurnCube turnCheck = turnBase.GetComponent<TurnCube>();
+                        turnCheck.turnCollider.gameObject.SetActive(true);
+                        if (!turnCheck.TurnChecker())
+                        {
+                            availTurns.Add(turn);
+                        }
+                        turnCheck.turnCollider.gameObject.SetActive(false);
+                        Destroy(turnCheck.gameObject);
+
+                        availTurns.Add(turn);
+                    }
+                }
+            }
+
+            if (availTurns.Count > 0)
+            {
                 int turnNum = Random.Range(0, availTurns.Count);
+
                 Cube newTurn = Instantiate(availTurns[turnNum], position, lastHallCube.transform.rotation);
                 currentSize++;
                 TurnCube turnComp = newTurn.GetComponent<TurnCube>();
@@ -247,6 +263,9 @@ public class SceneBuilder : MonoBehaviour
         int maxLength = 10;
         bool blocked = false;
         int hallLength = maxLength;
+        Debug.Log("Building Boss Hallway on starter Cube " + createdStarters.IndexOf(starter));
+        loadingBar.skullSlider.value = .25f;
+        loadingBar.text.text = "Adding Boss Room...";
         starter.hallType = HallStarterCube.HallType.boss;
 
         Cube firstCube = Instantiate(bossHallCube, starter.transform.position, starter.transform.rotation);
@@ -267,6 +286,7 @@ public class SceneBuilder : MonoBehaviour
         if (starter.HallwayCheck())
         {
             blocked = true;
+           
         }
         if (!blocked) // end checker
         {
@@ -308,6 +328,7 @@ public class SceneBuilder : MonoBehaviour
 
         if (blocked)
         {
+            Debug.Log("Boss Hall Blocked, looping...");
             firstCube.gameObject.SetActive(false);
             starter.hallBuildFin = true;
             DeadEndCube newDeadEnd = starter.deadEnd;
@@ -330,9 +351,68 @@ public class SceneBuilder : MonoBehaviour
         }
     }
 
+    public void MassiveSecretCheck()
+    { 
+        List<HallStarterCube> openCubes = new List<HallStarterCube>();
+        foreach (Cube starter in createdStarters)
+        {
+            HallStarterCube hall = starter.GetComponent<HallStarterCube>();
+            if (!hall.hallBuildFin)
+            {
+                if (!hall.MassiveSecretChecker())
+                {     
+                    openCubes.Add(hall);
+                }
+                else
+                {
 
+                }
+            }
+        }
+        if (openCubes.Count > 0)
+        {
+            Debug.Log("Open Starters for Massive Secrets " + openCubes.Count);
+            List<HiddenEndCube> massiveSecrets = new List<HiddenEndCube>();
+
+            foreach (HiddenEndCube secretCube in allDeadEnds)
+            {
+                if (secretCube.secretSize == HiddenEndCube.SecretSize.massive)
+                {
+                    massiveSecrets.Add(secretCube);
+                }
+            }
+
+            List<HallStarterCube> targetCubes = new List<HallStarterCube>();
+
+            for (int i = 0; i < massiveSecrets.Count; i++)
+            {
+                if (i < openCubes.Count)
+                {
+                    targetCubes.Clear();
+
+                    foreach (HallStarterCube emptyStarter in createdStarters)
+                    {
+                        if (!emptyStarter.hallBuildFin)
+                        {
+                            if (!emptyStarter.MassiveSecretChecker())
+                            {
+                                targetCubes.Add(emptyStarter);
+                            }
+                        }
+                    }
+                    int x = Random.Range(0, targetCubes.Count);
+
+                    Cube bigSecret = Instantiate(massiveSecrets[i], targetCubes[x].transform.position, targetCubes[x].transform.rotation);
+                    createdSecretEnds.Add(bigSecret);
+                    targetCubes[x].hallBuildFin = true;
+                }
+            }
+        }
+    }
+    
     public void FillDeadEnds()
     {
+        MassiveSecretCheck();
         int openEnds = 0;
         List<HallStarterCube> openCubes = new List<HallStarterCube>();
         foreach (Cube starter in createdStarters)
@@ -375,7 +455,6 @@ public class SceneBuilder : MonoBehaviour
    
     }
 
-
     IEnumerator StarterCubeCheck()
     {
         if (currentSize > targetSize)
@@ -399,10 +478,12 @@ public class SceneBuilder : MonoBehaviour
                         DeadEndCube newDeadEnd = targetStarter.deadEnd;
                         newDeadEnd.gameObject.SetActive(true);
                         targetStarter.hallType = HallStarterCube.HallType.deadEnd;
-                        createdDeadEnds.Add(newDeadEnd);
-                        Debug.Log("Dungeon Finished. Switching to SceneController Script");                        
+                        createdDeadEnds.Add(newDeadEnd);                                         
                     }
                 }
+                Debug.Log("Dungeon Finished. Switching to SceneController Script");
+                loadingBar.skullSlider.value = .4f;
+                loadingBar.text.text = "Build Finished...";
                 sceneController.SceneStart();
             }
             if (createdBossRooms.Count == 0)
@@ -434,8 +515,7 @@ public class SceneBuilder : MonoBehaviour
             yield return new WaitForSeconds(.05f);
             StartCoroutine(StarterCubeCheck());
         }
-    }
-    
+    }    
 
     public void StartHallwayChecker()
     {
@@ -472,7 +552,5 @@ public class SceneBuilder : MonoBehaviour
             StartCoroutine(CheckHallways());
         } 
     }
-
-
 
 }

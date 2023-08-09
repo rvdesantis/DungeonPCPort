@@ -1,18 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using JetBrains.Annotations;
 
 public class CubeRoom : TurnCube
 {
     public List<GameObject> wallCovers;
     public List<GameObject> wallSpawnPoints;
     public BoxCollider roomCollider;
-    public enum RoomType { quest, battle, chest, shop, NPC, portal, health}
+    public enum RoomType { quest, battle, chest, shop, NPC, health, portal }
     public RoomType roomType;
     public GameObject roofParent;
     public List<RoomPropParent> environments;
+    public RoomPropParent activeENV;
     public bool roomAssigned;
     public GameObject openWall;
+    public bool inRoom;
+    public bool eventTriggered;
+    public GameObject roomCenter;
+    public float enterDistance;
+    
 
     public bool RoomChecker()
     {
@@ -56,7 +63,7 @@ public class CubeRoom : TurnCube
                 }
             }
             int roomNum = UnityEngine.Random.Range(0, fillList.Count);
-            RoomPropParent targetRoom = fillList[roomNum];
+            RoomPropParent targetRoom = fillList[roomNum];  
             targetRoom.gameObject.SetActive(true);
             targetRoom.EnvFill();
         }
@@ -91,17 +98,28 @@ public class CubeRoom : TurnCube
             List<RoomPropParent> fillList = new List<RoomPropParent>();
             foreach (RoomPropParent env in environments)
             {
-                // add rooms with NPC fills
-                fillList.Add(env);
-                if (openWall != null)
+                if (env.NPCSpawn.Count > 0)
                 {
-                    env.openWall = openWall;
+                    fillList.Add(env);
+                    if (openWall != null)
+                    {
+                        env.openWall = openWall;
+                    }
                 }
             }
-            int roomNum = UnityEngine.Random.Range(0, fillList.Count);
-            RoomPropParent targetRoom = fillList[roomNum];
-            targetRoom.gameObject.SetActive(true);
-            targetRoom.EnvFill();
+            if (fillList.Count > 0)
+            {
+                int roomNum = UnityEngine.Random.Range(0, fillList.Count);
+                RoomPropParent targetRoom = fillList[roomNum];
+                targetRoom.gameObject.SetActive(true);
+                targetRoom.EnvFill();
+            }
+            if (fillList.Count == 0)
+            {
+                roomType = RoomType.battle;
+                FillRoom();
+                return;
+            }
         }
         if (roomType == RoomType.health)
         {
@@ -155,6 +173,41 @@ public class CubeRoom : TurnCube
             RoomPropParent targetRoom = fillList[roomNum];
             targetRoom.gameObject.SetActive(true);
             targetRoom.EnvFill(); // portal set up through EnvFill
+        }
+    }
+
+    private void Update()
+    {
+        if (inRoom && !eventTriggered)
+        {
+            if (roomType == RoomType.quest)
+            {
+
+            }
+            if (roomType == RoomType.battle)
+            {
+
+            }
+            if (roomType == RoomType.chest)
+            {
+
+            }
+            if (roomType == RoomType.shop)
+            {
+
+            }
+            if (roomType == RoomType.NPC)
+            {
+
+            }
+            if (roomType == RoomType.portal)
+            {
+            
+            }
+            if (roomType == RoomType.health)
+            {
+
+            }
         }
     }
 }

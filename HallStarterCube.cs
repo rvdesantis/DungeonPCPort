@@ -2,6 +2,7 @@ using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class HallStarterCube : Cube
@@ -12,12 +13,18 @@ public class HallStarterCube : Cube
     public BoxCollider mediumHallwayCollider; 
     public BoxCollider largeHallwayCollider;
     public BoxCollider smallSecretCollider;
+    public BoxCollider largeSecretCollider;
+    public List<BoxCollider> massiveSecretColliders;
 
     public bool hallBuildFin;
     public bool buildMirrorFin;
     public List<Cube> generatedHallway;
 
     public bool testColliders;
+
+    public bool testSmallCollider;
+    public bool testLargeCollider;
+    public bool testMassiveCollider;
 
     public enum HallType { deadEnd, small, med, large, boss}
     public HallType hallType;
@@ -65,6 +72,48 @@ public class HallStarterCube : Cube
         }
     }
 
+    public bool ForwardChecker()
+    {
+        Vector3 direction = transform.forward;
+
+        // Perform the sphere cast
+        RaycastHit hit;
+        bool hasHit = Physics.SphereCast(transform.position, 2, direction, out hit, 100);
+
+
+        if (hasHit)
+        {
+            GameObject hitObject = hit.collider.gameObject;
+        }
+
+        return hasHit;
+    }
+
+    public bool MassiveSecretChecker() // listed small to large
+    {
+        bool blocked = false;
+    
+        foreach (BoxCollider boxC in massiveSecretColliders)
+        {
+            if (!blocked)
+            {
+                boxC.gameObject.SetActive(true);
+                boxC.enabled = true;
+
+                blocked = Physics.CheckBox(boxC.bounds.center, boxC.bounds.extents/2, quaternion.identity, 0);
+
+                boxC.enabled = false;
+                boxC.gameObject.SetActive(false);
+            }
+        }       
+
+        if (!blocked)
+        {
+            blocked = ForwardChecker();
+        }
+        return blocked;
+    }
+
     public bool SecretEndChecker()
     {
         bool blocked = false;
@@ -77,14 +126,7 @@ public class HallStarterCube : Cube
         }
         smallHallwayCollider.gameObject.SetActive(false);
 
-        if (!blocked)
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return blocked;
     }
 
     private void Update()
@@ -93,6 +135,15 @@ public class HallStarterCube : Cube
         {
             int x = builder.createdStarters.IndexOf(this);      
             buildMirrorFin = true;
+        }
+
+        if (testMassiveCollider)
+        {
+            testMassiveCollider = false;
+            if (MassiveSecretChecker())
+            {
+                Debug.Log("Massive Checker Collision");
+            }
         }
     }
 }

@@ -15,6 +15,25 @@ public class TrapHallCube : Cube
     public GameObject fallRoomSpawnPoint;
     public PlayableDirector fallDirector;
     public List<PlayableDirector> landingDirectors;
+    public List<PlayableDirector> monsterDirectors;
     public GameObject repairFloor;
-  
+
+
+    private void Start()
+    {
+        TestSet();
+    }
+
+    public void TestSet()
+    {
+        int num = Random.Range(0, 2);
+        if (num == 0)
+        {
+            trapType = TrapType.empty;
+        }
+        if (num == 1)
+        {
+            trapType = TrapType.enemy;
+        }
+    }
 }

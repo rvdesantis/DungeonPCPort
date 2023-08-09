@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -12,6 +13,7 @@ public class DistanceController : MonoBehaviour
     public List<FakeWall> fakeWalls;
     public List<FakeFloor> fakeFloors;
     public List<DunChest> chests;
+    public List<DunNPC> npcS;
     public List<AudioDistance> audioDistanceControllers;
 
     public void MapDistance(Vector3 playerPosition)
@@ -89,7 +91,7 @@ public class DistanceController : MonoBehaviour
             {
                 portal.sceneController = sceneController;
             }
-            if (Vector3.Distance(playerPosition, portal.transform.position) < 25)
+            if (Vector3.Distance(playerPosition, portal.transform.position) < 15)
             {
                 if (!portal.gameObject.activeSelf)
                 {
@@ -119,7 +121,7 @@ public class DistanceController : MonoBehaviour
                     }
                 }
             }
-            if (Vector3.Distance(playerPosition, portal.transform.position) > 25)
+            if (Vector3.Distance(playerPosition, portal.transform.position) > 15)
             {
                 if (portal.gameObject.activeSelf)
                 {
@@ -185,7 +187,6 @@ public class DistanceController : MonoBehaviour
             }
         }
     }
-
     public void ChestDistance(Vector3 playerPosition)
     {
         foreach (DunChest chest in chests)
@@ -207,7 +208,23 @@ public class DistanceController : MonoBehaviour
             }
         }
     }
-
+    public void NPCDistance(Vector3 playerPosition)
+    {
+        foreach (DunNPC npc in npcS)
+        {
+            if (Vector3.Distance(playerPosition, npc.transform.position) < 5)
+            {
+                npc.inRange = true;
+            }
+            if (npc.inRange && !sceneController.uiController.uiActive)
+            {
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    npc.NPCTrigger();
+                }
+            }
+        }
+    }
     public void FakeFloorDistance(Vector3 playerPosition)
     {
         foreach (FakeFloor floor in fakeFloors)
@@ -231,7 +248,39 @@ public class DistanceController : MonoBehaviour
                 if (floor.inRange && !floor.floorBreak)
                 {
                     floor.floorBreak = true;
-                    floor.StandardFall();                    
+
+                    if (Vector3.Distance(playerPosition, floor.front.transform.position) < Vector3.Distance(playerPosition, floor.front.transform.position))
+                    {
+                        Debug.Log("flipping floor");
+                        floor.transform.rotation = Quaternion.Euler(floor.transform.rotation.eulerAngles.x, floor.transform.rotation.eulerAngles.y + 180f, floor.transform.rotation.eulerAngles.z);
+                    }
+                    floor.Fall();                    
+                }
+            }
+        }
+    }
+    public void FakeRoomDistance(Vector3 playerPosition)
+    {
+        if (playerController.controller.enabled && !sceneController.uiController.uiActive)
+        {
+            foreach (CubeRoom room in sceneController.builder.createdRooms)
+            {
+                float distance = Vector3.Distance(playerPosition, room.roomCenter.transform.position);
+
+                if (!room.inRoom)
+                {
+                    if (distance < room.enterDistance)
+                    {
+                        room.inRoom = true;
+                    }
+                }
+
+                if (room.inRoom)
+                {
+                    if (distance > room.enterDistance)
+                    {
+                        room.inRoom = false;
+                    }
                 }
             }
         }
@@ -250,6 +299,8 @@ public class DistanceController : MonoBehaviour
                 FakeFloorDistance(playerPosition);
                 AudioDistance(playerPosition);
                 ChestDistance(playerPosition);
+                NPCDistance(playerPosition);
+                FakeRoomDistance(playerPosition);
             }
         }
     }

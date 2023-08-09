@@ -18,7 +18,7 @@ public class RoomPropParent : MonoBehaviour
     public List<GameObject> portalAList;
     public List<AudioDistance> audioDistanceList;
     public DunPortal portA;
-    public GameObject bosshallPortal; // portal b
+    public GameObject portbGameObject; // portal b
     public DunPortal portB;
     public bool active;
     
@@ -36,27 +36,73 @@ public class RoomPropParent : MonoBehaviour
         openWallSpawnPoint = roomParent.wallSpawnPoints[x];
     }
 
+    public GameObject PortalShuffle()
+    {
+        GameObject randomPortal = null;
+        List<GameObject> openPorts = new List<GameObject>();
+
+        HallStarterCube bossStarter = null;
+        SceneBuilder builder = FindObjectOfType<SceneBuilder>();
+
+        foreach (HallStarterCube starter in builder.createdStarters)
+        {
+            if (starter.hallType == HallStarterCube.HallType.boss)
+            {
+                bossStarter = starter;
+                break;
+            }
+        }
+
+        // set odds for boss vs return vs treasure vs secret, etc
+        BossHallCube targetCube = bossStarter.generatedHallway[1].GetComponent<BossHallCube>();
+        openPorts.Add(targetCube.bossPortal);
+
+        SanctuaryCube sanct = builder.sanctuary.GetComponent<SanctuaryCube>();
+        openPorts.Add(sanct.returnPortal.gameObject);
+    
+        foreach (Cube secrets in builder.createdDeadEnds)
+        {
+            HiddenEndCube end = secrets.GetComponent<HiddenEndCube>();
+            if (end != null)
+            {
+                if (end.secretPortal != null)
+                {
+                    openPorts.Add(end.secretPortal.gameObject);
+                }
+            }
+        }
+        
+        int ranPortalNum = Random.Range(0, openPorts.Count);
+        randomPortal = openPorts[ranPortalNum];
+        return randomPortal;
+    }
+
     public virtual void EnvFill()
     {
         StartCoroutine(SetActives());
         AvailableWall();
+        roomParent.activeENV = this;
         if (roomParent.roomType == CubeRoom.RoomType.portal)
         {
-            HallStarterCube bossStarter = null;
-            SceneBuilder builder = FindObjectOfType<SceneBuilder>();
-
-            foreach (HallStarterCube starter in builder.createdStarters)
-            {
-                if (starter.hallType == HallStarterCube.HallType.boss)
-                {
-                    bossStarter = starter;
-                    break;
-                }
-            }
-
-            BossHallCube targetCube = bossStarter.generatedHallway[1].GetComponent<BossHallCube>();
-            bosshallPortal = targetCube.bossPortal;
+            portbGameObject = PortalShuffle();
             SetPortal();
+        }
+        if (roomParent.roomType == CubeRoom.RoomType.NPC)
+        {
+            int count = NPCSpawn.Count;
+            if (count > 0)
+            {
+                int xx = Random.Range(0, count);
+                NPCSpawn[xx].SetActive(true);
+
+                if (distanceController == null)
+                {
+                    distanceController = FindAnyObjectByType<DistanceController>();
+                }
+
+                DunNPC npc = NPCSpawn[xx].GetComponent<DunNPC>();
+                distanceController.npcS.Add(npc);
+            }
         }
     }
 
@@ -91,7 +137,7 @@ public class RoomPropParent : MonoBehaviour
             }
         }
         portA = portalAList[x].GetComponent<DunPortal>();
-        portB = bosshallPortal.GetComponent<DunPortal>();
+        portB = portbGameObject.GetComponent<DunPortal>();
         if (distanceController == null)
         {
             distanceController = FindAnyObjectByType<DistanceController>();

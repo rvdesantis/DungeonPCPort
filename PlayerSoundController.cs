@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerSoundController : MonoBehaviour
 {
+    public DunUIController uiController;
     public PlayerController playerController;
     public AudioSource audioSource;
     public List<AudioClip> stepSoundsNormal;
@@ -44,7 +45,7 @@ public class PlayerSoundController : MonoBehaviour
 
     private void Update()
     {
-        if (playerController.walking && !engaged)
+        if (playerController.walking && !engaged && uiController.uiActive == false)
         {
             StartCoroutine(StepSounds());
         }

@@ -1,66 +1,83 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class HornRoomParent : RoomPropParent
-{
-    public List<Light> lights;
-    public float duration = 7f; // Total duration of the light animation (in seconds)
-    public float startIntensity = 1f; // Initial intensity value
-    public float endIntensity = 5f; // Target intensity value
+{   
 
-
-    private float timer = 0f; // Timer variable
-    public bool increasing = true; // Flag to determine if the intensity is increasing or decreasing
-    public bool loop;
-    // Start is called before the first frame update
-
-
-
-
-
-
-    public void StartIntensityAnimation()
+    public PlayableDirector demonessPlayable;
+    public bool enterTrigger;
+    public GameObject afterPlaySpawnPoint;
+   
+    IEnumerator FirstEnterENV()
     {
-        // Reset timer and flag
-        timer = 0f;
-        increasing = true;
-       StartCoroutine(AnimateIntensity());
-    }
+        Debug.Log("Room ENV Enter Trigger");
+        PartyController party = FindObjectOfType<PartyController>();
+        PlayerController player = FindObjectOfType<PlayerController>();
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
 
-    private IEnumerator AnimateIntensity()
-    {
-        while (timer <= duration)
+        if (roomParent.roomType == CubeRoom.RoomType.NPC)
         {
-            float intensity;
-            intensity = Mathf.Lerp(1, 5, timer / duration);
-            foreach (Light light in lights)
+            party.AssignCamBrain(demonessPlayable, 3);
+            foreach (DunModel model in party.activeParty)
             {
-                light.intensity = intensity;
+                model.AssignToDirector(demonessPlayable);
+                model.gameObject.SetActive(true);
+                model.transform.position = demonessPlayable.transform.position;
+                model.transform.parent = demonessPlayable.transform;
             }
-            timer += Time.deltaTime;
-            yield return null;
+            party.activeParty[0].torch.SetActive(true);
+            DunModel demoness = Instantiate(monsters.enemyMasterList[0], demonessPlayable.transform, false);
+            demoness.transform.position = demonessPlayable.transform.position;
+            demoness.AssignToDirector(demonessPlayable, 4);
+
+
+            float clipTime = (float)demonessPlayable.duration;
+
+            player.controller.enabled = false;
+            demonessPlayable.Play();
+            yield return new WaitForSeconds(clipTime);
+            party.activeParty[0].torch.SetActive(false);
+            foreach (DunModel model in party.activeParty)
+            {
+                model.gameObject.SetActive(false);
+            }
+            player.controller.enabled = true;
+
         }
-        StartCoroutine(AnimateLower());
-    }
-
-
-    private IEnumerator AnimateLower()
-    {
-        timer = 0f;
-        while (timer <= duration)
+        if (roomParent.roomType == CubeRoom.RoomType.quest)
         {
-            float intensity;
-            intensity = Mathf.Lerp(5, 1, timer / duration);
-            foreach (Light light in lights)
+            party.AssignCamBrain(demonessPlayable, 3);
+            foreach (DunModel model in party.activeParty)
             {
-                light.intensity = intensity;
+                model.AssignToDirector(demonessPlayable);
+                model.gameObject.SetActive(true);
+                model.transform.position = demonessPlayable.transform.position;
+                model.transform.parent = demonessPlayable.transform;
             }
-            timer += Time.deltaTime;
-            yield return null;
+            party.activeParty[0].torch.SetActive(true);
+            DunModel demoness = Instantiate(monsters.enemyMasterList[0], demonessPlayable.transform, false);
+            demoness.transform.position = demonessPlayable.transform.position;
+            demoness.AssignToDirector(demonessPlayable, 4);
+
+
+            float clipTime = (float)demonessPlayable.duration;
+
+            player.controller.enabled = false;
+            demonessPlayable.Play();
+            yield return new WaitForSeconds(clipTime);
+            party.activeParty[0].torch.SetActive(false);
+            foreach (DunModel model in party.activeParty)
+            {
+                model.gameObject.SetActive(false);
+            }
+            player.transform.position = afterPlaySpawnPoint.transform.position;
+            player.transform.rotation = afterPlaySpawnPoint.transform.rotation;
+            player.controller.enabled = true;
         }
-        loop = false;
     }
+
 
     public void SetPortal()
     {
@@ -73,7 +90,7 @@ public class HornRoomParent : RoomPropParent
             }
         }
         portA = portalAList[x].GetComponent<DunPortal>();
-        portB = bosshallPortal.GetComponent<DunPortal>();
+        portB = portbGameObject.GetComponent<DunPortal>();
         if (distanceController == null)
         {
             distanceController = FindAnyObjectByType<DistanceController>();
@@ -86,11 +103,13 @@ public class HornRoomParent : RoomPropParent
 
     private void Update()
     {
-        // Check if the animation coroutine has finished
-        if (loop == false)
+        if (!enterTrigger)
         {
-            loop = true;
-            StartIntensityAnimation();
+            if (roomParent.inRoom)
+            {
+                enterTrigger = true;
+                StartCoroutine(FirstEnterENV());
+            }
         }
     }
 }

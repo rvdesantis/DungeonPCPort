@@ -10,6 +10,8 @@ public class DunUIController : MonoBehaviour
     public GameObject compassObj;
     public GameObject titleObj;
 
+    public LoadingBarUI loadingBar;
+
     private void Update()
     {
         if (!uiActive)
