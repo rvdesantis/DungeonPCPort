@@ -8,6 +8,7 @@ using UnityEngine.Playables;
 public class PartyController : MonoBehaviour
 {
     public List<DunModel> activeParty;
+    public List<DunModel> masterParty;
     public PlayerController controller;
     public List<PlayableDirector> openingPlayables;
 
@@ -37,10 +38,28 @@ public class PartyController : MonoBehaviour
             openingDir.Stop();
             openingDir.gameObject.SetActive(false);
         }
-        foreach (DunModel activeModel in activeParty)
+        foreach (DunModel inactive in masterParty)
         {
-            activeModel.gameObject.SetActive(false);
-            activeModel.transform.parent = null;
+            bool inParty = false;
+            foreach (DunModel active in activeParty)
+            {
+                if (active == inactive)
+                {
+                    inParty = true;
+                }
+            }
+            if (inParty)
+            {
+                inactive.gameObject.SetActive(false);
+                inactive.transform.parent = null;
+            }
+            if (!inParty)
+            {
+                if (inactive.activeWeapon != null)
+                {
+                    inactive.activeWeapon.SetActive(false);
+                }
+            }
         }
 
     }

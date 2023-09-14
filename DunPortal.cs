@@ -11,15 +11,21 @@ public class DunPortal : MonoBehaviour
     public bool inRange;
     public int jumpCount;
     public bool closeOnJump;
-    public FakeWall wallDestroy;
 
+    public FakeWall destoryWall;
+    public MeshRenderer portalViewMeshRenderer;
+    public Material returnViewMaterial;
+    public RenderTexture returnViewTexture;
     public AudioClip returnSound;
 
     public IEnumerator Transport()
     {
+        sceneController.uiController.compassObj.SetActive(false);
+        jumpCount++;
         connectedPortal.connectedPortal = this;
         connectedPortal.sceneController = sceneController;
         connectedPortal.gameObject.SetActive(true);
+
 
         PlayerController player = sceneController.playerController;
         player.controller.enabled = false;
@@ -27,23 +33,19 @@ public class DunPortal : MonoBehaviour
         player.transform.rotation = connectedPortal.transportPosition.transform.rotation;
         player.controller.enabled = true;
         player.audioSource.PlayOneShot(connectedPortal.returnSound);
-       
-  
+        if (connectedPortal.destoryWall != null)
+        { 
+            connectedPortal.destoryWall.inRange = true;
+            connectedPortal.destoryWall.WallBreak();
+        }
+        yield return new WaitForSeconds(.25f);
 
-
-        yield return new WaitForSeconds(1);
-        connectedPortal.inRange = false;
         connectedPortal.gameObject.SetActive(false);
-        jumpCount++;
-        connectedPortal.jumpCount++;
         if (closeOnJump)
         {
             gameObject.SetActive(false);
         }
-        if (wallDestroy != null)
-        {
-            wallDestroy.WallBreak();
-        }
+        sceneController.uiController.compassObj.SetActive(true);
     }
 
 
@@ -58,4 +60,14 @@ public class DunPortal : MonoBehaviour
         }
     }
 
+
+    public void ConnectPortals(DunPortal connectorPortal)
+    {
+        connectedPortal = connectorPortal;
+        connectorPortal.connectedPortal = this;
+
+        Material[] materials = portalViewMeshRenderer.materials;
+        materials[0] = connectorPortal.returnViewMaterial;
+        portalViewMeshRenderer.materials = materials;
+    }
 }

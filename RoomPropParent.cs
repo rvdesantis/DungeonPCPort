@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,10 @@ public class RoomPropParent : MonoBehaviour
     public DunPortal portA;
     public GameObject portbGameObject; // portal b
     public DunPortal portB;
+
+    public float portalBossReq;
+    public float portalWinReq;
+
     public bool active;
     
     public void AvailableWall()
@@ -36,44 +41,58 @@ public class RoomPropParent : MonoBehaviour
         openWallSpawnPoint = roomParent.wallSpawnPoints[x];
     }
 
-    public GameObject PortalShuffle()
+    public GameObject PortalShuffle() // odds set by portalBossRequired & portalWinRequired
     {
         GameObject randomPortal = null;
         List<GameObject> openPorts = new List<GameObject>();
-
         HallStarterCube bossStarter = null;
+        SceneController controller = FindObjectOfType<SceneController>();
         SceneBuilder builder = FindObjectOfType<SceneBuilder>();
-
-        foreach (HallStarterCube starter in builder.createdStarters)
-        {
-            if (starter.hallType == HallStarterCube.HallType.boss)
-            {
-                bossStarter = starter;
-                break;
-            }
-        }
-
-        // set odds for boss vs return vs treasure vs secret, etc
-        BossHallCube targetCube = bossStarter.generatedHallway[1].GetComponent<BossHallCube>();
-        openPorts.Add(targetCube.bossPortal);
-
         SanctuaryCube sanct = builder.sanctuary.GetComponent<SanctuaryCube>();
-        openPorts.Add(sanct.returnPortal.gameObject);
-    
-        foreach (Cube secrets in builder.createdDeadEnds)
+
+
+        int portalRoll = Random.Range(0, 100);
+        if (portalRoll >= portalWinReq)
         {
-            HiddenEndCube end = secrets.GetComponent<HiddenEndCube>();
-            if (end != null)
+            openPorts.Add(sanct.eventCubes.enterPortalSMRoom.gameObject);
+            foreach (Cube endCube in controller.builder.createdSecretEnds)
             {
-                if (end.secretPortal != null)
+                HiddenEndCube hidden = endCube.GetComponent<HiddenEndCube>();
+                if (hidden != null)
                 {
-                    openPorts.Add(end.secretPortal.gameObject);
+                    if (hidden.secretPortal != null)
+                    {
+                        openPorts.Add(hidden.secretPortal.gameObject);
+                    }
                 }
             }
+        }
+        if (portalRoll < portalWinReq && portalRoll >= portalBossReq)
+        {
+            foreach (HallStarterCube starter in builder.createdStarters)
+            {
+                if (starter.hallType == HallStarterCube.HallType.boss)
+                {
+                    bossStarter = starter;
+                    break;
+                }
+            }
+            BossHallCube targetCube = bossStarter.generatedHallway[1].GetComponent<BossHallCube>();
+            openPorts.Add(targetCube.bossPortal);
+        }
+        if (portalRoll < portalBossReq)
+        {
+            openPorts.Add(sanct.returnPortal.gameObject);
         }
         
         int ranPortalNum = Random.Range(0, openPorts.Count);
         randomPortal = openPorts[ranPortalNum];
+
+        if (randomPortal == sanct.eventCubes.enterPortalSMRoom)
+        {
+            sanct.eventCubes.SetTreasureRoom(randomPortal.GetComponent<DunPortal>(), true);
+        }
+
         return randomPortal;
     }
 
@@ -144,6 +163,7 @@ public class RoomPropParent : MonoBehaviour
         }
         distanceController.portals.Add(portA);
 
-        portA.connectedPortal = portB;
+        portA.ConnectPortals(portB);
+
     }
 }

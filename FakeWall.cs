@@ -8,8 +8,9 @@ public class FakeWall : MonoBehaviour
 {
     public BoxCollider blockCollider;
     public bool inRange;
-    public bool wallBreak;
+    public bool wallBroken;
     public bool wallBreakTest;
+    public GameObject objectSetActive;
     public PlayableDirector standardBreak;
 
     // Start is called before the first frame update
@@ -20,13 +21,17 @@ public class FakeWall : MonoBehaviour
 
     IEnumerator Break()
     {
-        if (!wallBreak)
+        if (!wallBroken)
         {
-            wallBreak = true;
+            wallBroken = true;
             standardBreak.Play();
+            if (objectSetActive != null)
+            {
+                objectSetActive.SetActive(true);
+            }
+            yield return new WaitForSeconds(1);
+            blockCollider.enabled = false;
         }
-        yield return new WaitForSeconds(1);
-        blockCollider.enabled = false;
     }
 
     public void WallBreak()
@@ -37,7 +42,7 @@ public class FakeWall : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!wallBreak)
+        if (!wallBroken)
         {
             if (wallBreakTest)
             {
@@ -45,7 +50,7 @@ public class FakeWall : MonoBehaviour
             }
         }
 
-        if (inRange && !wallBreak)
+        if (inRange && !wallBroken)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {

@@ -15,8 +15,8 @@ public class HornRoomParent : RoomPropParent
         Debug.Log("Room ENV Enter Trigger");
         PartyController party = FindObjectOfType<PartyController>();
         PlayerController player = FindObjectOfType<PlayerController>();
-        MonsterController monsters = FindAnyObjectByType<MonsterController>();
-
+        MonsterController monsters = FindObjectOfType<MonsterController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
         if (roomParent.roomType == CubeRoom.RoomType.NPC)
         {
             party.AssignCamBrain(demonessPlayable, 3);
@@ -36,6 +36,8 @@ public class HornRoomParent : RoomPropParent
             float clipTime = (float)demonessPlayable.duration;
 
             player.controller.enabled = false;
+            uiController.compassObj.SetActive(false);
+
             demonessPlayable.Play();
             yield return new WaitForSeconds(clipTime);
             party.activeParty[0].torch.SetActive(false);
@@ -44,7 +46,7 @@ public class HornRoomParent : RoomPropParent
                 model.gameObject.SetActive(false);
             }
             player.controller.enabled = true;
-
+            uiController.compassObj.SetActive(true);
         }
         if (roomParent.roomType == CubeRoom.RoomType.quest)
         {
@@ -65,6 +67,8 @@ public class HornRoomParent : RoomPropParent
             float clipTime = (float)demonessPlayable.duration;
 
             player.controller.enabled = false;
+
+            uiController.compassObj.SetActive(false);
             demonessPlayable.Play();
             yield return new WaitForSeconds(clipTime);
             party.activeParty[0].torch.SetActive(false);
@@ -75,31 +79,9 @@ public class HornRoomParent : RoomPropParent
             player.transform.position = afterPlaySpawnPoint.transform.position;
             player.transform.rotation = afterPlaySpawnPoint.transform.rotation;
             player.controller.enabled = true;
+            uiController.compassObj.SetActive(true);
         }
     }
-
-
-    public void SetPortal()
-    {
-        int x = 0;
-        foreach (GameObject wall in roomParent.wallCovers)
-        {
-            if (wall.activeSelf)
-            {
-                x = roomParent.wallCovers.IndexOf(wall);
-            }
-        }
-        portA = portalAList[x].GetComponent<DunPortal>();
-        portB = portbGameObject.GetComponent<DunPortal>();
-        if (distanceController == null)
-        {
-            distanceController = FindAnyObjectByType<DistanceController>();
-        }
-        distanceController.portals.Add(portA);
-
-        portA.connectedPortal = portB;
-    }
-
 
     private void Update()
     {

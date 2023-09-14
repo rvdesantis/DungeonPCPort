@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+
 
 
 public class DistanceController : MonoBehaviour
@@ -14,6 +14,8 @@ public class DistanceController : MonoBehaviour
     public List<FakeFloor> fakeFloors;
     public List<DunChest> chests;
     public List<DunNPC> npcS;
+    public List<CubeRoom> rooms;
+    public List<DunSwitch> switches;
     public List<AudioDistance> audioDistanceControllers;
 
     public void MapDistance(Vector3 playerPosition)
@@ -100,10 +102,20 @@ public class DistanceController : MonoBehaviour
                         portal.gameObject.SetActive(true);
                         portal.connectedPortal.gameObject.SetActive(true);
                     }
-                    if (portal.closeOnJump && portal.jumpCount == 0)
+                    if (portal.closeOnJump)
                     {
-                        portal.gameObject.SetActive(true);
-                        portal.connectedPortal.gameObject.SetActive(true);
+                        if (portal.jumpCount == 0)
+                        {
+                            portal.gameObject.SetActive(true);
+                            portal.connectedPortal.gameObject.SetActive(true);
+                        }
+                        if (portal.jumpCount > 0)
+                        {
+                            if (portal.gameObject.activeSelf)
+                            {
+                                portal.gameObject.SetActive(false);
+                            }             
+                        }
                     }
                 }
                 if (Vector3.Distance(playerPosition, portal.transform.position) < 3)
@@ -197,7 +209,10 @@ public class DistanceController : MonoBehaviour
                 {
                     chest.inRange = true;
                 }
-
+                if (Vector3.Distance(playerPosition, chest.transform.position) >= 5 && chest.inRange)
+                {
+                    chest.inRange = false;
+                }
                 if (chest.inRange && !sceneController.uiController.uiActive)
                 {
                     if (Input.GetKeyDown(KeyCode.Space))
@@ -212,6 +227,24 @@ public class DistanceController : MonoBehaviour
     {
         foreach (DunNPC npc in npcS)
         {
+            if (npc.idlePlayableLoop != null)
+            {
+                if (Vector3.Distance(playerPosition, npc.transform.position) < 15)
+                {
+                    if (!npc.engaged)
+                    {
+                        if (npc.idlePlayableLoop.state != UnityEngine.Playables.PlayState.Playing)
+                        {
+                            npc.idlePlayableLoop.Play();
+                        }
+                    }
+                }
+                if (Vector3.Distance(playerPosition, npc.transform.position) > 16)
+                {
+                    npc.idlePlayableLoop.Stop();
+                    npc.idlePlayableLoop.time = 0;
+                }
+            }
             if (Vector3.Distance(playerPosition, npc.transform.position) < 5)
             {
                 npc.inRange = true;
@@ -285,6 +318,46 @@ public class DistanceController : MonoBehaviour
             }
         }
     }
+    public void EnemyTriggerDistance(Vector3 playerPosition)
+    {
+        if (playerController.controller.enabled && !sceneController.uiController.uiActive)
+        {
+            foreach (Cube cube in builder.createdHallSideCubes)
+            {
+                SideExtenderCube side = cube.GetComponent<SideExtenderCube>();
+                if (side != null && !side.triggered)
+                {
+                    if (side.sideType == SideExtenderCube.SideType.enemy)
+                    {
+                        if (Vector3.Distance(playerPosition, side.triggerSpot.transform.position) < 4)
+                        {
+                            side.TriggerEnemy();
+                        }
+                    }
+                }
+            }
+        }
+    }
+    public void SwitchDistance(Vector3 playerPosition)
+    {
+        if (playerController.controller.enabled && !sceneController.uiController.uiActive)
+        {
+            foreach (DunSwitch dunSwit in switches)
+            {
+                if (Vector3.Distance(playerPosition, dunSwit.transform.position) < 5 && !dunSwit.inRange)
+                {
+                    dunSwit.inRange = true;
+                }
+                if (dunSwit.inRange)
+                {
+                    if (Vector3.Distance(playerPosition, dunSwit.transform.position) >= 5)
+                    {
+                        dunSwit.inRange = false;
+                    }
+                }
+            }
+        }
+    }
 
     private void Update()
     {
@@ -301,6 +374,8 @@ public class DistanceController : MonoBehaviour
                 ChestDistance(playerPosition);
                 NPCDistance(playerPosition);
                 FakeRoomDistance(playerPosition);
+                EnemyTriggerDistance(playerPosition);
+                SwitchDistance(playerPosition);
             }
         }
     }

@@ -42,6 +42,8 @@ public class DemonicSmallParent : RoomPropParent
         PartyController party = FindObjectOfType<PartyController>();
         PlayerController player = FindObjectOfType<PlayerController>();
         MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+
         gargEnterPlayable.gameObject.SetActive(true);
         if (roomParent.roomType == CubeRoom.RoomType.battle)
         {
@@ -52,6 +54,7 @@ public class DemonicSmallParent : RoomPropParent
                 model.AssignToDirector(gargEnterPlayable);
                 model.gameObject.SetActive(true);
                 model.transform.position = gargEnterPlayable.transform.position;
+                model.transform.rotation = gargEnterPlayable.transform.rotation;
                 model.transform.parent = gargEnterPlayable.transform;
             }
             party.activeParty[0].torch.SetActive(true);
@@ -72,6 +75,8 @@ public class DemonicSmallParent : RoomPropParent
             float clipTime = (float)gargEnterPlayable.duration;
 
             player.controller.enabled = false;
+            uiController.compassObj.SetActive(false);
+
             gargEnterPlayable.Play();
             yield return new WaitForSeconds(clipTime);
             party.activeParty[0].torch.SetActive(false);
@@ -80,6 +85,7 @@ public class DemonicSmallParent : RoomPropParent
                 model.gameObject.SetActive(false);
             }
             player.controller.enabled = true;
+            uiController.compassObj.SetActive(true);
         }
     }
 

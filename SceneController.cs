@@ -91,7 +91,7 @@ public class SceneController : MonoBehaviour
 
             targetRoom.roomType = (CubeRoom.RoomType)roomTypeNum;
             targetRoom.mapIcon.icon.sprite = mapController.iconMasterList[roomTypeNum];
-
+            distance.rooms.Add(targetRoom);
             targetRoom.FillRoom(); // portal room set to last option for distance check
             yield return new WaitForSeconds(.15f);
             StartCoroutine(RoomFiller());
@@ -132,7 +132,7 @@ public class SceneController : MonoBehaviour
         starter = openHalls[x];
         int z = starter.generatedHallway.Count;
 
-        int hallIndex = UnityEngine.Random.Range(1, z - 1);
+        int hallIndex = UnityEngine.Random.Range(1, z - 2);
 
         targetHall = starter.generatedHallway[hallIndex];
 
@@ -175,6 +175,11 @@ public class SceneController : MonoBehaviour
                     distance.fakeFloors.Add(trapHallCube.fakeFloor);        
                     targetHall.filled = true;
                     int zz = builder.createdTrapHalls.Count;
+                    // end cap checker
+                    if (targetHall.cap.gameObject.activeSelf)
+                    {
+                        trapHallCube.cap.gameObject.SetActive(true);
+                    }
                     targetHall.gameObject.SetActive(false);
 
                     yield return new WaitForSeconds(.1f);
@@ -236,7 +241,7 @@ public class SceneController : MonoBehaviour
 
         int z = starter.generatedHallway.Count;
 
-        int hallIndex = UnityEngine.Random.Range(1, z - 1);
+        int hallIndex = UnityEngine.Random.Range(1, z - 2);
 
         targetHall = starter.generatedHallway[hallIndex];
 
@@ -273,6 +278,12 @@ public class SceneController : MonoBehaviour
                 sideExtender.filled = true;
                 targetHall.filled = true;
                 int zz = builder.createdHallSideCubes.Count;
+
+                if (targetHall.cap.gameObject.activeSelf)
+                {
+                    sideExtender.cap.gameObject.SetActive(true);
+                }
+
                 targetHall.gameObject.SetActive(false);
 
                 if (!left && !right)

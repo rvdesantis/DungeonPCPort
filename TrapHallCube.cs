@@ -16,17 +16,20 @@ public class TrapHallCube : Cube
     public PlayableDirector fallDirector;
     public List<PlayableDirector> landingDirectors;
     public List<PlayableDirector> monsterDirectors;
+    public List<PlayableDirector> NPCDirectors;
+    public List<PlayableDirector> otherDirectors;
+    public List<GameObject> otherObjects;
     public GameObject repairFloor;
 
 
     private void Start()
     {
-        TestSet();
+        SetTrap();
     }
 
-    public void TestSet()
+    public void SetTrap()
     {
-        int num = Random.Range(0, 2);
+        int num = Random.Range(0, 3);
         if (num == 0)
         {
             trapType = TrapType.empty;
@@ -34,6 +37,10 @@ public class TrapHallCube : Cube
         if (num == 1)
         {
             trapType = TrapType.enemy;
+        }
+        if (num == 2)
+        {
+            trapType = TrapType.other;
         }
     }
 }

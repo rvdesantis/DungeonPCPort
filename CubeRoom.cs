@@ -19,7 +19,10 @@ public class CubeRoom : TurnCube
     public bool eventTriggered;
     public GameObject roomCenter;
     public float enterDistance;
-    
+
+
+
+
 
     public bool RoomChecker()
     {
@@ -175,6 +178,7 @@ public class CubeRoom : TurnCube
             targetRoom.EnvFill(); // portal set up through EnvFill
         }
     }
+
 
     private void Update()
     {

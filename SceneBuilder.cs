@@ -48,6 +48,7 @@ public class SceneBuilder : MonoBehaviour
         {
             targetSize = 250;
         }
+        loadingBar.skullSlider.value = 0;
     }
 
     public void StartBuild()
@@ -64,6 +65,9 @@ public class SceneBuilder : MonoBehaviour
             fog.SetActive(true);
         }
         loadingBar.text.text = "Building Dungeon...";
+
+        // start character select
+
         StartCoroutine(StarterCubeCheck());
     }
 
@@ -123,6 +127,9 @@ public class SceneBuilder : MonoBehaviour
         {
             firstCube.gameObject.SetActive(false);
             starter.hallBuildFin = true;
+            float loading = (float)currentSize / (float)targetSize;
+            float adjusted = loading / 2;
+            loadingBar.skullSlider.value = adjusted;
             EndHallway(starter, starter.generatedHallway[starter.generatedHallway.Count - 1]);
         }
 
@@ -156,7 +163,6 @@ public class SceneBuilder : MonoBehaviour
         if (currentSize >= targetSize)
         {
             Debug.Log("Target Size Reached, Closing Hallway");
-            loadingBar.skullSlider.value = .1f;
             loadingBar.text.text = "Closing Dungeon...";
             DeadEndCube newDeadEnd = lastHallCube.cap;
             createdDeadEnds.Add(newDeadEnd);
@@ -264,7 +270,6 @@ public class SceneBuilder : MonoBehaviour
         bool blocked = false;
         int hallLength = maxLength;
         Debug.Log("Building Boss Hallway on starter Cube " + createdStarters.IndexOf(starter));
-        loadingBar.skullSlider.value = .25f;
         loadingBar.text.text = "Adding Boss Room...";
         starter.hallType = HallStarterCube.HallType.boss;
 
@@ -455,7 +460,7 @@ public class SceneBuilder : MonoBehaviour
    
     }
 
-    IEnumerator StarterCubeCheck()
+    IEnumerator StarterCubeCheck() // swaps to Controller when finished
     {
         if (currentSize > targetSize)
         {
@@ -482,7 +487,6 @@ public class SceneBuilder : MonoBehaviour
                     }
                 }
                 Debug.Log("Dungeon Finished. Switching to SceneController Script");
-                loadingBar.skullSlider.value = .4f;
                 loadingBar.text.text = "Build Finished...";
                 sceneController.SceneStart();
             }

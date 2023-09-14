@@ -5,4 +5,6 @@ using UnityEngine;
 public class SanctuaryCube : Cube
 {
     public DunPortal returnPortal;
+    public EventCube eventCubes;
+
 }

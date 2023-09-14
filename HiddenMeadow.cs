@@ -36,7 +36,7 @@ public class HiddenMeadow : HiddenEndCube
 
     private void Update()
     {
-        if (fakeWall.wallBreak && !opened)
+        if (fakeWall.wallBroken && !opened)
         {
             opened = true;
             FirstEnter();

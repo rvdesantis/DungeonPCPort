@@ -1,17 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.Sockets;
+using UnityEngine.Playables;
 using UnityEngine;
 
 public class DunNPC : MonoBehaviour
 {
     public Animator anim;
     public bool opened;
+    public bool engaged;
     public bool inRange;
     public AudioSource audioSource;
     public List<AudioClip> audioClips;
     public FakeWall fakeWall;
-
+    public PlayableDirector idlePlayableLoop;
 
     public virtual void NPCTrigger()
     {
@@ -34,7 +35,7 @@ public class DunNPC : MonoBehaviour
             }
             if (fakeWall != null)
             {
-                if (fakeWall.wallBreak)
+                if (fakeWall.wallBroken)
                 {
                     opened = true;
                     if (anim != null)
@@ -51,6 +52,11 @@ public class DunNPC : MonoBehaviour
                 }
             }
         }
+    }
+
+    public virtual void NPCIdleLoopTrigger()
+    {
+
     }
 
 
