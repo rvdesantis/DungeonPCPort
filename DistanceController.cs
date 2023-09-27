@@ -16,6 +16,7 @@ public class DistanceController : MonoBehaviour
     public List<DunNPC> npcS;
     public List<CubeRoom> rooms;
     public List<DunSwitch> switches;
+    public List<DunItem> dunItems;
     public List<AudioDistance> audioDistanceControllers;
 
     public void MapDistance(Vector3 playerPosition)
@@ -215,7 +216,7 @@ public class DistanceController : MonoBehaviour
                 }
                 if (chest.inRange && !sceneController.uiController.uiActive)
                 {
-                    if (Input.GetKeyDown(KeyCode.Space))
+                    if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
                     {
                         chest.OpenChest();
                     }
@@ -251,7 +252,7 @@ public class DistanceController : MonoBehaviour
             }
             if (npc.inRange && !sceneController.uiController.uiActive)
             {
-                if (Input.GetKeyDown(KeyCode.Space))
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
                 {
                     npc.NPCTrigger();
                 }
@@ -344,15 +345,35 @@ public class DistanceController : MonoBehaviour
         {
             foreach (DunSwitch dunSwit in switches)
             {
-                if (Vector3.Distance(playerPosition, dunSwit.transform.position) < 5 && !dunSwit.inRange)
+                if (Vector3.Distance(playerPosition, dunSwit.transform.position) < 4 && !dunSwit.inRange)
                 {
                     dunSwit.inRange = true;
                 }
                 if (dunSwit.inRange)
                 {
-                    if (Vector3.Distance(playerPosition, dunSwit.transform.position) >= 5)
+                    if (Vector3.Distance(playerPosition, dunSwit.transform.position) >= 4)
                     {
                         dunSwit.inRange = false;
+                    }
+                }
+            }
+        }
+    }
+    public void DunItemDistance(Vector3 playerPosition)
+    {
+        if (playerController.controller.enabled && !sceneController.uiController.uiActive)
+        {
+            foreach (DunItem item in dunItems)
+            {
+                if (Vector3.Distance(playerPosition, item.transform.position) <= 4)
+                {
+                    item.inRange = true;
+                }
+                if (item.inRange)
+                {
+                    if (Vector3.Distance(playerPosition, item.transform.position) >= 4)
+                    {
+                        item.inRange = false;
                     }
                 }
             }
@@ -376,6 +397,7 @@ public class DistanceController : MonoBehaviour
                 FakeRoomDistance(playerPosition);
                 EnemyTriggerDistance(playerPosition);
                 SwitchDistance(playerPosition);
+                DunItemDistance(playerPosition);
             }
         }
     }

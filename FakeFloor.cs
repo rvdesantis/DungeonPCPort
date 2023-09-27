@@ -18,6 +18,10 @@ public class FakeFloor : MonoBehaviour
     public GameObject front;
     public GameObject back;
 
+    public DunModel activeEnemy;
+    public List<GameObject> activationList;
+
+
     public void Fall()
     {  
         if (trapCube.trapType == TrapHallCube.TrapType.empty)
@@ -50,14 +54,70 @@ public class FakeFloor : MonoBehaviour
             OtherFall(mystNum);
         }
     }
+    public void EndFall()
+    {
+        SceneController controller = FindObjectOfType<SceneController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PartyController party = FindObjectOfType<PartyController>();
+        PlayerController player = controller.playerController;
+
+        controller.activePlayable = null;
+        controller.endAction = null;
+
+
+
+        foreach (DunModel activeModel in party.activeParty)
+        {
+            activeModel.transform.parent = null;
+            activeModel.gameObject.SetActive(false);
+            if (activeModel.torch != null)
+            {
+                activeModel.torch.SetActive(false);
+            }
+            if (activeModel.activeWeapon != null)
+            {
+                activeModel.activeWeapon.SetActive(false);
+            }
+        }
+
+        if (activeEnemy != null)
+        {
+            activeEnemy.gameObject.SetActive(false);
+        }
+        if (activationList.Count > 0)
+        {
+            foreach (GameObject obj in activationList)
+            {
+                obj.SetActive(true);
+            }
+        }
+
+        foreach (PlayableDirector fallPlayable in trapCube.landingDirectors)
+        {
+            if (fallPlayable.state == PlayState.Playing)
+            {
+                fallPlayable.time = fallPlayable.duration;
+                break;
+            }
+        }
+
+
+        player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
+        player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
+        player.controller.enabled = true;
+        player.gravity = 9;
+        player.playerLight.enabled = true;
+        player.cinPersonCam.m_Priority = 5;
+
+        uiController.compassObj.SetActive(true);
+    }
     public void StandardFall()
     {
         PlayerController player = FindAnyObjectByType<PlayerController>();
         DistanceController distance = FindAnyObjectByType<DistanceController>();
-
+        SceneController sceneController = FindObjectOfType<SceneController>();
         if (fallRoom != null)
-        {
-            SceneController sceneController = FindObjectOfType<SceneController>();
+        {            
             fallRoom.exitPortal.sceneController = sceneController;
             fallRoom.returnPortal.sceneController = sceneController;
             distance.portals.Add(fallRoom.exitPortal);
@@ -100,12 +160,13 @@ public class FakeFloor : MonoBehaviour
         PartyController party = FindObjectOfType<PartyController>();
         PlayableDirector recoverDir = trapCube.landingDirectors[0];
         DunUIController uiController = FindObjectOfType<DunUIController>();
-
         float gravX = player.gravity;
         player.gravity = 0;
         player.controller.enabled = false;
         player.transform.position = repairFloor.transform.position;
         player.cinPersonCam.m_Priority = -1;
+
+        
         uiController.compassObj.SetActive(false);
         party.AssignCamBrain(standardBreak);
         foreach (DunModel activeModel in party.activeParty)
@@ -133,6 +194,7 @@ public class FakeFloor : MonoBehaviour
     {
         PartyController party = FindObjectOfType<PartyController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
+        SceneController controller = FindObjectOfType<SceneController>();
 
         PlayableDirector recoverDir = null;
         if (mysteryNumber == 0)
@@ -157,36 +219,38 @@ public class FakeFloor : MonoBehaviour
             }
         if (recoverDir != null)
         {
+            controller.activePlayable = recoverDir;
+            controller.endAction += EndFall;
+            activationList.Clear();
+            activationList.Add(trapCube.otherObjects[mysteryNumber]);
             recoverDir.Play();
 
             yield return new WaitForSeconds((float)recoverDir.duration);
-            foreach (DunModel activeModel in party.activeParty)
+            if (controller.activePlayable == recoverDir)
             {
-                activeModel.transform.parent = null;
-                activeModel.gameObject.SetActive(false);
-                if (activeModel.torch != null)
+                foreach (DunModel activeModel in party.activeParty)
                 {
-                    activeModel.torch.SetActive(false);
+                    activeModel.transform.parent = null;
+                    activeModel.gameObject.SetActive(false);
+                    if (activeModel.torch != null)
+                    {
+                        activeModel.torch.SetActive(false);
+                    }
+                    if (activeModel.activeWeapon != null)
+                    {
+                        activeModel.activeWeapon.SetActive(false);
+                    }
                 }
-                if (activeModel.activeWeapon != null)
-                {
-                    activeModel.activeWeapon.SetActive(false);
-                }
+                player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
+                player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
+                player.controller.enabled = true;
+                player.gravity = gravity;
+                player.playerLight.enabled = true;
+                player.cinPersonCam.m_Priority = 5;
+                trapCube.otherObjects[0].SetActive(true);
+                uiController.compassObj.SetActive(true);
             }
-
-            // activate mystery scriptable object, Start() activates.
-            trapCube.otherObjects[0].SetActive(true);
-
-
-            yield return new WaitForSeconds(.1f);
-
-            player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
-            player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
-            player.controller.enabled = true;
-            player.gravity = gravity;
-            player.playerLight.enabled = true;
-            player.cinPersonCam.m_Priority = 5;
-            uiController.compassObj.SetActive(true);
+            
         }        
     }
 
@@ -194,7 +258,9 @@ public class FakeFloor : MonoBehaviour
     {
         PartyController party = FindObjectOfType<PartyController>();
         PlayableDirector recoverDir = trapCube.landingDirectors[0];
+        SceneController controller = FindObjectOfType<SceneController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
+
         float gravX = player.gravity;
         player.gravity = 0;
         player.controller.enabled = false;
@@ -234,35 +300,22 @@ public class FakeFloor : MonoBehaviour
         }
 
         recoverDir.Play();
+        controller.activePlayable = recoverDir;
+        controller.endAction += EndFall;
 
         yield return new WaitForSeconds((float)recoverDir.duration);
-        foreach (DunModel activeModel in party.activeParty)
+        if (controller.activePlayable == recoverDir)
         {
-            activeModel.transform.parent = null;
-            activeModel.gameObject.SetActive(false);
-            if (activeModel.torch != null)
-            {
-                activeModel.torch.SetActive(false);
-            }
-            if (activeModel.activeWeapon != null)
-            {
-                activeModel.activeWeapon.SetActive(false);
-            }
+            EndFall();
         }
-        player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
-        player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
-        player.controller.enabled = true;
-        player.gravity = gravX;
-        player.playerLight.enabled = true;
-        player.cinPersonCam.m_Priority = 5;
-        uiController.compassObj.SetActive(true);
     }
 
     private IEnumerator MonsterFallTimer(PlayerController player, int monsterNum)
     {
         PartyController party = FindObjectOfType<PartyController>();
         PlayableDirector monsterDir = trapCube.monsterDirectors[monsterNum];
-        MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        MonsterController monsters = FindObjectOfType<MonsterController>();
+        SceneController controller = FindObjectOfType<SceneController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
 
         float gravX = player.gravity;
@@ -310,30 +363,41 @@ public class FakeFloor : MonoBehaviour
         }
 
         activeMonster.gameObject.SetActive(true);
+        activeEnemy = activeMonster;
+
+        controller.activePlayable = monsterDir;
+        controller.endAction += EndFall;
+
         monsterDir.Play();
 
         yield return new WaitForSeconds((float)monsterDir.duration);
-        foreach (DunModel activeModel in party.activeParty)
+
+        if (controller.activePlayable == monsterDir)
         {
-            activeModel.transform.parent = null;
-            activeModel.gameObject.SetActive(false);
-            if (activeModel.torch != null)
+            foreach (DunModel activeModel in party.activeParty)
             {
-                activeModel.torch.SetActive(false);
+                activeModel.transform.parent = null;
+                activeModel.gameObject.SetActive(false);
+                if (activeModel.torch != null)
+                {
+                    activeModel.torch.SetActive(false);
+                }
+                if (activeModel.activeWeapon != null)
+                {
+                    activeModel.activeWeapon.SetActive(false);
+                }
             }
-            if (activeModel.activeWeapon != null)
-            {
-                activeModel.activeWeapon.SetActive(false);
-            }
+            activeMonster.gameObject.SetActive(false);
+            player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
+            player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
+            player.controller.enabled = true;
+            player.gravity = gravX;
+            player.playerLight.enabled = true;
+            player.cinPersonCam.m_Priority = 5;
+            uiController.compassObj.SetActive(true);
         }
-        activeMonster.gameObject.SetActive(false);
-        player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
-        player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
-        player.controller.enabled = true;
-        player.gravity = gravX;
-        player.playerLight.enabled = true;
-        player.cinPersonCam.m_Priority = 5;
-        uiController.compassObj.SetActive(true);
+
+
     }
 
 

@@ -1,10 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class DunChest : MonoBehaviour
 {
+    public DunItem chestItem;
+    public enum AnimType { animator, playable}
+    public AnimType animType;
     public Animator anim;
+    public PlayableDirector openPlayable;
     public bool opened;
     public bool inRange;
     public bool cursed;
@@ -13,24 +18,45 @@ public class DunChest : MonoBehaviour
     public List<AudioClip> audioClips; // 0 - open, 1 - locked, 2 - treasure sound (coin, etc)
     public FakeWall fakeWall;
 
+
+
     public IEnumerator OpenSequence()
     {
         opened = true;
-        if (anim != null)
+        if (animType == AnimType.animator)
         {
-            anim.SetTrigger("openLid");
-        }
-        if (audioSource != null)
-        {
-            audioSource.PlayOneShot(audioClips[0]);
-        }
-        yield return new WaitForSeconds(.25f);
-        if (audioClips.Count >= 3)
-        {
-            if (audioClips[2] != null)
+            if (anim != null)
             {
-                audioSource.PlayOneShot(audioClips[2]);
-            }            
+                anim.SetTrigger("openLid");
+            }
+            if (audioSource != null)
+            {
+                audioSource.PlayOneShot(audioClips[0]);
+            }
+            yield return new WaitForSeconds(.5f);
+            if (chestItem != null)
+            {
+                chestItem.PickUp();
+            }
+            if (audioClips.Count >= 3)
+            {
+                if (audioClips[2] != null)
+                {
+                    audioSource.PlayOneShot(audioClips[2]);
+                }
+            }
+        }
+        if (animType == AnimType.playable)
+        {
+            if (openPlayable != null)
+            {
+                openPlayable.Play();
+                yield return new WaitForSeconds((float)openPlayable.duration);
+                if (chestItem != null)
+                {
+                    chestItem.PickUp();
+                }
+            }
         }
     }
 
@@ -55,4 +81,6 @@ public class DunChest : MonoBehaviour
             audioSource.PlayOneShot(audioClips[1]);
         }
     }
+
+   
 }

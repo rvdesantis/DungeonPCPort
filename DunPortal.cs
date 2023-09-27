@@ -53,7 +53,7 @@ public class DunPortal : MonoBehaviour
     {
         if (inRange)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
             {
                 StartCoroutine(Transport());
             }

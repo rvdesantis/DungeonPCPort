@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
+using static Unity.Burst.Intrinsics.X86;
 
 public class SideExtenderCube : Cube
 {
@@ -22,7 +23,8 @@ public class SideExtenderCube : Cube
     // monsters with side hall type, indexed as: even number - left enemy, odd number - right enemy.  
     public DunModel lMonster;
     public DunModel rMonster;
-    public List<PlayableDirector> monsterPlayables; 
+    public List<PlayableDirector> monsterPlayables;
+    public DunModel activeEnemy;
 
 
     public void SetWalls(bool left = true)
@@ -117,6 +119,7 @@ public class SideExtenderCube : Cube
                 if (availableEnemies.Count > 0)
                 {
                     lMonster = availableEnemies[Random.Range(0, availableEnemies.Count)];
+                    activeEnemy = lMonster;
                     sideType = SideType.enemy;
                 }
             }
@@ -175,6 +178,7 @@ public class SideExtenderCube : Cube
                 if (availableEnemies.Count > 0)
                 {
                     rMonster = availableEnemies[Random.Range(0, availableEnemies.Count)];
+                    activeEnemy = rMonster;
                     sideType = SideType.enemy;
                 }
             }
@@ -240,6 +244,7 @@ public class SideExtenderCube : Cube
             if (lMonster != null)
             {    
                 PlayableDirector monsterDir = monsterPlayables[lMonster.spawnPlayableInt];
+                lFakeWall.wallBroken = true;
                 StartCoroutine(MonsterEventTimer(lMonster, monsterDir, true));
             }
         }
@@ -253,6 +258,7 @@ public class SideExtenderCube : Cube
             if (rMonster != null)
             {
                 PlayableDirector monsterDir = monsterPlayables[rMonster.spawnPlayableInt];
+                rFakeWall.wallBroken = true;
                 StartCoroutine(MonsterEventTimer(rMonster, monsterDir, true));
             }
         }
@@ -263,14 +269,13 @@ public class SideExtenderCube : Cube
         PartyController party = FindObjectOfType<PartyController>();
         PlayerController player = FindObjectOfType<PlayerController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
-
-
-        float gravX = player.gravity;
-        player.gravity = 0;
+        SceneController controller = FindObjectOfType<SceneController>();
+  
         player.controller.enabled = false;  
         player.cinPersonCam.m_Priority = -1;
 
-  
+        controller.activePlayable = monsterDir;
+        controller.endAction += EndMonster;
         foreach (DunModel activeModel in party.activeParty)
         {
             activeModel.transform.parent = monsterDir.gameObject.transform;
@@ -294,6 +299,7 @@ public class SideExtenderCube : Cube
         DunModel activeMonster = Instantiate(monster, monsterDir.transform, false);
         activeMonster.transform.position = monsterDir.transform.position;
         activeMonster.AssignToDirector(monsterDir, 4);
+        activeEnemy = activeMonster;
 
         if (monsterDir == monsterPlayables[0])
         {
@@ -307,7 +313,30 @@ public class SideExtenderCube : Cube
         monsterDir.Play();
 
         yield return new WaitForSeconds((float)monsterDir.duration);
+        if (controller.activePlayable == monsterDir)
+        {
+            EndMonster();
+        }
+    }
 
+    public void EndMonster()
+    {
+        PartyController party = FindObjectOfType<PartyController>();
+        PlayerController player = FindObjectOfType<PlayerController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+        SceneController controller = FindObjectOfType<SceneController>();
+
+        foreach (PlayableDirector monPlayable in monsterPlayables)
+        {
+            if (monPlayable.state == PlayState.Playing)
+            {              
+                monPlayable.time = monPlayable.duration;
+                monPlayable.Play();
+            }
+        }
+        // does not skip to end of playable so that walls finish animating
+        controller.activePlayable = null;
+        controller.endAction = null;
         foreach (DunModel activeModel in party.activeParty)
         {
             activeModel.transform.parent = null;
@@ -321,10 +350,9 @@ public class SideExtenderCube : Cube
                 activeModel.activeWeapon.SetActive(false);
             }
         }
-        activeMonster.gameObject.SetActive(false);
+        activeEnemy.gameObject.SetActive(false);
 
         player.controller.enabled = true;
-        player.gravity = gravX;
         player.playerLight.enabled = true;
         player.cinPersonCam.m_Priority = 5;
         uiController.compassObj.SetActive(true);

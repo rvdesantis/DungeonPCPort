@@ -8,6 +8,7 @@ public class HornRoomParent : RoomPropParent
 
     public PlayableDirector demonessPlayable;
     public bool enterTrigger;
+    public bool skippedTrigger;
     public GameObject afterPlaySpawnPoint;
    
     IEnumerator FirstEnterENV()
@@ -16,7 +17,10 @@ public class HornRoomParent : RoomPropParent
         PartyController party = FindObjectOfType<PartyController>();
         PlayerController player = FindObjectOfType<PlayerController>();
         MonsterController monsters = FindObjectOfType<MonsterController>();
+        SceneController controller = FindObjectOfType<SceneController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
+
+        controller.activePlayable = demonessPlayable;
         if (roomParent.roomType == CubeRoom.RoomType.NPC)
         {
             party.AssignCamBrain(demonessPlayable, 3);
@@ -40,6 +44,12 @@ public class HornRoomParent : RoomPropParent
 
             demonessPlayable.Play();
             yield return new WaitForSeconds(clipTime);
+
+            if (!skippedTrigger)
+            {
+                controller.activePlayable = null;
+            }
+            
             party.activeParty[0].torch.SetActive(false);
             foreach (DunModel model in party.activeParty)
             {

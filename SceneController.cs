@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cinemachine;
+using UnityEngine.Playables;
 
 public class SceneController : MonoBehaviour
 {
@@ -15,7 +16,8 @@ public class SceneController : MonoBehaviour
     public DistanceController distance;
     public bool active;
     public CinemachineVirtualCamera characterCam;
-
+    public PlayableDirector activePlayable;
+    public Action endAction;
 
     public void SceneStart()
     {
