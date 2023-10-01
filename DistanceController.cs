@@ -37,10 +37,14 @@ public class DistanceController : MonoBehaviour
                     }
                     if (Vector3.Distance(playerPosition, starterComp.generatedHallway[starterComp.generatedHallway.Count - 1].transform.position) < 6)
                     {
-                        foreach (Cube hallway in starterComp.generatedHallway)
+                        if (starterComp.generatedHallway.Count > 0)
                         {
-                            mapController.LayerOnMap(hallway, 6, false);
+                            foreach (Cube hallway in starterComp.generatedHallway)
+                            {
+                                mapController.LayerOnMap(hallway, 6, false);
+                            }
                         }
+
                     }
                 }
             }
@@ -55,34 +59,38 @@ public class DistanceController : MonoBehaviour
                 }
             }
         }
+        foreach (Cube end in builder.createdDeadEnds)
+        {
+            if (!end.mapIcon.onMap)
+            {
+                if (Vector3.Distance(playerPosition, end.floorPoint.transform.position) < 6)
+                {
+                    mapController.LayerOnMap(end, 6, true);        
+                }
+            }
+        }
         foreach (Cube room in builder.createdRooms)
         {
-            if (!room.mapIcon.onMap)
+            if (Vector3.Distance(playerPosition, room.floorPoint.transform.position) < 6)
             {
-                if (Vector3.Distance(playerPosition, room.floorPoint.transform.position) < 6)
+                mapController.LayerOnMap(room, 6, true);
+                // trigger room event
+            }
+            CubeRoom roomComp = room.GetComponent<CubeRoom>();
+            foreach (HallStarterCube starter2 in roomComp.starterCubes)
+            {
+                if (Vector3.Distance(playerPosition, starter2.floorPoint.transform.position) < 6)
                 {
                     mapController.LayerOnMap(room, 6, true);
                     // trigger room event
                 }
-                CubeRoom roomComp = room.GetComponent<CubeRoom>();
-                foreach (HallStarterCube starter2 in roomComp.starterCubes)
-                {
-                    if (Vector3.Distance(playerPosition, starter2.floorPoint.transform.position) < 6)
-                    {
-                        mapController.LayerOnMap(room, 6, true);
-                        // trigger room event
-                    }
-                }
-            }
+            }            
         }
         foreach (Cube boss in builder.createdBossRooms)
         {
-            if (!boss.mapIcon.onMap)
+            if (Vector3.Distance(playerPosition, boss.floorPoint.transform.position) < 6) // floorpoint set to door
             {
-                if (Vector3.Distance(playerPosition, boss.floorPoint.transform.position) < 6) // floorpoint set to door
-                {
-                    mapController.LayerOnMap(boss, 6, true);
-                }
+                mapController.LayerOnMap(boss, 6, true);
             }
         }
     }
@@ -94,7 +102,7 @@ public class DistanceController : MonoBehaviour
             {
                 portal.sceneController = sceneController;
             }
-            if (Vector3.Distance(playerPosition, portal.transform.position) < 15)
+            if (Vector3.Distance(playerPosition, portal.transform.position) < 15 && portal.assigned)
             {
                 if (!portal.gameObject.activeSelf)
                 {
@@ -134,7 +142,7 @@ public class DistanceController : MonoBehaviour
                     }
                 }
             }
-            if (Vector3.Distance(playerPosition, portal.transform.position) > 15)
+            if (Vector3.Distance(playerPosition, portal.transform.position) > 15 && portal.assigned)
             {
                 if (portal.gameObject.activeSelf)
                 {

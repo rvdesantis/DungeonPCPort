@@ -9,11 +9,11 @@ public class ScorpionSwitch : DunSwitch
     {
         if (!switchOn && !locked)
         {
-            StartCoroutine(FlipTimer());
+            StartCoroutine(SFlipTimer());
         }
     }
 
-    IEnumerator FlipTimer()
+    IEnumerator SFlipTimer()
     {
         switchOn = true;
         switchPlayable.Play();

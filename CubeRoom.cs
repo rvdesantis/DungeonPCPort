@@ -206,7 +206,11 @@ public class CubeRoom : TurnCube
             }
             if (roomType == RoomType.portal)
             {
-            
+                if (activeENV.portbGameObject == null)
+                {
+                    activeENV.portbGameObject = activeENV.PortalShuffle();
+                    activeENV.SetPortal();
+                }
             }
             if (roomType == RoomType.health)
             {

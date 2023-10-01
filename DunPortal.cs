@@ -11,7 +11,7 @@ public class DunPortal : MonoBehaviour
     public bool inRange;
     public int jumpCount;
     public bool closeOnJump;
-
+    public bool assigned;
     public FakeWall destoryWall;
     public MeshRenderer portalViewMeshRenderer;
     public Material returnViewMaterial;
@@ -65,7 +65,7 @@ public class DunPortal : MonoBehaviour
     {
         connectedPortal = connectorPortal;
         connectorPortal.connectedPortal = this;
-
+        assigned = true;
         Material[] materials = portalViewMeshRenderer.materials;
         materials[0] = connectorPortal.returnViewMaterial;
         portalViewMeshRenderer.materials = materials;

@@ -6,10 +6,23 @@ public class CrysLampSwitch : DunSwitch
 {
     public override void FlipSwitch()
     {
-        if (!locked)
+        if (!locked && !flipping)
         {
-            switchPlayable.Play();
-            locked = true;
+            if (!switchOn)
+            {
+                switchOn = true;
+                flipping = true;
+                switchAnim.SetTrigger("switchOn");
+                StartCoroutine(FlipTimer());
+                return;
+            }
+            if (switchOn)
+            {
+                switchOn = false;
+                flipping = true;
+                switchAnim.SetTrigger("switchOff");
+                StartCoroutine(FlipTimer());                
+            }
         }
     }
 

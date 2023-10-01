@@ -51,6 +51,12 @@ public class FakeFloor : MonoBehaviour
         if (trapCube.trapType == TrapHallCube.TrapType.other)
         {
             int mystNum = Random.Range(0, trapCube.otherObjects.Count);
+            if (mystNum == 0)
+            {
+                PortalTrap portalTrap = trapCube.otherObjects[0].GetComponent<PortalTrap>();
+
+                portalTrap.AssignPortals();
+            }
             OtherFall(mystNum);
         }
     }
@@ -63,8 +69,6 @@ public class FakeFloor : MonoBehaviour
 
         controller.activePlayable = null;
         controller.endAction = null;
-
-
 
         foreach (DunModel activeModel in party.activeParty)
         {
@@ -121,6 +125,7 @@ public class FakeFloor : MonoBehaviour
             fallRoom.exitPortal.sceneController = sceneController;
             fallRoom.returnPortal.sceneController = sceneController;
             distance.portals.Add(fallRoom.exitPortal);
+            fallRoom.exitPortal.gameObject.SetActive(true);
 
         }
         StartCoroutine(StandardFallTimer(player));
@@ -136,6 +141,7 @@ public class FakeFloor : MonoBehaviour
             fallRoom.exitPortal.sceneController = sceneController;
             fallRoom.returnPortal.sceneController = sceneController;
             distance.portals.Add(fallRoom.exitPortal);
+            fallRoom.exitPortal.gameObject.SetActive(true);
         }
         
         StartCoroutine(MonsterFallTimer(player, monsterNum));
@@ -151,6 +157,7 @@ public class FakeFloor : MonoBehaviour
             fallRoom.exitPortal.sceneController = sceneController;
             fallRoom.returnPortal.sceneController = sceneController;
             distance.portals.Add(fallRoom.exitPortal);
+            fallRoom.exitPortal.gameObject.SetActive(true);
         }
         StartCoroutine(MysteryFallTimer(player, mystNum));
     }
@@ -250,7 +257,11 @@ public class FakeFloor : MonoBehaviour
                 trapCube.otherObjects[0].SetActive(true);
                 uiController.compassObj.SetActive(true);
             }
-            
+
+
+            controller.activePlayable = null;
+            controller.endAction += null;
+
         }        
     }
 
@@ -388,6 +399,10 @@ public class FakeFloor : MonoBehaviour
                 }
             }
             activeMonster.gameObject.SetActive(false);
+
+            controller.activePlayable = null;
+            controller.endAction += null;
+
             player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
             player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
             player.controller.enabled = true;
@@ -396,8 +411,6 @@ public class FakeFloor : MonoBehaviour
             player.cinPersonCam.m_Priority = 5;
             uiController.compassObj.SetActive(true);
         }
-
-
     }
 
 

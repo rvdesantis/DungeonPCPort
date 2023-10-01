@@ -143,6 +143,9 @@ public class SceneBuilder : MonoBehaviour
             createdDeadEnds.Add(newDeadEnd);
             newDeadEnd.gameObject.SetActive(true);
 
+            starter.mapIcon.gameObject.SetActive(false);
+            newDeadEnd.mapIcon.gameObject.SetActive(true);
+
             if (starter.generatedHallway.Count > 0)
             {
                 foreach (Cube targetCube in starter.generatedHallway)
@@ -167,6 +170,7 @@ public class SceneBuilder : MonoBehaviour
             DeadEndCube newDeadEnd = lastHallCube.cap;
             createdDeadEnds.Add(newDeadEnd);
             newDeadEnd.gameObject.SetActive(true);
+            lastHallCube.mapIcon.gameObject.SetActive(false);
             starter.hallType = HallStarterCube.HallType.deadEnd;
         }
         if (currentSize < targetSize)

@@ -214,7 +214,7 @@ public class CrystalLampRoomParent : RoomPropParent
         int currentY = 100;
         int currentZ = 100;
 
-        if (!lampSwitches[0].locked)
+        if (!lampSwitches[0].switchOn)
         {
             foreach (GameObject lamp in lamp0List)
             {
@@ -226,7 +226,7 @@ public class CrystalLampRoomParent : RoomPropParent
             }
         }
 
-        if (!lampSwitches[1].locked)
+        if (!lampSwitches[1].switchOn)
         {
             foreach (GameObject lamp in lamp1List)
             {
@@ -238,7 +238,7 @@ public class CrystalLampRoomParent : RoomPropParent
             }
         }
 
-        if (!lampSwitches[2].locked)
+        if (!lampSwitches[2].switchOn)
         {
             foreach (GameObject lamp in lamp2List)
             {
@@ -259,7 +259,7 @@ public class CrystalLampRoomParent : RoomPropParent
                 x = 0;
             }
         }
-        if (lampSwitches[0].locked)
+        if (lampSwitches[0].switchOn)
         {
             foreach (GameObject lamp in lamp0List)
             {
@@ -280,7 +280,7 @@ public class CrystalLampRoomParent : RoomPropParent
                 y = 0;
             }
         }
-        if (lampSwitches[1].locked)
+        if (lampSwitches[1].switchOn)
         {
             foreach (GameObject lamp in lamp1List)
             {
@@ -301,7 +301,7 @@ public class CrystalLampRoomParent : RoomPropParent
                 z = 0;
             }
         }
-        if (lampSwitches[2].locked)
+        if (lampSwitches[2].switchOn)
         {
             foreach (GameObject lamp in lamp2List)
             {

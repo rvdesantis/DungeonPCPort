@@ -8,6 +8,7 @@ using UnityEngine.Playables;
 public class SceneController : MonoBehaviour
 {
     public SceneBuilder builder;
+    public InputController inputController;
     public Cube sanctuary;
     public MapController mapController;
     public PlayerController playerController;
@@ -18,6 +19,8 @@ public class SceneController : MonoBehaviour
     public CinemachineVirtualCamera characterCam;
     public PlayableDirector activePlayable;
     public Action endAction;
+
+    
 
     public void SceneStart()
     {
@@ -38,6 +41,8 @@ public class SceneController : MonoBehaviour
         party.EndOpening();
 
         uiController.startButtons[1].gameObject.SetActive(false);
+        uiController.startButtons[2].gameObject.SetActive(false);
+
         uiController.titleObj.SetActive(false);
         uiController.uiActive = false;
         uiController.compassObj.SetActive(true);
@@ -327,5 +332,18 @@ public class SceneController : MonoBehaviour
             }
         }
         
+    }
+
+    public void SkipScene()
+    {
+        if (endAction == null)
+        {
+            Debug.Log("Error, no Method assigned to endAction on SceneController Script");
+        }
+        else
+        {
+            activePlayable.time = activePlayable.duration;
+            endAction.Invoke();            
+        }
     }
 }

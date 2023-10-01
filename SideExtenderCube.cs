@@ -76,6 +76,7 @@ public class SideExtenderCube : Cube
             {
                 spawnableList.Add(enemyObject);
             }
+
             if (lChest != null)
             {
                 spawnableList.Add(lChest.gameObject);
@@ -94,10 +95,7 @@ public class SideExtenderCube : Cube
             }
             if (spawnableList[objectPick] == lPortal.gameObject)
             {
-                sideType = SideType.portal;
-                distance.portals.Add(lPortal);
-                SetPortal(lPortal);
-                lFakeWall.objectSetActive = lPortal.gameObject;
+                sideType = SideType.portal;          
             }
             // add NPC Spawn
 
@@ -157,9 +155,7 @@ public class SideExtenderCube : Cube
             if (spawnableList[objectPick] == rPortal.gameObject)
             {
                 sideType = SideType.portal;
-                distance.portals.Add(rPortal);
-                SetPortal(rPortal);
-                rFakeWall.objectSetActive = rPortal.gameObject;
+              
             }
             // add NPC Spawn
             if (spawnableList[objectPick] == enemyObject)
@@ -195,8 +191,10 @@ public class SideExtenderCube : Cube
         SanctuaryCube sact = controller.sanctuary.GetComponent<SanctuaryCube>();
 
         availablePort.Add(sact.returnPortal);
-        availablePort.Add(sact.eventCubes.enterPortalSMRoom);
-
+        if (!sact.eventCubes.treasureChest.opened)
+        {
+            availablePort.Add(sact.eventCubes.enterPortalSMRoom);
+        }
         foreach (HallStarterCube starter in controller.builder.createdStarters)
         {
             if (starter.hallType == HallStarterCube.HallType.boss)
@@ -206,7 +204,6 @@ public class SideExtenderCube : Cube
                 break;
             }
         }
-
         foreach (Cube endCube in controller.builder.createdSecretEnds)
         {
             HiddenEndCube hidden = endCube.GetComponent<HiddenEndCube>();
@@ -218,15 +215,13 @@ public class SideExtenderCube : Cube
                 }
             }
         }
-
         portal.ConnectPortals(availablePort[Random.Range(0, availablePort.Count)]);
 
-        if (portal == sact.eventCubes.enterPortalSMRoom) // sets Event Room if applicable
+        if (portal.connectedPortal == sact.eventCubes.enterPortalSMRoom) // sets Event Room if applicable
         {
-            sact.eventCubes.SetTreasureRoom(portal, true);
+            sact.eventCubes.SetTreasureRoom(portal, true);            
         }
-
-        portal.gameObject.SetActive(false);
+        portal.connectedPortal.gameObject.SetActive(true);
     }
 
     public void TriggerEnemy()
@@ -299,6 +294,7 @@ public class SideExtenderCube : Cube
         DunModel activeMonster = Instantiate(monster, monsterDir.transform, false);
         activeMonster.transform.position = monsterDir.transform.position;
         activeMonster.AssignToDirector(monsterDir, 4);
+        activeMonster.gameObject.SetActive(true);
         activeEnemy = activeMonster;
 
         if (monsterDir == monsterPlayables[0])

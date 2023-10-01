@@ -28,26 +28,42 @@ public class PortalTrap : MonoBehaviour
                 break;
             }
         }
-
-        AssignPortals();
     }
 
     public void AssignPortals()
     {
-        foreach(DunPortal portal in randomPortals)
+        controller = FindObjectOfType<SceneController>();
+        builder = FindObjectOfType<SceneBuilder>();
+        sanct = controller.sanctuary.GetComponent<SanctuaryCube>();
+        distance = FindObjectOfType<DistanceController>();
+        foreach (HallStarterCube starter in builder.createdStarters)
+        {
+            if (starter.hallType == HallStarterCube.HallType.boss)
+            {
+                bossHall = starter.generatedHallway[1].GetComponent<BossHallCube>();
+                break;
+            }
+        }
+
+        gameObject.SetActive(true);
+
+        foreach (DunPortal portal in randomPortals)
         {
             portal.sceneController = controller;
             portal.closeOnJump = true;
         }
         randomPortals[0].ConnectPortals(sanct.returnPortal);
-
+        randomPortals[0].gameObject.SetActive(true);
         // random portal 1 between boss, or attack events
         randomPortals[1].ConnectPortals(bossHall.bossPortal.GetComponent<DunPortal>());
-
+        randomPortals[1].gameObject.SetActive(true);
         // random portal 2 random between treasure room or hidden room portal
 
         List<DunPortal> mystPortals = new List<DunPortal>();
-        mystPortals.Add(sanct.eventCubes.enterPortalSMRoom); // SM Sact Event Room set first to activate environment if triggered.  
+        if (!sanct.eventCubes.treasureChest.opened)
+        {
+            mystPortals.Add(sanct.eventCubes.enterPortalSMRoom); // SM Sact Event Room set first to activate environment if triggered.  
+        }
         foreach (Cube endCube in builder.createdSecretEnds)
         {
             HiddenEndCube hidden = endCube.GetComponent<HiddenEndCube>();
@@ -59,17 +75,21 @@ public class PortalTrap : MonoBehaviour
                 }
             }
         }
-
-        int mystNum = Random.Range(0, mystPortals.Count);
-        if (mystNum == 0)
+        if (mystPortals.Count > 0)
         {
-            sanct.eventCubes.SetTreasureRoom(randomPortals[2]);
-            randomPortals[2].ConnectPortals(sanct.eventCubes.enterPortalSMRoom);
+            int mystNum = Random.Range(0, mystPortals.Count);
+            if (mystNum == 0)
+            {
+                sanct.eventCubes.SetTreasureRoom(randomPortals[2]);
+                randomPortals[2].ConnectPortals(sanct.eventCubes.enterPortalSMRoom);
+                randomPortals[2].gameObject.SetActive(true);
+            }
+            if (mystNum != 0)
+            {
+                randomPortals[2].ConnectPortals(mystPortals[mystNum]);
+            }
         }
-        if (mystNum != 0)
-        {
-            randomPortals[2].ConnectPortals(mystPortals[mystNum]);
-        }
+       
 
         foreach (DunPortal portal in randomPortals)
         {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class DunUIController : MonoBehaviour
@@ -15,8 +16,6 @@ public class DunUIController : MonoBehaviour
     public bool joystick;
     public LoadingBarUI loadingBar;
 
-    private bool isSpacebarDown = false;
-    private float timeHeldDown = 0f;
 
     IEnumerator ToggleTimer()
     {
@@ -39,6 +38,7 @@ public class DunUIController : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton7))
                 {
                     isToggling = true;
+                    compassObj.SetActive(false);
                     Button reset = startButtons[1];
                     reset.gameObject.SetActive(true);
                     reset.Select();
@@ -47,48 +47,35 @@ public class DunUIController : MonoBehaviour
                     uiActive = true;
                     Cursor.visible = true;
                     Cursor.lockState = CursorLockMode.None;
-
-                    if (controller.activePlayable != null)
-                    {
-                        controller.activePlayable.Pause();
-                    }
                     StartCoroutine(ToggleTimer());
                 }
-                if (controller.activePlayable != null)
-                {
-                    if (controller.activePlayable.state == UnityEngine.Playables.PlayState.Playing)
-                    {
-                        if (Input.GetKey(KeyCode.Space))
-                        {
-                            if (!isSpacebarDown)
-                            {
-                                isSpacebarDown = true;
-                                timeHeldDown = 0f;
-                            }
-                            else
-                            {
-                                timeHeldDown += Time.deltaTime;
-                                if (timeHeldDown >= 1f)
-                                {   
-                                    if (controller.endAction != null)
-                                    {
-                                        controller.endAction.Invoke();
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            isSpacebarDown = false;
-                            timeHeldDown = 0f;
-                        }
-                    }
-                }
-
             }
 
             if (uiActive && !isToggling)
             {
+                if (Input.GetKey(KeyCode.Mouse0))
+                {
+                    bool highlighted = false;
+                    foreach (Button button in startButtons)
+                    {
+                        if (EventSystem.current.currentSelectedGameObject == button)
+                        {
+                            highlighted = true;
+                        }
+                    }
+
+                    if (!highlighted)
+                    {
+                        if (startButtons[0].gameObject.activeSelf)
+                        {
+                            startButtons[0].Select();
+                        }
+                        else
+                        {
+                            startButtons[1].Select();
+                        }
+                    }
+                }
                 if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton7))
                 {
                     isToggling = true;
@@ -98,11 +85,8 @@ public class DunUIController : MonoBehaviour
                     uiActive = false;
                     Cursor.visible = false;
                     Cursor.lockState = CursorLockMode.Locked;
+                    compassObj.SetActive(true);
                     StartCoroutine(ToggleTimer());
-                    if (controller.activePlayable != null)
-                    {
-                        controller.activePlayable.Play();
-                    }
                 }
             }
         }

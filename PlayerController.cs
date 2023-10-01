@@ -113,7 +113,7 @@ public class PlayerController : MonoBehaviour
             
             
 
-            if (Input.GetKeyDown(KeyCode.Q) && !turning)
+            if ((Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.Joystick1Button4)) && !turning)
             {
                 turning = true;
                 currentRotation -= 90f;
@@ -121,7 +121,7 @@ public class PlayerController : MonoBehaviour
                 targetRotation = Quaternion.Euler(0, currentRotation, 0);
                 StartCoroutine(RotatePlayer(targetRotation, rotationTime));
             }
-            else if (Input.GetKeyDown(KeyCode.E) && !turning)
+            if ((Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.Joystick1Button5)) && !turning)
             {
                 turning = true;
                 currentRotation += 90f;

@@ -83,7 +83,7 @@ public class DunItem : MonoBehaviour
             }
         }
 
-        Debug.Log(itemName + " picked up");
+        Debug.Log(itemCount + " " + itemName + " picked up");
     }
 
     private void Update()

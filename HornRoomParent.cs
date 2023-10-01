@@ -20,9 +20,10 @@ public class HornRoomParent : RoomPropParent
         SceneController controller = FindObjectOfType<SceneController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
 
-        controller.activePlayable = demonessPlayable;
+        
         if (roomParent.roomType == CubeRoom.RoomType.NPC)
         {
+            controller.activePlayable = demonessPlayable;
             party.AssignCamBrain(demonessPlayable, 3);
             foreach (DunModel model in party.activeParty)
             {
@@ -60,6 +61,7 @@ public class HornRoomParent : RoomPropParent
         }
         if (roomParent.roomType == CubeRoom.RoomType.quest)
         {
+            controller.activePlayable = demonessPlayable;
             party.AssignCamBrain(demonessPlayable, 3);
             foreach (DunModel model in party.activeParty)
             {

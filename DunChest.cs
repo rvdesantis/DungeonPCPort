@@ -18,7 +18,14 @@ public class DunChest : MonoBehaviour
     public List<AudioClip> audioClips; // 0 - open, 1 - locked, 2 - treasure sound (coin, etc)
     public FakeWall fakeWall;
 
-
+    public void MapCheck()
+    {
+        InventoryController inventory = FindObjectOfType<InventoryController>();
+        if (inventory.mapstatus != InventoryController.MapInventoryStatus.secret)
+        {
+            chestItem = inventory.mapItemPrefab;
+        }
+    }
 
     public IEnumerator OpenSequence()
     {
@@ -64,6 +71,7 @@ public class DunChest : MonoBehaviour
     {
         if (inRange && !opened && !locked)
         {
+            MapCheck();
             if (fakeWall == null)
             {
                 StartCoroutine(OpenSequence());

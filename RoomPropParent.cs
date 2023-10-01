@@ -54,7 +54,10 @@ public class RoomPropParent : MonoBehaviour
         int portalRoll = Random.Range(0, 100);
         if (portalRoll >= portalWinReq)
         {
-            openPorts.Add(sanct.eventCubes.enterPortalSMRoom.gameObject);
+            if (!sanct.eventCubes.treasureChest.opened)
+            {
+                openPorts.Add(sanct.eventCubes.enterPortalSMRoom.gameObject);
+            }
             foreach (Cube endCube in controller.builder.createdSecretEnds)
             {
                 HiddenEndCube hidden = endCube.GetComponent<HiddenEndCube>();
@@ -103,8 +106,7 @@ public class RoomPropParent : MonoBehaviour
         roomParent.activeENV = this;
         if (roomParent.roomType == CubeRoom.RoomType.portal)
         {
-            portbGameObject = PortalShuffle();
-            SetPortal();
+
         }
         if (roomParent.roomType == CubeRoom.RoomType.NPC)
         {
@@ -162,8 +164,9 @@ public class RoomPropParent : MonoBehaviour
             distanceController = FindAnyObjectByType<DistanceController>();
         }
         distanceController.portals.Add(portA);
-
         portA.ConnectPortals(portB);
+        portA.gameObject.SetActive(true);
+        portB.gameObject.SetActive(true);
 
     }
 }
