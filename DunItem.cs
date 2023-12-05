@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class DunItem : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class DunItem : MonoBehaviour
     public ItemType itemType;
     public int itemCount;
     public bool inRange;
+    public Sprite icon;
+
+    public string itemInfo;
 
     public virtual void PickUp()
     {
@@ -67,7 +71,7 @@ public class DunItem : MonoBehaviour
             bool inList = false;
             foreach (DunItem keyItem in inventory.keyItems)
             {
-                if (keyItem == this)
+                if (keyItem.itemName == itemName)
                 {
                     keyItem.itemCount = keyItem.itemCount + itemCount;                    
                     inList = true;
@@ -78,12 +82,20 @@ public class DunItem : MonoBehaviour
 
             if (!inList)
             {
+                itemCount = 1;
                 inventory.keyItems.Add(this);
                 gameObject.SetActive(false);
             }
         }
 
         Debug.Log(itemCount + " " + itemName + " picked up");
+
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+        uiController.rangeImage.gameObject.SetActive(false);
+        uiController.customImage.gameObject.SetActive(false);
+        uiController.ToggleKeyUI(gameObject, false);
+        uiController.pickUpUI.gameObject.SetActive(true);
+        uiController.pickUpUI.OpenImage(this);
     }
 
     private void Update()

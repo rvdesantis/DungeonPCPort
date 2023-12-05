@@ -91,7 +91,7 @@ public class RoomPropParent : MonoBehaviour
         int ranPortalNum = Random.Range(0, openPorts.Count);
         randomPortal = openPorts[ranPortalNum];
 
-        if (randomPortal == sanct.eventCubes.enterPortalSMRoom)
+        if (randomPortal == sanct.eventCubes.enterPortalSMRoom.gameObject)
         {
             sanct.eventCubes.SetTreasureRoom(randomPortal.GetComponent<DunPortal>(), true);
         }
@@ -127,7 +127,7 @@ public class RoomPropParent : MonoBehaviour
         }
     }
 
-    IEnumerator SetActives()
+    public IEnumerator SetActives()
     {
         yield return new WaitForSeconds(.0f);
         foreach (GameObject obj in inactiveList)
@@ -145,7 +145,6 @@ public class RoomPropParent : MonoBehaviour
             }
         }   
     }
-
 
     public void SetPortal()
     {

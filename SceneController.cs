@@ -5,6 +5,7 @@ using UnityEngine;
 using Cinemachine;
 using UnityEngine.Playables;
 
+
 public class SceneController : MonoBehaviour
 {
     public SceneBuilder builder;
@@ -13,21 +14,68 @@ public class SceneController : MonoBehaviour
     public MapController mapController;
     public PlayerController playerController;
     public PartyController party;
+    public InventoryController inventory;
     public DunUIController uiController;
     public DistanceController distance;
+    public UnlockController unlockables;
+    public SaveController saveController;
     public bool active;
     public CinemachineVirtualCamera characterCam;
     public PlayableDirector activePlayable;
     public Action endAction;
 
+    public enum GameState { Dungeon, Battle}
+    public GameState gameState;
+
     
 
     public void SceneStart()
     {
-        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
         active = true;
+        SetRandomParty();
         StartCoroutine(SceneStarter());
+    }
+
+    public void SetRandomParty()
+    {
+        List<DunModel> availParty = new List<DunModel>();
+        List<DunModel> randomParty = new List<DunModel>();
+
+        availParty.Add(party.masterParty[0]);
+        availParty.Add(party.masterParty[1]);
+        availParty.Add(party.masterParty[2]);
+        availParty.Add(party.masterParty[3]);
+
+        if (unlockables.rogueUnlock)
+        {
+            availParty.Add(party.masterParty[4]);
+        }
+
+        int x = UnityEngine.Random.Range(0, availParty.Count);
+        randomParty.Add(availParty[x]);
+        availParty.Remove(availParty[x]);
+
+        int y = UnityEngine.Random.Range(0, availParty.Count);
+        randomParty.Add(availParty[y]);
+        availParty.Remove(availParty[y]);
+
+        int z = UnityEngine.Random.Range(0, availParty.Count);
+        randomParty.Add(availParty[z]);
+        availParty.Remove(availParty[z]);
+
+        party.activeParty.Add(randomParty[0]);
+        party.activeParty.Add(randomParty[1]);
+        party.activeParty.Add(randomParty[2]);
+
+        int a = party.masterParty.IndexOf(party.activeParty[0]);
+        int b = party.masterParty.IndexOf(party.activeParty[1]);
+        int c = party.masterParty.IndexOf(party.activeParty[2]);
+
+        party.combatParty.Add(party.combatMaster[a]);
+        party.combatParty.Add(party.combatMaster[b]);
+        party.combatParty.Add(party.combatMaster[c]);
     }
 
     private IEnumerator SceneStarter()
@@ -39,9 +87,12 @@ public class SceneController : MonoBehaviour
         playerController.playerLight.enabled = true;
 
         party.EndOpening();
-
+        inventory.StartReset();
+ 
         uiController.startButtons[1].gameObject.SetActive(false);
         uiController.startButtons[2].gameObject.SetActive(false);
+        uiController.startButtons[3].gameObject.SetActive(false);
+        uiController.buttonFrameUI.SetActive(false);
 
         uiController.titleObj.SetActive(false);
         uiController.uiActive = false;
@@ -343,7 +394,15 @@ public class SceneController : MonoBehaviour
         else
         {
             activePlayable.time = activePlayable.duration;
-            endAction.Invoke();            
+            endAction.Invoke();   
+            if (activePlayable != null)
+            {
+                activePlayable = null;
+            }
+            if (endAction != null)
+            {
+                endAction = null;
+            }
         }
     }
 }

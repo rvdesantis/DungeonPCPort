@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.Playables;
 using UnityEngine;
+using UnityEngine.UI;
+using Cinemachine;
 
 public class DunNPC : MonoBehaviour
 {
@@ -13,6 +15,13 @@ public class DunNPC : MonoBehaviour
     public List<AudioClip> audioClips;
     public FakeWall fakeWall;
     public PlayableDirector idlePlayableLoop;
+    public Sprite icon;
+    public string modelInfo;
+    public Sprite modelIcon;
+    public GameObject uiObject;
+    public CinemachineVirtualCamera faceCam;
+    public bool singleUse;
+
 
     public virtual void NPCTrigger()
     {
@@ -52,13 +61,20 @@ public class DunNPC : MonoBehaviour
                 }
             }
         }
-    }
+    } // triggered from DistanceController
 
     public virtual void NPCIdleLoopTrigger()
     {
 
     }
 
+    public virtual void OpenUI()
+    {
+        if (uiObject != null)
+        {
+
+        }
+    }
 
 
 }

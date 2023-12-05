@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using System.Linq.Expressions;
 
 
 public class SceneBuilder : MonoBehaviour
@@ -33,7 +32,7 @@ public class SceneBuilder : MonoBehaviour
 
     public PlayerController playerController;
     public SceneController sceneController;
-
+    public UnlockController unlockables;
     public LoadingBarUI loadingBar;
 
     private void Start()
@@ -43,6 +42,9 @@ public class SceneBuilder : MonoBehaviour
 
     public void PreBuild()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Confined;
+        unlockables.OpenGameLoad();
         currentSize = 0;
         if (targetSize == 0) // checks for error, sets to small by default if 0
         {
@@ -273,7 +275,6 @@ public class SceneBuilder : MonoBehaviour
         int maxLength = 10;
         bool blocked = false;
         int hallLength = maxLength;
-        Debug.Log("Building Boss Hallway on starter Cube " + createdStarters.IndexOf(starter));
         loadingBar.text.text = "Adding Boss Room...";
         starter.hallType = HallStarterCube.HallType.boss;
 
@@ -330,6 +331,8 @@ public class SceneBuilder : MonoBehaviour
             Cube bossRoom = Instantiate(allBossRooms[x], bossPosition,bossRot);
             BossCube bossCube = bossRoom.GetComponent<BossCube>();
             createdBossRooms.Add(bossCube);
+            bossCube.bossHallStarter = starter;
+            bossCube.controller = sceneController;
             bossCube.positioner.SetActive(true);
         }
 
@@ -380,7 +383,7 @@ public class SceneBuilder : MonoBehaviour
         }
         if (openCubes.Count > 0)
         {
-            Debug.Log("Open Starters for Massive Secrets " + openCubes.Count);
+
             List<HiddenEndCube> massiveSecrets = new List<HiddenEndCube>();
 
             foreach (HiddenEndCube secretCube in allDeadEnds)
@@ -436,12 +439,12 @@ public class SceneBuilder : MonoBehaviour
                 }
                 if (hall.SecretEndChecker())
                 {
-                    Debug.Log("Secret Box Checker positive on starter " + createdStarters.IndexOf(hall));
+                  
                 }
             }
         }    
         openEnds = openCubes.Count;
-        Debug.Log("Open Starters Left - " + openEnds);
+
         float secretTarget = openEnds / 5;
         secretTarget = Mathf.CeilToInt(secretTarget);
         List<HallStarterCube> secretStarters = new List<HallStarterCube>();
@@ -453,13 +456,41 @@ public class SceneBuilder : MonoBehaviour
                 openCubes.Remove(openCubes[x]);
             }
         }
-        Debug.Log("Filling " + secretStarters.Count + " ends with Secrets");
+
 
         foreach (HallStarterCube secretCube in secretStarters)
         {
-            Cube newSecret = Instantiate(allDeadEnds[0], secretCube.transform.position, secretCube.transform.rotation);
-            createdSecretEnds.Add(newSecret);
-            secretCube.hallBuildFin = true;
+            HiddenEndCube hidden = null;
+            List<HiddenEndCube> capCubes = new List<HiddenEndCube>(); 
+            foreach (Cube cube in allDeadEnds)
+            {
+                hidden = cube.GetComponent<HiddenEndCube>();
+                if (hidden == null)
+                {
+                    Debug.Log("Failed to grab hidden cube component", cube.gameObject);
+                }
+                if (hidden != null)
+                {
+                    if (hidden.secretSize == HiddenEndCube.SecretSize.end)
+                    {
+                        capCubes.Add(hidden);
+                    }
+                }
+            }
+            if (capCubes.Count == 0)
+            {
+                Debug.Log("Builder failed to build list of available cap cubes");
+            }
+            if (capCubes.Count > 0)
+            {
+    
+                int x = Random.Range(0, capCubes.Count);
+
+                Cube newSecret = Instantiate(capCubes[x], secretCube.transform.position, secretCube.transform.rotation);
+                createdSecretEnds.Add(newSecret);
+                secretCube.hallBuildFin = true;
+            }
+
         }
    
     }

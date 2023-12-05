@@ -8,10 +8,15 @@ public class CrysLampSwitch : DunSwitch
     {
         if (!locked && !flipping)
         {
+            DunUIController uiController = FindObjectOfType<DunUIController>();
+            uiController.rangeImage.gameObject.SetActive(false);
+            uiController.customImage.gameObject.SetActive(false);
+            uiController.ToggleKeyUI(gameObject, false);
             if (!switchOn)
             {
                 switchOn = true;
                 flipping = true;
+
                 switchAnim.SetTrigger("switchOn");
                 StartCoroutine(FlipTimer());
                 return;
@@ -20,15 +25,16 @@ public class CrysLampSwitch : DunSwitch
             {
                 switchOn = false;
                 flipping = true;
+
                 switchAnim.SetTrigger("switchOff");
-                StartCoroutine(FlipTimer());                
+                StartCoroutine(FlipTimer());
             }
         }
     }
 
     public override void Update()
     {
-        if (inRange)
+        if (inRange && !flipping)
         {
             if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
             {

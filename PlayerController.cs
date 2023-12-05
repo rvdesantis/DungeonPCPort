@@ -35,10 +35,11 @@ public class PlayerController : MonoBehaviour
     public float gravity = 9.8f; // Adjust this value to control the strength of gravity
     public float groundDistance = 0.2f; // Adjust this value based on your player's height and ground detection accuracy
 
-
     private Vector3 velocity;
     public AudioSource audioSource;
     public List<AudioClip> audioClips;
+
+    public List<ParticleSystem> vfxLIST;
 
     private void Start()
     {

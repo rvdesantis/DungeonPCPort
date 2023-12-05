@@ -10,9 +10,7 @@ public class HiddenMeadow : HiddenEndCube
     public PlayableDirector treantCombatPlayable;
     public bool opened;
 
-    public GameObject treasureSpawn0;
-    public GameObject treasureSpawn1;
-    public GameObject treasureSpawn2;
+    public DunChest cornerChest;
 
     public GameObject volumeObject;
 
@@ -22,6 +20,7 @@ public class HiddenMeadow : HiddenEndCube
         PartyController party = FindObjectOfType<PartyController>();
         PlayerController player = FindObjectOfType<PlayerController>();
         MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        DistanceController distance = FindObjectOfType<DistanceController>();
 
         party.AssignCamBrain(treantEnterPlayable, 3);
         foreach (DunModel model in party.activeParty)
@@ -30,8 +29,11 @@ public class HiddenMeadow : HiddenEndCube
         }     
         DunModel Treant = Instantiate(monsters.enemyMasterList[2], treantSpawnPoint.transform.position, treantSpawnPoint.transform.rotation);
         Treant.AssignToDirector(treantEnterPlayable, 4);
-
+        distance.chests.Add(cornerChest);
+        cornerChest.gameObject.SetActive(true);
         volumeObject.SetActive(true);
+        
+        
     }
 
     private void Update()

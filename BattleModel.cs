@@ -2,17 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BattleModel : MonoBehaviour
+public class BattleModel : DunModel
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public int health;
+    public int maxH;
+    public int mana;
+    public int maxM;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public int def;
+    public int power;
+    public int XP;
+    public float powerBonusPercent;
+    public float powerBonusInt;
+
+    public float defBonusPercent;
+    public float defBonusInt;
+
+    public float spellBonusPercent;
+    public float spellBonusInt;
+
+    public List<Spell> activeSpells;
+    public List<Spell> masterSpells;
 }

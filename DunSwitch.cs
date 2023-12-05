@@ -14,9 +14,16 @@ public class DunSwitch : MonoBehaviour
     public Animator switchAnim;
     public PlayableDirector switchPlayable;
 
+    public AudioSource audioSource;
+    public List<AudioClip> switchSounds;
+
     public IEnumerator FlipTimer()
     {
         yield return new WaitForSeconds(.5f);
+        if (switchSounds.Count > 0)
+        {
+            audioSource.PlayOneShot(switchSounds[0]);
+        }
         flipping = false;
     }
 
@@ -24,6 +31,11 @@ public class DunSwitch : MonoBehaviour
     {
         if (!locked && !flipping)
         {
+            DunUIController uiController = FindObjectOfType<DunUIController>();
+            uiController.rangeImage.gameObject.SetActive(false);
+            uiController.customImage.gameObject.SetActive(false);
+            uiController.ToggleKeyUI(gameObject, false);
+
             if (!switchOn)
             {
                 if (animType == AnimType.animator)
@@ -31,6 +43,10 @@ public class DunSwitch : MonoBehaviour
                     switchOn = true;
                     flipping = true;
                     switchAnim.SetTrigger("switchOn");
+                    if (audioSource != null && switchSounds.Count > 0)
+                    {
+                        audioSource.PlayOneShot(switchSounds[0]);
+                    }
                     StartCoroutine(FlipTimer());
                 }
                 if (animType == AnimType.playable)

@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
+using UnityEngine.Playables;
 
 public class StatueRoomParent : RoomPropParent
 {
@@ -18,12 +20,87 @@ public class StatueRoomParent : RoomPropParent
     public DunItem chaosOrb;
     public List<GameObject> wallCovers;
 
+    public PlayableDirector crystalSwitchPlayable;
+    public PlayableDirector fallChaosPlayable;
+    public bool gravityOff;
+    public bool skippedTrigger;
+
+
+
+
 
     private void Start()
     {
         RoomSetUp();
         StartCoroutine(RotateObjects());
     }
+
+    public void EndStart()
+    {
+        SceneController controller = FindObjectOfType<SceneController>();
+        PlayerController player = FindObjectOfType<PlayerController>();
+        PartyController party = FindObjectOfType<PartyController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+
+        controller.activePlayable = null;
+        controller.endAction = null;
+        foreach (DunModel model in party.activeParty)
+        {
+            model.gameObject.SetActive(false);
+        }
+        player.controller.enabled = true;
+        uiController.compassObj.SetActive(true);
+        uiController.rangeImage.gameObject.SetActive(false);
+        if (uiController.interactUI.activeObj == startSwitch.gameObject)
+        {
+            uiController.ToggleKeyUI(startSwitch.gameObject, false);
+        }
+    }
+    IEnumerator StartSwitch()
+    {
+        Debug.Log("Room ENV Enter Trigger");
+        PartyController party = FindObjectOfType<PartyController>();
+        PlayerController player = FindObjectOfType<PlayerController>();
+        MonsterController monsters = FindObjectOfType<MonsterController>();
+        SceneController controller = FindObjectOfType<SceneController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+
+        controller.activePlayable = crystalSwitchPlayable;
+        controller.endAction = EndStart;
+        party.AssignCamBrain(crystalSwitchPlayable, 3);
+        foreach (DunModel model in party.activeParty)
+        {
+            model.AssignToDirector(crystalSwitchPlayable);
+            model.gameObject.SetActive(true);
+            if (model.torch != null)
+            {
+                model.torch.SetActive(false);
+            }
+            if (model.activeWeapon != null)
+            {
+                model.activeWeapon.SetActive(false);
+            }
+            model.transform.position = crystalSwitchPlayable.transform.position;
+            model.transform.parent = crystalSwitchPlayable.transform;
+        }
+        party.activeParty[0].torch.SetActive(false);
+        float clipTime = (float)crystalSwitchPlayable.duration;
+        player.controller.enabled = false;
+        uiController.compassObj.SetActive(false);
+        crystalSwitchPlayable.Play();
+        yield return new WaitForSeconds(clipTime);
+
+       if (controller.activePlayable != null)
+        {
+            EndStart();
+        }
+    }
+
+    public void CrystalSwitch()
+    {
+        StartCoroutine(StartSwitch());
+    }
+
 
     public void RoomSetUp() // does not add wall switches to distance controller until activated, only start switch.
     {
@@ -59,6 +136,16 @@ public class StatueRoomParent : RoomPropParent
             floorGrate.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
             roofGrate.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
             yield return null;
+        }
+    }
+
+    private void Update()
+    {
+        if (startSwitch.switchOn && !gravityOff)
+        {
+            gravityOff = true;
+            startSwitch.locked = true;
+            CrystalSwitch();
         }
     }
 }

@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class DunPortal : MonoBehaviour
@@ -20,32 +18,36 @@ public class DunPortal : MonoBehaviour
 
     public IEnumerator Transport()
     {
-        sceneController.uiController.compassObj.SetActive(false);
-        jumpCount++;
-        connectedPortal.connectedPortal = this;
-        connectedPortal.sceneController = sceneController;
-        connectedPortal.gameObject.SetActive(true);
-
-
-        PlayerController player = sceneController.playerController;
-        player.controller.enabled = false;
-        player.transform.position = connectedPortal.transportPosition.transform.position;
-        player.transform.rotation = connectedPortal.transportPosition.transform.rotation;
-        player.controller.enabled = true;
-        player.audioSource.PlayOneShot(connectedPortal.returnSound);
-        if (connectedPortal.destoryWall != null)
-        { 
-            connectedPortal.destoryWall.inRange = true;
-            connectedPortal.destoryWall.WallBreak();
-        }
-        yield return new WaitForSeconds(.25f);
-
-        connectedPortal.gameObject.SetActive(false);
-        if (closeOnJump)
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+        if (!uiController.uiActive)
         {
-            gameObject.SetActive(false);
+            jumpCount++;
+            connectedPortal.connectedPortal = this;
+            connectedPortal.sceneController = sceneController;
+            connectedPortal.gameObject.SetActive(true);
+            uiController.rangeImage.gameObject.SetActive(false);
+
+            PlayerController player = sceneController.playerController;
+            player.controller.enabled = false;
+            player.transform.position = connectedPortal.transportPosition.transform.position;
+            player.transform.rotation = connectedPortal.transportPosition.transform.rotation;
+            player.controller.enabled = true;
+            player.audioSource.PlayOneShot(connectedPortal.returnSound);
+            if (connectedPortal.destoryWall != null)
+            {
+                connectedPortal.destoryWall.inRange = true;
+                connectedPortal.destoryWall.WallBreak();
+            }
+            uiController.interactUI.activeObj = null;
+            uiController.interactParent.SetActive(false);
+            yield return new WaitForSeconds(.25f);
+            connectedPortal.gameObject.SetActive(false);
+            if (closeOnJump)
+            {
+                gameObject.SetActive(false);
+            }
         }
-        sceneController.uiController.compassObj.SetActive(true);
+       
     }
 
 
@@ -59,7 +61,6 @@ public class DunPortal : MonoBehaviour
             }
         }
     }
-
 
     public void ConnectPortals(DunPortal connectorPortal)
     {

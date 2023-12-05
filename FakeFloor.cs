@@ -23,7 +23,8 @@ public class FakeFloor : MonoBehaviour
 
 
     public void Fall()
-    {  
+    {
+        // measure distance and flip if walking up from behind.  
         if (trapCube.trapType == TrapHallCube.TrapType.empty)
         {
             StandardFall();
@@ -109,9 +110,15 @@ public class FakeFloor : MonoBehaviour
         player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
         player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
         player.controller.enabled = true;
-        player.gravity = 9;
+        player.gravity = 15;
         player.playerLight.enabled = true;
         player.cinPersonCam.m_Priority = 5;
+
+        if (!fallRoom.exitPortal.gameObject.activeSelf)
+        {
+            Debug.Log("Error - Exit Portal Manually Opened (GameObject)", fallRoom.exitPortal.gameObject);
+            fallRoom.exitPortal.gameObject.SetActive(true);
+        }
 
         uiController.compassObj.SetActive(true);
     }
@@ -130,7 +137,6 @@ public class FakeFloor : MonoBehaviour
         }
         StartCoroutine(StandardFallTimer(player));
     }
-
     public void MonsterFall(int monsterNum)
     {
         PlayerController player = FindAnyObjectByType<PlayerController>();
@@ -146,14 +152,14 @@ public class FakeFloor : MonoBehaviour
         
         StartCoroutine(MonsterFallTimer(player, monsterNum));
     }
-
     public void OtherFall(int mystNum)
     {
         PlayerController player = FindAnyObjectByType<PlayerController>();
         DistanceController distance = FindAnyObjectByType<DistanceController>();
+        SceneController sceneController = FindObjectOfType<SceneController>();
         if (fallRoom != null)
         {
-            SceneController sceneController = FindObjectOfType<SceneController>();
+
             fallRoom.exitPortal.sceneController = sceneController;
             fallRoom.returnPortal.sceneController = sceneController;
             distance.portals.Add(fallRoom.exitPortal);
@@ -161,7 +167,6 @@ public class FakeFloor : MonoBehaviour
         }
         StartCoroutine(MysteryFallTimer(player, mystNum));
     }
-
     private IEnumerator MysteryFallTimer(PlayerController player, int mysteryNumber)
     {
         PartyController party = FindObjectOfType<PartyController>();
@@ -196,7 +201,6 @@ public class FakeFloor : MonoBehaviour
         StartCoroutine(MysterActivation(player, mysteryNumber, gravX));
 
     }
-
     private IEnumerator MysterActivation(PlayerController player, int mysteryNumber, float gravity)
     {
         PartyController party = FindObjectOfType<PartyController>();
@@ -228,6 +232,7 @@ public class FakeFloor : MonoBehaviour
         {
             controller.activePlayable = recoverDir;
             controller.endAction += EndFall;
+
             activationList.Clear();
             activationList.Add(trapCube.otherObjects[mysteryNumber]);
             recoverDir.Play();
@@ -260,11 +265,10 @@ public class FakeFloor : MonoBehaviour
 
 
             controller.activePlayable = null;
-            controller.endAction += null;
+            controller.endAction = null;
 
         }        
     }
-
     private IEnumerator StandardFallTimer(PlayerController player)
     {
         PartyController party = FindObjectOfType<PartyController>();
@@ -320,7 +324,6 @@ public class FakeFloor : MonoBehaviour
             EndFall();
         }
     }
-
     private IEnumerator MonsterFallTimer(PlayerController player, int monsterNum)
     {
         PartyController party = FindObjectOfType<PartyController>();
@@ -401,7 +404,7 @@ public class FakeFloor : MonoBehaviour
             activeMonster.gameObject.SetActive(false);
 
             controller.activePlayable = null;
-            controller.endAction += null;
+            controller.endAction = null;
 
             player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
             player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
@@ -412,6 +415,5 @@ public class FakeFloor : MonoBehaviour
             uiController.compassObj.SetActive(true);
         }
     }
-
 
 }

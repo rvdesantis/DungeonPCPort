@@ -65,6 +65,11 @@ public class DunChest : MonoBehaviour
                 }
             }
         }
+
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+        uiController.ToggleKeyUI(gameObject, false);
+        uiController.pickUpUI.gameObject.SetActive(true);
+        uiController.pickUpUI.OpenImage(chestItem);
     }
 
     public virtual void OpenChest()

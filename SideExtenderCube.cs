@@ -101,6 +101,7 @@ public class SideExtenderCube : Cube
 
             if (spawnableList[objectPick] == enemyObject)
             {
+                lFakeWall.locked = true;
             
                 List<DunModel> availableEnemies = new List<DunModel>();
 
@@ -159,7 +160,8 @@ public class SideExtenderCube : Cube
             }
             // add NPC Spawn
             if (spawnableList[objectPick] == enemyObject)
-            {                
+            {
+                rFakeWall.locked = true;
                 List<DunModel> availableEnemies = new List<DunModel>();
                 foreach (DunModel enemy in monsters.enemyMasterList)
                 {
@@ -215,12 +217,12 @@ public class SideExtenderCube : Cube
                 }
             }
         }
-        portal.ConnectPortals(availablePort[Random.Range(0, availablePort.Count)]);
-
-        if (portal.connectedPortal == sact.eventCubes.enterPortalSMRoom) // sets Event Room if applicable
+        int portNum = Random.Range(0, availablePort.Count);
+        if (availablePort[portNum] == sact.eventCubes.enterPortalSMRoom) // sets Event Room if applicable
         {
             sact.eventCubes.SetTreasureRoom(portal, true);            
         }
+        portal.ConnectPortals(availablePort[portNum]);
         portal.connectedPortal.gameObject.SetActive(true);
     }
 
@@ -278,6 +280,10 @@ public class SideExtenderCube : Cube
             activeModel.transform.position = monsterDir.transform.position;
             activeModel.transform.rotation = monsterDir.transform.rotation;
             activeModel.gameObject.SetActive(true);
+            if (activeModel.activeWeapon != null)
+            {
+                activeModel.activeWeapon.SetActive(false);
+            }
             if (torch)
             {
                 if (party.activeParty.IndexOf(activeModel) == 0)

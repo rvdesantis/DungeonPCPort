@@ -177,6 +177,23 @@ public class CubeRoom : TurnCube
             targetRoom.gameObject.SetActive(true);
             targetRoom.EnvFill(); // portal set up through EnvFill
         }
+        if (roomType == RoomType.shop)
+        {
+            List<RoomPropParent> fillList = new List<RoomPropParent>();
+            foreach (RoomPropParent env in environments)
+            {
+                // add rooms with Mystery fills
+                fillList.Add(env);
+                if (openWall != null)
+                {
+                    env.openWall = openWall;
+                }
+            }
+            int roomNum = UnityEngine.Random.Range(0, fillList.Count);
+            RoomPropParent targetRoom = fillList[roomNum];
+            targetRoom.gameObject.SetActive(true);
+            targetRoom.EnvFill();
+        }
     }
 
 

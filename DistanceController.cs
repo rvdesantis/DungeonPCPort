@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -6,6 +7,7 @@ using UnityEngine;
 public class DistanceController : MonoBehaviour
 {
     public PlayerController playerController;
+    public DunUIController uiController;
     public SceneBuilder builder;
     public SceneController sceneController;
     public MapController mapController;
@@ -15,6 +17,7 @@ public class DistanceController : MonoBehaviour
     public List<DunChest> chests;
     public List<DunNPC> npcS;
     public List<CubeRoom> rooms;
+    public List<CubeRoom> bossRooms;
     public List<DunSwitch> switches;
     public List<DunItem> dunItems;
     public List<AudioDistance> audioDistanceControllers;
@@ -74,6 +77,7 @@ public class DistanceController : MonoBehaviour
             if (Vector3.Distance(playerPosition, room.floorPoint.transform.position) < 6)
             {
                 mapController.LayerOnMap(room, 6, true);
+                room.mapIcon.visitedFrame.gameObject.SetActive(true);
                 // trigger room event
             }
             CubeRoom roomComp = room.GetComponent<CubeRoom>();
@@ -118,13 +122,6 @@ public class DistanceController : MonoBehaviour
                             portal.gameObject.SetActive(true);
                             portal.connectedPortal.gameObject.SetActive(true);
                         }
-                        if (portal.jumpCount > 0)
-                        {
-                            if (portal.gameObject.activeSelf)
-                            {
-                                portal.gameObject.SetActive(false);
-                            }             
-                        }
                     }
                 }
                 if (Vector3.Distance(playerPosition, portal.transform.position) < 3)
@@ -132,6 +129,9 @@ public class DistanceController : MonoBehaviour
                     if (!portal.inRange)
                     {
                         portal.inRange = true;
+                        uiController.rangeImage.sprite = uiController.rangeSprites[1];
+                        uiController.rangeImage.gameObject.SetActive(true);
+                        uiController.ToggleKeyUI(portal.gameObject, true);
                     }
                 }
                 if (Vector3.Distance(playerPosition, portal.transform.position) > 4)
@@ -139,42 +139,50 @@ public class DistanceController : MonoBehaviour
                     if (portal.inRange)
                     {
                         portal.inRange = false;
+                        uiController.rangeImage.gameObject.SetActive(false);
+                        if (uiController.interactUI.activeObj == portal.gameObject)
+                        {
+                            uiController.ToggleKeyUI(portal.gameObject, false);
+                        }
                     }
                 }
             }
-            if (Vector3.Distance(playerPosition, portal.transform.position) > 15 && portal.assigned)
+            if (Vector3.Distance(playerPosition, portal.transform.position) > 15)
             {
                 if (portal.gameObject.activeSelf)
                 {
                     portal.gameObject.SetActive(false);
                     portal.connectedPortal.gameObject.SetActive(false);
-                    portal.inRange = false; 
                 }
             }
         }
     }
     public void FakeWallDistance(Vector3 playerPosition)
     {
-        foreach (FakeWall fWall in fakeWalls)
+        if (playerController.enabled)
         {
-            if (fWall.gameObject.activeSelf)
+            foreach (FakeWall fWall in fakeWalls)
             {
-                if (Vector3.Distance(playerPosition, fWall.transform.position) < 5)
+                if (fWall.gameObject.activeSelf)
                 {
-                    if (!fWall.inRange)
+                    if (Vector3.Distance(playerPosition, fWall.transform.position) < 5)
                     {
-                        fWall.inRange = true;
+                        if (!fWall.inRange)
+                        {
+                            fWall.inRange = true;
+                        }
                     }
-                }
-                if (Vector3.Distance(playerPosition, fWall.transform.position) > 5)
-                {
-                    if (fWall.inRange)
+                    if (Vector3.Distance(playerPosition, fWall.transform.position) > 5)
                     {
-                        fWall.inRange = false;
+                        if (fWall.inRange)
+                        {
+                            fWall.inRange = false;
+                        }
                     }
                 }
             }
         }
+        
     }
     public void AudioDistance(Vector3 playerPosition)
     {
@@ -214,21 +222,56 @@ public class DistanceController : MonoBehaviour
         {
             if (!chest.opened)
             {
-                if (Vector3.Distance(playerPosition, chest.transform.position) < 5)
+                if (Vector3.Distance(playerPosition, chest.transform.position) < 4 && !chest.inRange && !chest.opened)
                 {
                     chest.inRange = true;
+                    if (chest.locked)
+                    {
+                        if (chest.fakeWall == null || chest.fakeWall.wallBroken)
+                        {
+                            uiController.rangeImage.sprite = uiController.rangeSprites[4];
+                            uiController.customImage.sprite = uiController.customSprites[1];
+                            uiController.rangeImage.gameObject.SetActive(true);
+                            uiController.customImage.gameObject.SetActive(true);
+                            uiController.ToggleKeyUI(chest.gameObject, true);
+                        }
+                    }
+                    if (!chest.locked)
+                    {
+                        if (chest.fakeWall == null || chest.fakeWall.wallBroken)
+                        {
+                            uiController.rangeImage.sprite = uiController.rangeSprites[0];
+                            uiController.rangeImage.gameObject.SetActive(true);
+                            uiController.ToggleKeyUI(chest.gameObject, true);
+                        }
+                    }
                 }
-                if (Vector3.Distance(playerPosition, chest.transform.position) >= 5 && chest.inRange)
+                if (Vector3.Distance(playerPosition, chest.transform.position) >= 4 && chest.inRange)
                 {
                     chest.inRange = false;
+                    if (uiController.interactUI.activeObj == chest.gameObject)
+                    {
+                        uiController.rangeImage.gameObject.SetActive(false);
+                        uiController.customImage.gameObject.SetActive(false);
+                        uiController.ToggleKeyUI(chest.gameObject, false);
+                    }
                 }
                 if (chest.inRange && !sceneController.uiController.uiActive)
                 {
-                    if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
+                    if (chest.fakeWall == null || chest.fakeWall.wallBroken)
                     {
-                        chest.OpenChest();
+                        if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
+                        {
+                            chest.OpenChest();                            
+                        }
                     }
                 }
+            }         
+            if (chest.opened && chest.inRange)
+            {
+                chest.inRange = false;
+                uiController.rangeImage.gameObject.SetActive(false);
+                uiController.customImage.gameObject.SetActive(false);
             }
         }
     }
@@ -236,35 +279,64 @@ public class DistanceController : MonoBehaviour
     {
         foreach (DunNPC npc in npcS)
         {
-            if (npc.idlePlayableLoop != null)
+            if (npc.gameObject.activeSelf)
             {
-                if (Vector3.Distance(playerPosition, npc.transform.position) < 15)
+                if (npc.idlePlayableLoop != null)
                 {
-                    if (!npc.engaged)
+                    if (Vector3.Distance(playerPosition, npc.transform.position) < 15)
                     {
-                        if (npc.idlePlayableLoop.state != UnityEngine.Playables.PlayState.Playing)
+                        if (!npc.engaged)
                         {
-                            npc.idlePlayableLoop.Play();
+                            if (npc.idlePlayableLoop.state != UnityEngine.Playables.PlayState.Playing)
+                            {
+                                npc.idlePlayableLoop.Play();
+                            }
                         }
                     }
+                    if (Vector3.Distance(playerPosition, npc.transform.position) > 16)
+                    {
+                        npc.idlePlayableLoop.Stop();
+                        npc.idlePlayableLoop.time = 0;
+                    }
                 }
-                if (Vector3.Distance(playerPosition, npc.transform.position) > 16)
+                if (Vector3.Distance(playerPosition, npc.transform.position) < 4 && !npc.inRange)
                 {
-                    npc.idlePlayableLoop.Stop();
-                    npc.idlePlayableLoop.time = 0;
+                    npc.inRange = true;
+                    if (npc.icon == null)
+                    {
+                        uiController.rangeImage.sprite = uiController.rangeSprites[2];
+                    }
+                    if (npc.icon != null)
+                    {
+                        uiController.rangeImage.sprite = uiController.rangeSprites[4];
+                        uiController.customImage.sprite = npc.icon;
+                        uiController.rangeImage.gameObject.SetActive(true);
+                        uiController.customImage.gameObject.SetActive(true);
+                    }
+
+                    uiController.rangeImage.gameObject.SetActive(true);
+                    uiController.ToggleKeyUI(npc.gameObject, true);
                 }
-            }
-            if (Vector3.Distance(playerPosition, npc.transform.position) < 5)
-            {
-                npc.inRange = true;
-            }
-            if (npc.inRange && !sceneController.uiController.uiActive)
-            {
-                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
+                if (Vector3.Distance(playerPosition, npc.transform.position) >= 4 && npc.inRange)
                 {
-                    npc.NPCTrigger();
+                    npc.inRange = false;
+                    uiController.rangeImage.gameObject.SetActive(false);
+                    uiController.customImage.gameObject.SetActive(false);
+
+                    if (uiController.interactUI.activeObj == npc.gameObject)
+                    {
+                        uiController.ToggleKeyUI(npc.gameObject, false);
+                    }
+                }
+                if (npc.inRange && !sceneController.uiController.uiActive)
+                {
+                    if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
+                    {
+                        npc.NPCTrigger();
+                    }
                 }
             }
+
         }
     }
     public void FakeFloorDistance(Vector3 playerPosition)
@@ -290,18 +362,12 @@ public class DistanceController : MonoBehaviour
                 if (floor.inRange && !floor.floorBreak)
                 {
                     floor.floorBreak = true;
-
-                    if (Vector3.Distance(playerPosition, floor.front.transform.position) < Vector3.Distance(playerPosition, floor.front.transform.position))
-                    {
-                        Debug.Log("flipping floor");
-                        floor.transform.rotation = Quaternion.Euler(floor.transform.rotation.eulerAngles.x, floor.transform.rotation.eulerAngles.y + 180f, floor.transform.rotation.eulerAngles.z);
-                    }
                     floor.Fall();                    
                 }
             }
         }
     }
-    public void FakeRoomDistance(Vector3 playerPosition)
+    public void RoomDistance(Vector3 playerPosition)
     {
         if (playerController.controller.enabled && !sceneController.uiController.uiActive)
         {
@@ -353,15 +419,36 @@ public class DistanceController : MonoBehaviour
         {
             foreach (DunSwitch dunSwit in switches)
             {
-                if (Vector3.Distance(playerPosition, dunSwit.transform.position) < 4 && !dunSwit.inRange)
+                if (Vector3.Distance(playerPosition, dunSwit.transform.position) < 4 && !dunSwit.inRange && !dunSwit.flipping)
                 {
-                    dunSwit.inRange = true;
+                    if (dunSwit.locked)
+                    {
+                        dunSwit.inRange = true;
+                        uiController.rangeImage.sprite = uiController.rangeSprites[4];
+                        uiController.customImage.sprite = uiController.customSprites[1];
+                        uiController.rangeImage.gameObject.SetActive(true);
+                        uiController.customImage.gameObject.SetActive(true);
+                        uiController.ToggleKeyUI(dunSwit.gameObject, true);
+                    }
+                    else
+                    {
+                        dunSwit.inRange = true;
+                        uiController.rangeImage.sprite = uiController.rangeSprites[1];
+                        uiController.rangeImage.gameObject.SetActive(true);
+                        uiController.ToggleKeyUI(dunSwit.gameObject, false);
+                    }
                 }
                 if (dunSwit.inRange)
                 {
-                    if (Vector3.Distance(playerPosition, dunSwit.transform.position) >= 4)
+                    if (Vector3.Distance(playerPosition, dunSwit.transform.position) >= 4 || dunSwit.flipping)
                     {
                         dunSwit.inRange = false;
+                        uiController.rangeImage.gameObject.SetActive(false);
+                        uiController.customImage.gameObject.SetActive(false);
+                        if (uiController.interactUI.activeObj == dunSwit.gameObject)
+                        {
+                            uiController.ToggleKeyUI(dunSwit.gameObject, false);
+                        }
                     }
                 }
             }
@@ -373,17 +460,31 @@ public class DistanceController : MonoBehaviour
         {
             foreach (DunItem item in dunItems)
             {
-                if (Vector3.Distance(playerPosition, item.transform.position) <= 4)
+                if (item.gameObject.activeSelf)
                 {
-                    item.inRange = true;
-                }
-                if (item.inRange)
-                {
-                    if (Vector3.Distance(playerPosition, item.transform.position) >= 4)
+                    if (Vector3.Distance(playerPosition, item.transform.position) <= 4 && !item.inRange)
                     {
-                        item.inRange = false;
+                        item.inRange = true;
+                        uiController.rangeImage.sprite = uiController.rangeSprites[4];
+                        uiController.customImage.sprite = item.icon;
+                        uiController.rangeImage.gameObject.SetActive(true);
+                        uiController.customImage.gameObject.SetActive(true);
+                        uiController.ToggleKeyUI(item.gameObject, true);
                     }
-                }
+                    if (item.inRange)
+                    {
+                        if (Vector3.Distance(playerPosition, item.transform.position) >= 4 && item.inRange)
+                        {
+                            item.inRange = false;
+                            uiController.rangeImage.gameObject.SetActive(false);
+                            uiController.customImage.gameObject.SetActive(false);
+                            if (uiController.interactUI.activeObj == item.gameObject)
+                            {
+                                uiController.ToggleKeyUI(item.gameObject, false);
+                            }        
+                        }
+                    }
+                }    
             }
         }
     }
@@ -391,9 +492,9 @@ public class DistanceController : MonoBehaviour
     private void Update()
     {
         Vector3 playerPosition = playerController.transform.position;
-        if (playerController.active && sceneController.active)
+        if (playerController.active && playerController.enabled && sceneController.active)
         {
-            if (!sceneController.uiController.uiActive)
+            if (!sceneController.uiController.uiActive && !sceneController.uiController.isToggling)
             {
                 MapDistance(playerPosition);
                 PortalDistance(playerPosition);
@@ -402,7 +503,7 @@ public class DistanceController : MonoBehaviour
                 AudioDistance(playerPosition);
                 ChestDistance(playerPosition);
                 NPCDistance(playerPosition);
-                FakeRoomDistance(playerPosition);
+                RoomDistance(playerPosition);
                 EnemyTriggerDistance(playerPosition);
                 SwitchDistance(playerPosition);
                 DunItemDistance(playerPosition);

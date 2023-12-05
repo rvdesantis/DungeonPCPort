@@ -17,8 +17,9 @@ public class SmallBoneRoomParent : RoomPropParent
         PlayerController player = FindObjectOfType<PlayerController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
 
-        evilRDirector.time = evilRDirector.duration;
+        controller.activePlayable = null;
         controller.endAction = null;
+
         if (controller.activePlayable == evilRDirector)
         {
             controller.activePlayable = null;
@@ -52,19 +53,12 @@ public class SmallBoneRoomParent : RoomPropParent
             model.transform.position = evilRDirector.transform.position;
             model.transform.parent = evilRDirector.transform;
             model.gameObject.SetActive(true);
-        }
-        party.activeParty[0].torch.SetActive(false);
-        foreach (DunModel enemy in monsters.enemyMasterList)
-        {
-            if (enemy.spawnArea == DunModel.SpawnArea.smallRoom)
+            if (model.activeWeapon != null)
             {
-                if (enemy.spawnPlayableInt == 2)
-                {
-                    enemy.gameObject.SetActive(false);
-                    break;
-                }
+                model.activeWeapon.SetActive(false);
             }
         }
+        party.activeParty[0].torch.SetActive(false);
 
         DunModel bunny = null;
         foreach (DunModel enemy in monsters.enemyMasterList)

@@ -60,6 +60,7 @@ public class PortalTrap : MonoBehaviour
         // random portal 2 random between treasure room or hidden room portal
 
         List<DunPortal> mystPortals = new List<DunPortal>();
+
         if (!sanct.eventCubes.treasureChest.opened)
         {
             mystPortals.Add(sanct.eventCubes.enterPortalSMRoom); // SM Sact Event Room set first to activate environment if triggered.  
@@ -78,12 +79,14 @@ public class PortalTrap : MonoBehaviour
         if (mystPortals.Count > 0)
         {
             int mystNum = Random.Range(0, mystPortals.Count);
-            if (mystNum == 0)
+
+            if (mystPortals[0] == sanct.eventCubes.enterPortalSMRoom)
             {
                 sanct.eventCubes.SetTreasureRoom(randomPortals[2]);
                 randomPortals[2].ConnectPortals(sanct.eventCubes.enterPortalSMRoom);
                 randomPortals[2].gameObject.SetActive(true);
             }
+          
             if (mystNum != 0)
             {
                 randomPortals[2].ConnectPortals(mystPortals[mystNum]);
@@ -95,9 +98,16 @@ public class PortalTrap : MonoBehaviour
         {
             portal.gameObject.SetActive(true);
             portal.closeOnJump = true;
-            if (!portal.connectedPortal.gameObject.activeSelf)
+            if (portal.connectedPortal != null)
             {
-                portal.connectedPortal.gameObject.SetActive(true);
+                if (!portal.connectedPortal.gameObject.activeSelf)
+                {
+                    portal.connectedPortal.gameObject.SetActive(true);
+                }
+            }
+            if (portal.connectedPortal == null)
+            {
+                Debug.Log("Portal not connected to portal B", portal.gameObject);
             }
             distance.portals.Add(portal);
         }

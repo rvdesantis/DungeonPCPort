@@ -4,5 +4,14 @@ using UnityEngine;
 
 public class HiddenForge : HiddenEndCube
 {
+    public DunNPC forgeNPC;
 
+    private void Start()
+    {
+        if (distanceC == null)
+        {
+            distanceC = FindObjectOfType<DistanceController>();
+            distanceC.npcS.Add(forgeNPC);
+        }
+    }
 }

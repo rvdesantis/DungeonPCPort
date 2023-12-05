@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.Playables;
 
 public class FakeWall : MonoBehaviour
 {
+    public SceneController controller;
     public BoxCollider blockCollider;
     public bool inRange;
     public bool wallBroken;
-    public bool wallBreakTest;
+    public bool locked;
     public GameObject objectSetActive;
     public PlayableDirector standardBreak;
 
@@ -42,19 +42,18 @@ public class FakeWall : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!wallBroken)
+        if (inRange && !wallBroken && !locked)
         {
-            if (wallBreakTest)
+            if (controller == null)
             {
-                WallBreak();
+                controller = FindObjectOfType<SceneController>();
             }
-        }
-
-        if (inRange && !wallBroken)
-        {
-            if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
+            if (controller.gameState == SceneController.GameState.Dungeon && controller.playerController.enabled && !controller.uiController.uiActive)
             {
-                WallBreak();
+                if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.JoystickButton0))
+                {
+                    WallBreak();
+                }
             }
         }
     }

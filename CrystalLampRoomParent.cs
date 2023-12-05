@@ -16,6 +16,8 @@ public class CrystalLampRoomParent : RoomPropParent
     public DunModel activeModel;
     public PlayableDirector scorpSummonPlayable;
     public PlayableDirector gobChestPlayable;
+    public DunChest gobChest;
+    public PlayableDirector knightPlayable;
     public PlayableDirector chaosPlayable;
     public DunItem cOrb;
 
@@ -40,7 +42,7 @@ public class CrystalLampRoomParent : RoomPropParent
         scorpSummonPlayable.time = scorpSummonPlayable.duration;
         activeModel.gameObject.SetActive(false);
         controller.activePlayable = null;
-        controller.endAction -= null;
+        controller.endAction = null;
         foreach (DunModel model in party.activeParty)
         {
             model.gameObject.SetActive(false);
@@ -56,16 +58,21 @@ public class CrystalLampRoomParent : RoomPropParent
         DunUIController uiController = FindObjectOfType<DunUIController>();
         SceneController controller = FindObjectOfType<SceneController>();
 
-        gobChestPlayable.time = gobChestPlayable.duration;
         activeModel.gameObject.SetActive(false);
         controller.activePlayable = null;
-        controller.endAction -= null;
+        controller.endAction = null;
         foreach (DunModel model in party.activeParty)
         {
             model.gameObject.SetActive(false);
         }
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
+
+        UnlockController unlockables = controller.unlockables;
+        if (!unlockables.mapVendorUnlock)
+        {
+            unlockables.UnlockNPC(0);
+        }
     }
 
     IEnumerator SummonETimer()
@@ -119,6 +126,14 @@ public class CrystalLampRoomParent : RoomPropParent
         yield return new WaitForSeconds(clipTime);
        
         scorp.gameObject.SetActive(false);
+        if (distanceController == null)
+        {
+            distanceController = FindObjectOfType<DistanceController>();
+        }
+        distanceController.switches.Remove(scorpionSwitch);
+        distanceController.switches.Remove(lampSwitches[0]);
+        distanceController.switches.Remove(lampSwitches[1]);
+        distanceController.switches.Remove(lampSwitches[2]);
 
         if (controller.activePlayable == scorpSummonPlayable)
         {
@@ -176,11 +191,78 @@ public class CrystalLampRoomParent : RoomPropParent
 
         gobChestPlayable.Play();
         yield return new WaitForSeconds(clipTime);
+        if (distanceController == null)
+        {
+            distanceController = FindObjectOfType<DistanceController>();
+        }
+        distanceController.chests.Add(gobChest);
+        distanceController.switches.Remove(scorpionSwitch);
+        distanceController.switches.Remove(lampSwitches[0]);
+        distanceController.switches.Remove(lampSwitches[1]);
+        distanceController.switches.Remove(lampSwitches[2]);
         goblin.gameObject.SetActive(false);
         if (controller.activePlayable == gobChestPlayable)
         {
             SummonGEnd();
         }      
+    }
+
+    IEnumerator SummonKnightTimer()
+    {
+        Debug.Log("Trigger Knight Summon");
+        PartyController party = FindObjectOfType<PartyController>();
+        PlayerController player = FindObjectOfType<PlayerController>();
+        MonsterController monster = FindObjectOfType<MonsterController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+        SceneController controller = FindObjectOfType<SceneController>();
+
+        knightPlayable.gameObject.SetActive(true);
+        party.AssignCamBrain(knightPlayable, 3);
+        DunModel knight = null;
+        foreach (DunModel enemy in monster.enemyMasterList)
+        {
+            if (enemy.spawnArea == DunModel.SpawnArea.smallRoom)
+            {
+                if (enemy.spawnPlayableInt == 3)
+                {
+                    knight = Instantiate(enemy, knightPlayable.transform.position, knightPlayable.transform.rotation);
+                    knight.AssignToDirector(knightPlayable, 4);
+                    knight.gameObject.SetActive(true);
+                    knight.transform.parent = knightPlayable.transform;
+                    knight.transform.position = knightPlayable.transform.position;
+                    knight.transform.rotation = knightPlayable.transform.rotation;
+                    activeModel = knight;                 
+                    break;
+                }
+            }
+        }
+        float clipTime = (float)knightPlayable.duration;
+        player.controller.enabled = false;
+        uiController.compassObj.SetActive(false);
+        GhostKnightModel ghostK = knight.GetComponent<GhostKnightModel>();
+        ghostK.headSmoke.gameObject.SetActive(true);
+        ghostK.headSmoke.Play();
+        knightPlayable.Play();
+        yield return new WaitForSeconds(clipTime);
+
+        if (distanceController == null)
+        {
+            distanceController = FindObjectOfType<DistanceController>();
+        }
+        GhostNightBlackSmith GNblackSmith = knight.GetComponent<GhostNightBlackSmith>();
+        distanceController.npcS.Add(GNblackSmith);
+        GNblackSmith.uiObject = uiController.blackSmithUI.gameObject;
+
+        distanceController.switches.Remove(scorpionSwitch);
+        distanceController.switches.Remove(lampSwitches[0]);
+        distanceController.switches.Remove(lampSwitches[1]);
+        distanceController.switches.Remove(lampSwitches[2]);
+        foreach (DunModel model in party.activeParty)
+        {
+            model.gameObject.SetActive(false);
+        }   
+        player.controller.enabled = true;
+        uiController.compassObj.SetActive(true);
     }
 
     IEnumerator ChaosOrbTimer()
@@ -191,7 +273,12 @@ public class CrystalLampRoomParent : RoomPropParent
         PartyController party = FindObjectOfType<PartyController>();
         DistanceController distanceController = FindObjectOfType<DistanceController>();
 
+        
         distanceController.dunItems.Add(cOrb);
+        distanceController.switches.Remove(scorpionSwitch);
+        distanceController.switches.Remove(lampSwitches[0]);
+        distanceController.switches.Remove(lampSwitches[1]);
+        distanceController.switches.Remove(lampSwitches[2]);
 
         chaosPlayable.gameObject.SetActive(true);
         party.AssignCamBrain(chaosPlayable, 3);
@@ -346,15 +433,15 @@ public class CrystalLampRoomParent : RoomPropParent
         }
     }
 
-
     public void SummonEnemy()
     {
         StartCoroutine(SummonETimer());
     }
 
+
     public void SummonBlue()
     {
-        Debug.Log("Blue Crystal Room Locked");
+        StartCoroutine(SummonKnightTimer());
     }
 
     public void SummonGreen()

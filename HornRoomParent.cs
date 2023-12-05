@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -24,6 +23,8 @@ public class HornRoomParent : RoomPropParent
         if (roomParent.roomType == CubeRoom.RoomType.NPC)
         {
             controller.activePlayable = demonessPlayable;
+            controller.endAction = EndEnter;
+
             party.AssignCamBrain(demonessPlayable, 3);
             foreach (DunModel model in party.activeParty)
             {
@@ -45,22 +46,13 @@ public class HornRoomParent : RoomPropParent
 
             demonessPlayable.Play();
             yield return new WaitForSeconds(clipTime);
-
-            if (!skippedTrigger)
-            {
-                controller.activePlayable = null;
-            }
-            
-            party.activeParty[0].torch.SetActive(false);
-            foreach (DunModel model in party.activeParty)
-            {
-                model.gameObject.SetActive(false);
-            }
-            player.controller.enabled = true;
-            uiController.compassObj.SetActive(true);
+            EndEnter();
         }
         if (roomParent.roomType == CubeRoom.RoomType.quest)
         {
+            controller.activePlayable = demonessPlayable;
+            controller.endAction = EndEnter;
+
             controller.activePlayable = demonessPlayable;
             party.AssignCamBrain(demonessPlayable, 3);
             foreach (DunModel model in party.activeParty)
@@ -83,16 +75,34 @@ public class HornRoomParent : RoomPropParent
             uiController.compassObj.SetActive(false);
             demonessPlayable.Play();
             yield return new WaitForSeconds(clipTime);
-            party.activeParty[0].torch.SetActive(false);
-            foreach (DunModel model in party.activeParty)
+            if (controller.activePlayable == demonessPlayable)
             {
-                model.gameObject.SetActive(false);
+                EndEnter();
             }
-            player.transform.position = afterPlaySpawnPoint.transform.position;
-            player.transform.rotation = afterPlaySpawnPoint.transform.rotation;
-            player.controller.enabled = true;
-            uiController.compassObj.SetActive(true);
         }
+    }
+
+    public void EndEnter()
+    {
+        PartyController party = FindObjectOfType<PartyController>();
+        PlayerController player = FindObjectOfType<PlayerController>();
+        MonsterController monsters = FindObjectOfType<MonsterController>();
+        SceneController controller = FindObjectOfType<SceneController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+
+        controller.activePlayable = null;
+        controller.endAction = null;
+
+
+        party.activeParty[0].torch.SetActive(false);
+        foreach (DunModel model in party.activeParty)
+        {
+            model.gameObject.SetActive(false);
+        }
+        player.transform.position = afterPlaySpawnPoint.transform.position;
+        player.transform.rotation = afterPlaySpawnPoint.transform.rotation;
+        player.controller.enabled = true;
+        uiController.compassObj.SetActive(true);
     }
 
     private void Update()
