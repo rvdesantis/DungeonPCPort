@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.Playables;
 
 
 public class SceneBuilder : MonoBehaviour
 {
-    public Camera buildCam;
     public int targetSize;
     public int currentSize;
     public List<HallStarterCube> sanctStarters;
@@ -34,6 +34,9 @@ public class SceneBuilder : MonoBehaviour
     public SceneController sceneController;
     public UnlockController unlockables;
     public LoadingBarUI loadingBar;
+    public bool frameBuild;
+
+    public List<PlayableDirector> openingPlayables;
 
     private void Start()
     {
@@ -42,15 +45,26 @@ public class SceneBuilder : MonoBehaviour
 
     public void PreBuild()
     {
-        Cursor.visible = false;
+        Cursor.visible = true;
         Cursor.lockState = CursorLockMode.Confined;
         unlockables.OpenGameLoad();
         currentSize = 0;
+
+        // add size controller.  targetSize Default set to 500 in Inspecter.
+
         if (targetSize == 0) // checks for error, sets to small by default if 0
         {
+            Debug.Log("ERROR - Target Size Set to 0");
             targetSize = 250;
         }
         loadingBar.skullSlider.value = 0;
+
+        sceneController.partySelect.FinalizeHeroes();
+
+        foreach (PlayableDirector opening in openingPlayables)
+        {
+            opening.Play();
+        }
     }
 
     public void StartBuild()
@@ -416,7 +430,9 @@ public class SceneBuilder : MonoBehaviour
 
                     Cube bigSecret = Instantiate(massiveSecrets[i], targetCubes[x].transform.position, targetCubes[x].transform.rotation);
                     createdSecretEnds.Add(bigSecret);
-                    targetCubes[x].hallBuildFin = true;
+                    targetCubes[x].hallBuildFin = true;   
+                    
+                    
                 }
             }
         }
@@ -521,6 +537,7 @@ public class SceneBuilder : MonoBehaviour
                         createdDeadEnds.Add(newDeadEnd);                                         
                     }
                 }
+                frameBuild = true;
                 Debug.Log("Dungeon Finished. Switching to SceneController Script");
                 loadingBar.text.text = "Build Finished...";
                 sceneController.SceneStart();

@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,21 @@ public class FakeFloor : MonoBehaviour
 
     public DunModel activeEnemy;
     public List<GameObject> activationList;
+
+    public int launchNum;
+
+    public bool returnBack;
+
+    public void StartBreak(bool back)
+    {
+        if (back)
+        {
+            returnBack = true;
+            fallRoom.returnPortal.transportPosition = front;
+        }
+
+        Fall();
+    }
 
 
     public void Fall()
@@ -121,6 +137,38 @@ public class FakeFloor : MonoBehaviour
         }
 
         uiController.compassObj.SetActive(true);
+    }
+
+    public void MonsterEndFall()
+    {
+        PartyController party = FindObjectOfType<PartyController>();
+        SceneController controller = FindObjectOfType<SceneController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        BattleController battleC = FindObjectOfType<BattleController>();
+
+
+        foreach (DunModel activeModel in party.activeParty)
+        {
+            activeModel.transform.parent = null;
+            activeModel.gameObject.SetActive(false);
+            if (activeModel.torch != null)
+            {
+                activeModel.torch.SetActive(false);
+            }
+            if (activeModel.activeWeapon != null)
+            {
+                activeModel.activeWeapon.SetActive(false);
+            }
+        }
+        activeEnemy.gameObject.SetActive(false);
+        controller.activePlayable = null;
+        controller.endAction = null;
+
+        player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
+        player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
+   
+        battleC.afterBattleAction = PitBattleReturn;
+        battleC.SetBattle(launchNum);       
     }
     public void StandardFall()
     {
@@ -279,7 +327,12 @@ public class FakeFloor : MonoBehaviour
         float gravX = player.gravity;
         player.gravity = 0;
         player.controller.enabled = false;
-        player.transform.position = repairFloor.transform.position;
+
+        Vector3 newPosition = repairFloor.transform.position;
+     
+
+        player.transform.SetPositionAndRotation(newPosition, front.transform.rotation);
+
         player.cinPersonCam.m_Priority = -1;
         uiController.compassObj.SetActive(false);
 
@@ -331,6 +384,7 @@ public class FakeFloor : MonoBehaviour
         MonsterController monsters = FindObjectOfType<MonsterController>();
         SceneController controller = FindObjectOfType<SceneController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
+        BattleController battleC = FindObjectOfType<BattleController>();
 
         float gravX = player.gravity;
         player.gravity = 0;
@@ -355,6 +409,7 @@ public class FakeFloor : MonoBehaviour
             boneDragon.AssignToDirector(monsterDir, 4);
 
             activeMonster = boneDragon;
+            launchNum = 1;
         }
         standardBreak.Play();
         yield return new WaitForSeconds((float)standardBreak.duration / 2);
@@ -380,7 +435,7 @@ public class FakeFloor : MonoBehaviour
         activeEnemy = activeMonster;
 
         controller.activePlayable = monsterDir;
-        controller.endAction += EndFall;
+        controller.endAction += MonsterEndFall;
 
         monsterDir.Play();
 
@@ -406,14 +461,27 @@ public class FakeFloor : MonoBehaviour
             controller.activePlayable = null;
             controller.endAction = null;
 
+
+
             player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
             player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
-            player.controller.enabled = true;
-            player.gravity = gravX;
-            player.playerLight.enabled = true;
-            player.cinPersonCam.m_Priority = 5;
-            uiController.compassObj.SetActive(true);
+            if (monsterNum == 0)
+            {
+                battleC.afterBattleAction = PitBattleReturn;
+                battleC.SetBattle(1);                
+            }
         }
     }
 
+    public void PitBattleReturn()
+    {
+        PlayerController player = FindObjectOfType<PlayerController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+
+        player.controller.enabled = true;
+        player.gravity = 9.5f;
+        player.playerLight.enabled = true;
+        player.cinPersonCam.m_Priority = 5;
+        uiController.compassObj.SetActive(true);
+    }
 }

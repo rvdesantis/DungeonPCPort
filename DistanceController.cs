@@ -78,6 +78,8 @@ public class DistanceController : MonoBehaviour
             {
                 mapController.LayerOnMap(room, 6, true);
                 room.mapIcon.visitedFrame.gameObject.SetActive(true);
+                room.mapIcon.iconBase.gameObject.SetActive(false);
+                room.mapIcon.visitedBase.gameObject.SetActive(true);
                 // trigger room event
             }
             CubeRoom roomComp = room.GetComponent<CubeRoom>();
@@ -362,7 +364,17 @@ public class DistanceController : MonoBehaviour
                 if (floor.inRange && !floor.floorBreak)
                 {
                     floor.floorBreak = true;
-                    floor.Fall();                    
+                    bool back = false;
+
+                    float frontDis = Vector3.Distance(playerPosition, floor.front.transform.position);
+                    float backDis = Vector3.Distance(playerPosition, floor.back.transform.position);
+
+                    if (backDis < frontDis)
+                    {
+                        back = true;
+                    }
+                    Debug.Log("Trap Door: Front Distance - " + frontDis + "/ Back Distance - " + backDis, floor.gameObject);
+                    floor.StartBreak(back);                   
                 }
             }
         }

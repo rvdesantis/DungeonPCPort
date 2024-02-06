@@ -14,6 +14,7 @@ public class InventoryUI : MonoBehaviour
     public DunUIController uiController;
     public InventoryController inventory;
     public SceneController controller;
+    public ShopUI shopUI;
 
     public List<Button> invButtons;
     public Sprite emptySprite;
@@ -47,6 +48,7 @@ public class InventoryUI : MonoBehaviour
 
     public void OpenInventory()
     {
+        gameObject.SetActive(true);
         tabIndex = 0;
         // Set Tabs
         tabs[0].sprite = tabSprites[0];
@@ -99,6 +101,16 @@ public class InventoryUI : MonoBehaviour
 
         foreach(Button itemBT in invButtons)
         {
+            if (!shopUI.gameObject.activeSelf)
+            {
+                itemBT.interactable = true;
+            }
+            if (shopUI.gameObject.activeSelf)
+            {
+                itemBT.interactable = false;
+                shopUI.itemButtons[0].Select();
+            }
+
             int x = invButtons.IndexOf(itemBT);
             if (x > 2)
             {
@@ -158,7 +170,15 @@ public class InventoryUI : MonoBehaviour
                 {
                     invImages[x].sprite = inventory.battleItems[x].icon;
                     invImages[x].gameObject.SetActive(true);
-                    itemBT.interactable = true;
+                    if (!shopUI.gameObject.activeSelf)
+                    {
+                        itemBT.interactable = true;
+                    }
+                    if (shopUI.gameObject.activeSelf)
+                    {
+                        itemBT.interactable = false;
+                        shopUI.itemButtons[0].Select();
+                    }
                     itemCountTXTs[x].gameObject.SetActive(true);
                     itemCountTXTs[x].text = inventory.battleItems[x].itemCount.ToString();
                 }
@@ -213,8 +233,16 @@ public class InventoryUI : MonoBehaviour
             if (x <= inventory.keyItems.Count - 1)
             {
                 invImages[x].sprite = inventory.keyItems[x].icon;
-                invImages[x].gameObject.SetActive(true);                  
-                itemBT.interactable = true;
+                invImages[x].gameObject.SetActive(true);
+                if (!shopUI.gameObject.activeSelf)
+                {
+                    itemBT.interactable = true;
+                }
+                if (shopUI.gameObject.activeSelf)
+                {
+                    itemBT.interactable = false;
+                    shopUI.itemButtons[0].Select();
+                }
                 itemCountTXTs[x].gameObject.SetActive(true);
                 itemCountTXTs[x].text = inventory.keyItems[x].itemCount.ToString();
             }

@@ -16,6 +16,10 @@ public class PartyController : MonoBehaviour
     public List<BattleModel> combatParty;
     public List<BattleModel> combatMaster;
 
+    public List<int> PowerUpCounters;
+    public List<int> DEFUpCounters;
+    public List<int> SpellUpCounters;
+
     public void AssignCamBrain(PlayableDirector dir, int pos = 0)
     {
  
@@ -83,6 +87,20 @@ public class PartyController : MonoBehaviour
             }
             EnhancedPrefs.SetPlayerPref(battleModel.modelName + "HP", newHealth);
             battleModel.health = newHealth;
+        }
+    }
+
+    public void LoadCounters()
+    {
+        foreach (DunModel partyMod in activeParty)
+        {
+            int x = EnhancedPrefs.GetPlayerPref(partyMod.modelName + "PowerUpCount", 0);
+            int y = EnhancedPrefs.GetPlayerPref(partyMod.modelName + "DEFUpCount", 0);
+            int z = EnhancedPrefs.GetPlayerPref(partyMod.modelName + "SpellUpCount", 0);
+
+            PowerUpCounters.Add(x);
+            DEFUpCounters.Add(y);
+            SpellUpCounters.Add(z);
         }
     }
 

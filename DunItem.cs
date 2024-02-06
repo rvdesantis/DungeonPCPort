@@ -11,7 +11,7 @@ public class DunItem : MonoBehaviour
     public int itemCount;
     public bool inRange;
     public Sprite icon;
-
+    public int itemPrice;
     public string itemInfo;
 
     public virtual void PickUp()

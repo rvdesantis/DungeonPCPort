@@ -40,4 +40,28 @@ public class InventoryController : MonoBehaviour
         return availGold;
     }
 
+    public void ReduceGold(int goldCost)
+    {
+        if (gold >= goldCost)
+        {
+            gold = gold - goldCost;
+        }
+
+        if (gold < goldCost)
+        {
+            if (GetAvailableGold() >= goldCost)
+            {
+                int neededGold = goldCost - gold;
+                int currentBank = EnhancedPrefs.GetPlayerPref("goldBank", 0);
+                int saveAmount = currentBank - neededGold;
+                EnhancedPrefs.SetPlayerPref("goldBank", saveAmount);
+                EnhancedPrefs.SavePlayerPrefs();
+            }
+            if (GetAvailableGold() < goldCost)
+            {
+                Debug.Log("Error, Tried to Reduce Gold Beyond the total Gold Amount in Inventory & Bank");
+            }
+        }
+    }
+
 }

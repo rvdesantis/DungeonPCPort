@@ -10,10 +10,14 @@ public class InputController : MonoBehaviour
     public ActiveInput activeInput; 
     public SceneController controller;
     public DunUIController uiController;
+    public ConfirmUI confirmUI;
 
     public bool isActionBTDown = false;
     public float timeHeldDown = 0f;
     public bool actionHOLD;
+    public string[] joystickNames;
+    public bool joyConnect;
+    public bool joyDisconnect;
 
     private void ButtonHoldChecker()
     {
@@ -69,9 +73,60 @@ public class InputController : MonoBehaviour
         }
     }
 
+    void CheckJoystickConnection()
+    {
+        joystickNames = Input.GetJoystickNames();
+        if (joystickNames.Length == 1 && !joyConnect)
+        {
+            if (string.IsNullOrEmpty(joystickNames[0]))
+            {
+               
+            }
+            if (!string.IsNullOrEmpty(joystickNames[0]))
+            {
+                joyConnect = true;
+                if (activeInput == ActiveInput.keyboard)
+                {
+                    activeInput = ActiveInput.joystick;
+                }
+                if (joyDisconnect == true)
+                {
+                    Debug.Log("Joystick RECONNECTED");
+                    joyDisconnect = false;
+                }
+                if (Time.timeScale != 1)
+                {
+                    Time.timeScale = 1f;
+                }
+            }
+        }
+        if (joystickNames.Length == 1 && joyConnect)
+        {
+            if (string.IsNullOrEmpty(joystickNames[0]))
+            {
+                joyConnect = false;
+                joyDisconnect = true;
+                if (Time.timeScale != 0)
+                {
+                    Debug.Log("ERROR - Joystick Disconnected");
+                    Time.timeScale = 0f;
+                    string mss = "Game Paused - Controller Disconnected\nPlease Reconnect PC Controller";
+                    confirmUI.ConfirmMessageUI(mss, false, false, false, true);
+                }
+            }
+            if (!string.IsNullOrEmpty(joystickNames[0]))
+            {
+
+            }
+        }
+
+
+    }
+
     private void Update()
     {
         ButtonHoldChecker();
+        CheckJoystickConnection();
     }
 
 }

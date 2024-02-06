@@ -14,6 +14,7 @@ public class SceneController : MonoBehaviour
     public MapController mapController;
     public PlayerController playerController;
     public PartyController party;
+    public SelectController partySelect;
     public InventoryController inventory;
     public DunUIController uiController;
     public DistanceController distance;
@@ -26,16 +27,25 @@ public class SceneController : MonoBehaviour
 
     public enum GameState { Dungeon, Battle}
     public GameState gameState;
-
+    public BattleController battleController;
     
 
     public void SceneStart()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
         active = true;
-        SetRandomParty();
-        StartCoroutine(SceneStarter());
+
+        // check to see if players have been selected yet.  
+        if (party.activeParty.Count < 3)
+        {
+            uiController.loadingBar.skullSlider.value = .5f;
+            uiController.loadingBar.text.text = "PAUSED: Party Select...";
+        }
+        if (party.activeParty.Count == 3)
+        {
+            StartCoroutine(SceneStarter());
+        }
+
+       
     }
 
     public void SetRandomParty()
@@ -51,6 +61,10 @@ public class SceneController : MonoBehaviour
         if (unlockables.rogueUnlock)
         {
             availParty.Add(party.masterParty[4]);
+        }
+        if (unlockables.vMageUnlock)
+        {
+            availParty.Add(party.masterParty[5]);
         }
 
         int x = UnityEngine.Random.Range(0, availParty.Count);
@@ -80,7 +94,9 @@ public class SceneController : MonoBehaviour
 
     private IEnumerator SceneStarter()
     {
-        characterCam.m_Priority = -1;
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = false;
+
         playerController.firstPersonCam.depth = 1;
         playerController.cinPersonCam.m_Priority = 5;
         playerController.active = true;

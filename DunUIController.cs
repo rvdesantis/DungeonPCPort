@@ -31,12 +31,15 @@ public class DunUIController : MonoBehaviour
     public AudioSource uiAudioSource;
 
     public SkipUI skipUI;
+    public CharacterUI characterUI;
     public InventoryUI inventoryUI;
     public PickUpUI pickUpUI;
     public GameObject settingsUI;
     public MessagePanelUI messagePanelUI;
     public UnlockedUI unlockUI;
     public BlacksmithUI blackSmithUI;
+    public SpellSmithUI spellSmithUI;
+    public ShopUI shopUI;
     public ConfirmUI confirmUI;
 
     IEnumerator ToggleTimer()
@@ -133,7 +136,6 @@ public class DunUIController : MonoBehaviour
                     controller.mapController.JoyStickSwap();
                 }
             }
-
         }
     }
 
@@ -171,6 +173,7 @@ public class DunUIController : MonoBehaviour
                 if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton7))
                 {
                     isToggling = true;
+                    Cursor.visible = true;
                     compassObj.SetActive(false);
                     lowerUIobj.SetActive(false);
                     Button reset = startButtons[1];
@@ -180,6 +183,7 @@ public class DunUIController : MonoBehaviour
                     startButtons[2].gameObject.SetActive(true);
                     startButtons[3].gameObject.SetActive(true);
                     startButtons[4].gameObject.SetActive(true);
+                    startButtons[5].gameObject.SetActive(true);
                     uiActive = true;
                     buttonFrameUI.SetActive(true);
                     uiAudioSource.PlayOneShot(uiSounds[0]);
@@ -190,6 +194,7 @@ public class DunUIController : MonoBehaviour
                     if (!inventoryUI.gameObject.activeSelf)
                     {
                         isToggling = true;
+                        Cursor.visible = true;
                         compassObj.SetActive(false);
                         lowerUIobj.SetActive(false);
                         uiActive = true;
@@ -199,42 +204,37 @@ public class DunUIController : MonoBehaviour
                         StartCoroutine(ToggleTimer());
                     }
                 }
+                if (Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.JoystickButton6))
+                {
+                    if (!characterUI.gameObject.activeSelf)
+                    {
+                        PartyController party = FindObjectOfType<PartyController>();
+                        isToggling = true;
+                        Cursor.visible = true;
+                        compassObj.SetActive(false);
+                        lowerUIobj.SetActive(false);
+                        uiActive = true;
+
+                        characterUI.gameObject.SetActive(true);
+                        characterUI.LoadStats(party.activeParty[0]);
+                        StartCoroutine(ToggleTimer());
+                    }
+                }
             }
 
             if (uiActive && !isToggling)
-            {
-                if (Input.GetKey(KeyCode.Mouse0))
-                {
-                    bool highlighted = false;
-                    foreach (Button button in startButtons)
-                    {
-                        if (EventSystem.current.currentSelectedGameObject == button)
-                        {
-                            highlighted = true;
-                        }
-                    }
-
-                    if (!highlighted)
-                    {
-                        if (startButtons[0].gameObject.activeSelf)
-                        {
-                            startButtons[0].Select();
-                        }
-                        else
-                        {
-                            startButtons[1].Select();
-                        }
-                    }
-                }
+            {                
                 if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton7))
                 {
                     isToggling = true;
+                    Cursor.visible = false;
                     Button reset = startButtons[1];
                     reset.gameObject.SetActive(false);
                     startButtons[1].gameObject.SetActive(false);
                     startButtons[2].gameObject.SetActive(false);
                     startButtons[3].gameObject.SetActive(false);
                     startButtons[4].gameObject.SetActive(false);
+                    startButtons[5].gameObject.SetActive(false);
 
                     buttonFrameUI.SetActive(false);
                     uiActive = false;
@@ -263,12 +263,29 @@ public class DunUIController : MonoBehaviour
                     {                       
                         settingsUI.SetActive(false);
                     }
+                    if (characterUI.gameObject.activeSelf)
+                    {
+                        if (characterUI.uiType == CharacterUI.UIType.CMenu)
+                        {
+                            characterUI.CloseUI();
+                        }
+                    }
+                    if (shopUI.gameObject.activeSelf)
+                    {
+                        shopUI.CloseUI();
+                        CloseDunInventory();
+                    }
+                    if (spellSmithUI.gameObject.activeSelf)
+                    {
+                        spellSmithUI.CloseUI();
+                    }
                 }
                 if (Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.JoystickButton2))
                 {
                     if (inventoryUI.gameObject.activeSelf)
                     {
                         isToggling = true;
+                        Cursor.visible = false;
                         CloseDunInventory();    
                         StartCoroutine(ToggleTimer());
                     }

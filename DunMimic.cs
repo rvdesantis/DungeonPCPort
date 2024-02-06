@@ -40,5 +40,16 @@ public class DunMimic : DunChest
             }
             yield return new WaitForSeconds(.5f);
         }
+        LaunchBattle();
+    }
+
+    public void LaunchBattle()
+    {
+        SceneController controller = FindObjectOfType<SceneController>();
+        BattleController battleC = controller.battleController;
+
+        controller.playerController.controller.enabled = false;
+        battleC.SetBattle(13);
+
     }
 }

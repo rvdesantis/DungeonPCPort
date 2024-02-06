@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class RoomPropParent : MonoBehaviour
@@ -26,6 +27,8 @@ public class RoomPropParent : MonoBehaviour
     public float portalWinReq;
 
     public bool active;
+    public bool battleTriggered;
+    public int battleNum;
     
     public void AvailableWall()
     {
@@ -108,7 +111,7 @@ public class RoomPropParent : MonoBehaviour
         {
 
         }
-        if (roomParent.roomType == CubeRoom.RoomType.NPC)
+        if (roomParent.roomType == CubeRoom.RoomType.NPC || roomParent.roomType == CubeRoom.RoomType.shop)
         {
             int count = NPCSpawn.Count;
             if (count > 0)
@@ -122,9 +125,65 @@ public class RoomPropParent : MonoBehaviour
                 }
 
                 DunNPC npc = NPCSpawn[xx].GetComponent<DunNPC>();
-                distanceController.npcS.Add(npc);
+                distanceController.npcS.Add(npc);                
+            }
+            if (count == 0)
+            {
+                AddShop();
             }
         }
+    }
+
+    public virtual void AfterBattle()
+    {
+
+    }
+
+    public virtual void AddShop() // disables from above, and JailRoomParent scriptdue to wall disappearing
+    {
+        Debug.Log("Adding Shop To Room", roomParent.gameObject);
+        NPCController NPCs = FindObjectOfType<NPCController>();
+
+        List<DeadEndCube> roomDeadEnds = new List<DeadEndCube>();
+        foreach (HallStarterCube starter in roomParent.starterCubes)
+        {
+            if (starter.deadEnd.gameObject.activeSelf)
+            {
+                if (!starter.deadEnd.filled)
+                {
+                    roomDeadEnds.Add(starter.deadEnd);
+                }
+            }
+        }
+        
+        if (roomDeadEnds.Count > 0)
+        {
+            int x = Random.Range(0, roomDeadEnds.Count);
+            Transform spawnTransform = roomDeadEnds[x].spawnPoint;
+
+            List<DunModel> vendorLIst = new List<DunModel>();
+            vendorLIst.Clear();
+
+            vendorLIst.Add(NPCs.npcMasterList[2]);
+            // add other shop vendors
+
+            int y = Random.Range(0, vendorLIst.Count);
+
+            DunModel shopNPC = Instantiate(vendorLIst[y], spawnTransform);
+
+            if (shopNPC == NPCs.npcMasterList[2])// battleshop
+            {
+                BattleShopNPC bShopNPC = shopNPC.GetComponent<BattleShopNPC>();
+                distanceController.npcS.Add(bShopNPC);
+                Debug.Log("Battle Shop Added", gameObject);
+            }
+        }
+
+        if (roomDeadEnds.Count == 0)
+        {
+            Debug.Log("No Available Dead Ends in Room for Shop");
+        }
+       
     }
 
     public IEnumerator SetActives()

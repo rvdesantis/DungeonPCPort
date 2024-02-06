@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class Spell : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public enum SpellType { heal, fire, thunder, voidMag, ice, nature}
+    public SpellType spellType;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public Transform targetTransform;
+ 
 }

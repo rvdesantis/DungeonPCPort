@@ -207,7 +207,7 @@ public class CubeRoom : TurnCube
             }
             if (roomType == RoomType.battle)
             {
-
+                
             }
             if (roomType == RoomType.chest)
             {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.Playables;
 
 public class DemonicSmallParent : RoomPropParent
@@ -11,57 +12,37 @@ public class DemonicSmallParent : RoomPropParent
     public GameObject afterPlaySpawnPoint;
     public List<DunModel> activeModels;
 
-
-    public override void EnvFill()
+    public override void AfterBattle()
     {
-        base.EnvFill(); // sets actives
-        if (roomParent.roomType == CubeRoom.RoomType.portal)
-        {
-            HallStarterCube bossStarter = null;
-            SceneBuilder builder = FindObjectOfType<SceneBuilder>();
+        PlayerController player = FindObjectOfType<PlayerController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
 
-            foreach (HallStarterCube starter in builder.createdStarters)
-            {
-                if (starter.hallType == HallStarterCube.HallType.boss)
-                {
-                    bossStarter = starter;
-                    break;
-                }
-            }
-
-            BossHallCube targetCube = bossStarter.generatedHallway[1].GetComponent<BossHallCube>();
-            portbGameObject = targetCube.bossPortal;
-            SetPortal();
-        }
+        player.controller.enabled = true;
+        uiController.compassObj.SetActive(true);
     }
-
-
-
     public void AfterEnter()
     {
         PartyController party = FindObjectOfType<PartyController>();
         SceneController controller = FindObjectOfType<SceneController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        BattleController battleC = FindObjectOfType<BattleController>();
 
         controller.endAction = null;
         controller.activePlayable = null;
 
-        if (controller.activePlayable == gargEnterPlayable)
+        foreach (DunModel mod in activeModels)
         {
-            controller.activePlayable = null;
+            if (mod != null)
+            {
+                mod.gameObject.SetActive(false);
+            }            
         }
-        foreach (DunModel garg in activeModels)
-        {
-            garg.gameObject.SetActive(false);
-        }
-
         foreach (DunModel model in party.activeParty)
         {
             model.gameObject.SetActive(false);
         }
-        player.controller.enabled = true;
-        uiController.compassObj.SetActive(true);
+        battleC.afterBattleAction = AfterBattle;
+        battleC.SetBattle(3);
+
     }
 
 
@@ -89,8 +70,12 @@ public class DemonicSmallParent : RoomPropParent
                 {
                     model.activeWeapon.SetActive(false);
                 }
+                if (model.torch != null)
+                {
+                    model.torch.SetActive(false);
+                }
             }
-            party.activeParty[0].torch.SetActive(false);
+           
 
             DunModel garg0 = null;
             DunModel garg1 = null;

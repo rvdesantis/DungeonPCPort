@@ -1,21 +1,18 @@
-using DTT.PlayerPrefsEnhanced;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
+using DTT.PlayerPrefsEnhanced;
+using UnityEngine.EventSystems;
 
-
-
-public class BlacksmithUI : MonoBehaviour
+public class SpellSmithUI : MonoBehaviour
 {
     public SceneController controller;
     public DunUIController uiController;
     public Photobooth photoBooth;
     public PartyController party;
-    public BlacksmithNPC activeBlackSmith;
+    public SpellNPC activeSpellSmith;
     public DunModel activeModel;
     public InventoryController inventory;
     public ConfirmUI confirmUI;
@@ -25,8 +22,7 @@ public class BlacksmithUI : MonoBehaviour
     public List<Sprite> currencyIcons; // 0-gold, 1-XP, 2-Chaos
     public TextMeshProUGUI currencyCost;
 
-    public Image weaponImage;
-    public Image armorImage;
+    public Image spellImage;
 
     public Image topLArrow;
     public Image topRArrow;
@@ -40,16 +36,13 @@ public class BlacksmithUI : MonoBehaviour
     public int partyIndex;
     public int currencyIndex;
 
-    public int upgradeIndex;
-
     public float activePlier;
     public float upgradeFinalPer;
 
     public List<Button> rButtons;
     public List<Button> lButtons;
 
-    public Button weaponBT;
-    public Button armorBT;
+    public Button spellBT; 
     public Button exitBT;
 
     public bool toggling;
@@ -59,20 +52,12 @@ public class BlacksmithUI : MonoBehaviour
 
     IEnumerator CloseTimer()
     {
-        toggling = true;   
-        weaponBT.interactable = true;
-        armorBT.interactable = true;
-        if (!armorImage.gameObject.activeSelf)
-        {
-            armorImage.gameObject.SetActive(true);
-        }
-        if (!weaponImage.gameObject.activeSelf)
-        {
-            weaponImage.gameObject.SetActive(true);
-        }
+        toggling = true;
+        spellBT.interactable = true;      
+        spellImage.gameObject.SetActive(true);
         uiController.uiActive = false;
         controller.playerController.enabled = true;
-        activeBlackSmith.opened = false;
+        activeSpellSmith.opened = false;
         uiController.isToggling = true;
 
         photoBooth.ResetBooth();
@@ -90,7 +75,7 @@ public class BlacksmithUI : MonoBehaviour
 
     public void OpenConfirm() // opened with button in UI
     {
-        string conMess = "Are you sure you would like to perminently increase " + activeModel.modelName + "'s ";
+        string conMess = "Are you sure you would like to perminently increase " + activeModel.modelName + "'s Spell Power?";
         string finishMess = "";
 
         float increaseAmount = 3 * activePlier;
@@ -99,23 +84,12 @@ public class BlacksmithUI : MonoBehaviour
         {
             increaseAmount = (1.5f * increaseAmount);
         }
-        if (upgradeIndex == 0)
-        {
-            currentpercent = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "PowPercent", 0f);
-            Debug.Log("Current Power% Bonus Set to " + currentpercent + ". Current increase% set to " + increaseAmount);
-            finishMess = " Power Stat by " + increaseAmount + "%? (Total Boost " + (currentpercent + increaseAmount) + "%)";
-        }
-        if (upgradeIndex == 1)
-        {
-            currentpercent = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "DefPercent", 0f);
-            Debug.Log("Current DEF% Bonus Set to " + currentpercent + ". Current increase% set to " + increaseAmount);
-            finishMess = " Defense Stat by " + increaseAmount + "%?  (Total Boost " + (currentpercent + increaseAmount) + "%)";
-        }
-
+        currentpercent = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "SpellPercent", 0f);
+        Debug.Log("Current Power% Bonus Set to " + currentpercent + ". Current increase% set to " + increaseAmount);
+        finishMess = " Stat by " + increaseAmount + "%? (Total Boost " + (currentpercent + increaseAmount) + "%)";
         upgradeFinalPer = currentpercent + increaseAmount;
-
         confirmUI.gameObject.SetActive(true);
-        confirmUI.ConfirmMessageUI(conMess + finishMess, true);
+        confirmUI.ConfirmMessageUI(conMess + finishMess, false, true);
     }
 
     public void ConfirmUpgrade()
@@ -126,103 +100,51 @@ public class BlacksmithUI : MonoBehaviour
         Debug.Log("Checking Funds");
         if (currencyIndex == 0)
         {
-            if (upgradeIndex == 0)
+
+            int count = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "SpellUpCount", 0);
+            int cost = 100 * (count + 1);
+            costInt = cost;
+            if (cost > inventory.GetAvailableGold())
             {
-                int count = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "PowerUpCount", 0);
-                int cost = 100 * (count + 1);
-                costInt = cost;
-                if (cost > inventory.GetAvailableGold())
-                {
-                    funds = false;
-                    fundsMessage = "Not Enough Gold To Upgrade " + activeModel.modelName + "'s Attack Power"; 
-                }
+                funds = false;
+                fundsMessage = "Not Enough Gold To Upgrade " + activeModel.modelName + "'s Spell Power";
             }
-            if (upgradeIndex == 1)
-            {
-                int count = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "DEFUpCount", 0);
-                int cost = 100 * (count + 1);
-                costInt = cost;
-                if (cost > inventory.GetAvailableGold())
-                {
-                    funds = false;
-                    fundsMessage = "Not Enough Gold To Upgrade " + activeModel.modelName + "'s Defense";
-                }
-            }
+            
         }
         if (currencyIndex == 1)
-        {
-            if (upgradeIndex == 0)
-            {                
-                int count = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "PowerUpCount", 0); 
-                int cost = 100 * (count + 1);
-                int XP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
-                costInt = cost;
-                if (cost > XP)
-                {
-                    Debug.Log("Not Enough Currency");
-                    funds = false;
-                    fundsMessage = "Not Enough Gold To Upgrade " + activeModel.modelName + "'s Attack Power\n(" + XP + " out of " + cost + ")";
-                }
-                if (cost <= XP)
-                {
-            
-                }
-            }
-            if (upgradeIndex == 1)
+        {           
+            int count = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "SpellUpCount", 0);
+            int cost = 100 * (count + 1);
+            int XP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
+            costInt = cost;
+            if (cost > XP)
             {
-                int count = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "DEFUpCount", 0);
-                int cost = 100 * (count + 1);
-                int XP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0); 
-                costInt = cost;
-                if (cost > XP)
-                {
-                    Debug.Log("Not Enough Currency");
-                    funds = false;
-                    fundsMessage = "Not Enough Gold To Upgrade " + activeModel.modelName + "'s Defense\n(" + XP + " out of " + cost + ")";
-                }
-                if (cost <= XP)
-                {
-               
-                }
+                Debug.Log("Not Enough Currency");
+                funds = false;
+                fundsMessage = "Not Enough Gold To Upgrade " + activeModel.modelName + "'s Spell Power";
             }
+            if (cost <= XP)
+            {
+
+            }   
         }
         if (currencyIndex == 2)
         {
             costInt = 1;
-            if (upgradeIndex == 0)
+            if (inventory.keyItems[0].itemCount < 1)
             {
-                if (inventory.keyItems[0].itemCount < 1)
-                {
-                    funds = false;
-                    fundsMessage = "Not Enough Gems To Upgrade " + activeModel.modelName + "'s Attack Power\n(No Gems In Inventory)";
-                }
-            }
-            if (upgradeIndex == 1)
-            {
-                if (inventory.keyItems[0].itemCount < 1)
-                {
-                    funds = false;
-                    fundsMessage = "Not Enough Gems To Upgrade " + activeModel.modelName + "'s Defense\n(No Gems In Inventory)";
-                }
+                funds = false;
+                fundsMessage = "Not Enough Gems To Upgrade " + activeModel.modelName + "'s Spell Power";
             }
         }
 
         if (funds)
         {
-       
-            if (upgradeIndex == 0)
-            {
-                activeBlackSmith.UpgradePower(activeModel, upgradeFinalPer, costInt, currencyIndex);
-            }
-            if (upgradeIndex == 1)
-            {
-                activeBlackSmith.UpgradeArmor(activeModel, upgradeFinalPer, costInt, currencyIndex);
-            }
-
-            if (activeBlackSmith.singleUse)
+            activeSpellSmith.UpgradeSpellPower(activeModel, upgradeFinalPer, costInt, currencyIndex);      
+            if (activeSpellSmith.singleUse)
             {
                 DistanceController distance = FindObjectOfType<DistanceController>();
-                distance.npcS.Remove(activeBlackSmith);
+                distance.npcS.Remove(activeSpellSmith);
 
                 uiController.interactUI.gameObject.SetActive(false);
                 uiController.interactUI.activeObj = null;
@@ -233,19 +155,19 @@ public class BlacksmithUI : MonoBehaviour
         }
 
         if (!funds)
-        {            
+        {
             uiController.messagePanelUI.OpenMessage(fundsMessage);
             uiController.messagePanelUI.CloseMessageTimer(4);
         }
-       
+
 
         CloseUI();
     }
 
 
-    public void OpenSmithUI(bool weapon = true, bool armor = true, float multiplier = 1, BlacksmithNPC blackSmith = null)
+    public void OpenSmithUI(float multiplier = 1, SpellNPC spellSmith = null)
     {
-        if (blackSmith == null)
+        if (spellSmith == null)
         {
             Debug.Log("Error, no blacksmith attached to UI");
         }
@@ -253,10 +175,10 @@ public class BlacksmithUI : MonoBehaviour
         {
             toggling = false;
         }
-        activeBlackSmith = blackSmith;
+        activeSpellSmith = spellSmith;
         uiController.uiActive = true;
         controller.playerController.enabled = false;
-       
+
         currencyImage.sprite = currencyIcons[0]; // sets to cold by default
         currencyCost.color = Color.yellow;
 
@@ -276,17 +198,8 @@ public class BlacksmithUI : MonoBehaviour
         textLineTwo.text = "(" + activeModel.modelName + ")";
 
         photoBooth.SayCheese(activeModel);
-        if (weapon == false)
-        {
-            weaponImage.gameObject.SetActive(false);
-            weaponBT.interactable = false;
-        }
-        if (armor == false)
-        {
-            armorImage.gameObject.SetActive(false);
-            armorBT.interactable = false;
-        }      
-        int x = party.PowerUpCounters[0];
+       
+        int x = party.SpellUpCounters[0];
         int price = 100 * (1 + x);
         currencyCost.text = "Price (Gold) " + price;
 
@@ -299,7 +212,7 @@ public class BlacksmithUI : MonoBehaviour
         StartCoroutine(CloseTimer());
     }
 
-     void UIUp()
+    void UIUp()
     {
         toggling = true;
         uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
@@ -322,29 +235,10 @@ public class BlacksmithUI : MonoBehaviour
                 topRArrow.gameObject.SetActive(false);
                 midLArrow.gameObject.SetActive(false);
                 midRArrow.gameObject.SetActive(false);
-                
-                if (weaponImage.gameObject.activeSelf)
-                {
-                    weaponBT.Select();
-                    upgradeIndex = 0;
-                }
+                spellBT.Select();   
+                textLineOne.text = "Permanently Increase Spell Power?";
+                textLineTwo.text = "";
 
-                if (!weaponImage.gameObject.activeSelf)
-                {
-                    armorBT.Select();
-                    upgradeIndex = 1;
-                }
-
-                if (upgradeIndex == 0)
-                {
-                    textLineOne.text = "Permanently Increase Power?";
-                    textLineTwo.text = "";
-                }
-                if (upgradeIndex == 1)
-                {
-                    textLineOne.text = "Permanently Increase Defense?";
-                    textLineTwo.text = "";
-                }
             }
             if (index == 1)
             {
@@ -366,7 +260,6 @@ public class BlacksmithUI : MonoBehaviour
                 {
                     textLineTwo.text = "Chaos Gem (" + inventory.keyItems[0].itemCount + ")";
                 }
-
             }
             if (index == 0)
             {
@@ -404,29 +297,9 @@ public class BlacksmithUI : MonoBehaviour
                 topRArrow.gameObject.SetActive(false);
                 midLArrow.gameObject.SetActive(false);
                 midRArrow.gameObject.SetActive(false);
-
-                if (weaponImage.gameObject.activeSelf)
-                {
-                    weaponBT.Select();
-                    upgradeIndex = 0;
-                }
-
-                if (!weaponImage.gameObject.activeSelf)
-                {
-                    armorBT.Select();
-                    upgradeIndex = 1;
-                }
-
-                if (upgradeIndex == 0)
-                {
-                    textLineOne.text = "Permanently Increase Power?";
-                    textLineTwo.text = "";
-                }
-                if (upgradeIndex == 1)
-                {
-                    textLineOne.text = "Permanently Increase Defense?";
-                    textLineTwo.text = "";
-                }
+                spellBT.Select();
+                textLineOne.text = "Permanently Increase Spell Power?";
+                textLineTwo.text = "";
             }
             if (index == 1)
             {
@@ -456,7 +329,7 @@ public class BlacksmithUI : MonoBehaviour
                 midLArrow.gameObject.SetActive(false);
                 midRArrow.gameObject.SetActive(false);
                 textLineOne.text = "Select Character";
-          textLineTwo.text = "(" + activeModel.modelName + ")";
+                textLineTwo.text = "(" + activeModel.modelName + ")";
             }
         }
         StartCoroutine(Toggle());
@@ -514,46 +387,23 @@ public class BlacksmithUI : MonoBehaviour
         {
             toggling = true;
             currencyIndex++;
-            bool armor = false;
-
-            if (EventSystem.current.currentSelectedGameObject == armorBT.gameObject)
-            {
-                armor = true;
-            }
-
             if (currencyIndex == 3)
             {
                 currencyIndex = 0;
             }
             rButtons[1].Select();
-            
+
             textLineOne.text = "Select Currency";
             if (currencyIndex == 0)
             {
-                int x = 0;
-                if (!armor)
-                {
-                    x = party.PowerUpCounters[partyIndex];
-                }
-                if (armor)
-                {
-                    x = party.DEFUpCounters[partyIndex];
-                }
+                int x = party.SpellUpCounters[partyIndex];
                 int price = 100 * (x + 1);
                 currencyCost.text = "Price (Gold): " + price; // add multipler for upgrade count  
                 textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
             }
             if (currencyIndex == 1)
             {
-                int x = 0;
-                if (!armor)
-                {
-                    x = party.PowerUpCounters[partyIndex];
-                }
-                if (armor)
-                {
-                    x = party.DEFUpCounters[partyIndex];
-                }
+                int x = party.SpellUpCounters[partyIndex];               
                 int price = 100 * (x + 1);
                 currencyCost.text = "Price (XP): " + price; // add multipler for upgrade count  
                 int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
@@ -568,41 +418,6 @@ public class BlacksmithUI : MonoBehaviour
             StartCoroutine(Toggle());
             return;
         }
-        if (index == 2) // power or def
-        {
-            if (armorBT.interactable)
-            {
-                toggling = true;
-                armorBT.Select();
-                textLineOne.text = "Permanently Increase Defense?";
-                upgradeIndex = 1;
-                StartCoroutine(Toggle());
-
-                if (currencyIndex == 0)
-                {
-                    int x = party.PowerUpCounters[partyIndex];              
-                    int price = 100 * (x + 1);
-                    currencyCost.text = "Price (Gold): " + price; 
-                    textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
-                }
-                if (currencyIndex == 1)
-                {
-                    int x = party.PowerUpCounters[partyIndex];                    
-                    int price = 100 * (x + 1);
-                    currencyCost.text = "Price (XP): " + price; 
-                    int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
-                    textLineTwo.text = activeModel.modelName + " XP (" + availXP + ")";
-                }
-                if (currencyIndex == 2)
-                {
-                    currencyCost.text = "Price (Gem): " + 1;   
-                    textLineTwo.text = "Available Gems (" + inventory.keyItems[0].itemCount + ")";
-                }
-                return;
-            }
-
-        }
-
     }
 
     void UILeft()
@@ -659,46 +474,24 @@ public class BlacksmithUI : MonoBehaviour
         {
             toggling = true;
             currencyIndex--;
-            bool armor = false;      
-
-            if (EventSystem.current.currentSelectedGameObject == armorBT.gameObject)
-            {
-                armor = true;
-            }
-
             if (currencyIndex == -1)
             {
                 currencyIndex = 2;
             }
             rButtons[1].Select();
-
             textLineOne.text = "Select Currency";
             if (currencyIndex == 0)
             {
                 int x = 0;
-                if (!armor)
-                {
-                    x = party.PowerUpCounters[partyIndex];
-                }
-                if (armor)
-                {
-                    x = party.DEFUpCounters[partyIndex];
-                }
+                x = party.SpellUpCounters[partyIndex];        
                 int price = 100 * (x + 1);
                 currencyCost.text = "Price (Gold): " + price; // add multipler for upgrade count  
                 textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
             }
             if (currencyIndex == 1)
             {
-                int x = 0;
-                if (!armor)
-                {
-                    x = party.PowerUpCounters[partyIndex];
-                }
-                if (armor)
-                {
-                    x = party.DEFUpCounters[partyIndex];
-                }
+                int x = 0;  
+                x = party.SpellUpCounters[partyIndex];            
                 int price = 100 * (x + 1);
                 currencyCost.text = "Price (XP): " + price; // add multipler for upgrade count  
                 int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
@@ -712,39 +505,6 @@ public class BlacksmithUI : MonoBehaviour
             currencyImage.sprite = currencyIcons[currencyIndex];
             StartCoroutine(Toggle());
             return;
-        }
-        if (index == 2) // power or def
-        {
-            if (weaponBT.interactable)
-            {
-                toggling = true;
-                weaponBT.Select();
-                upgradeIndex = 0;
-                textLineOne.text = "Permanently Increase Power?";
-                textLineTwo.text = "";
-                StartCoroutine(Toggle());
-                if (currencyIndex == 0)
-                {
-                    int  x = party.PowerUpCounters[partyIndex];              
-                    int price = 100 * (x + 1);
-                    currencyCost.text = "Price (Gold): " + price; // add multipler for upgrade count  
-                    textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
-                }
-                if (currencyIndex == 1)
-                {
-                    int x = party.PowerUpCounters[partyIndex];
-                    int price = 100 * (x + 1);
-                    currencyCost.text = "Price (XP): " + price; // add multipler for upgrade count  
-                    int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
-                    textLineTwo.text = activeModel.modelName + " XP (" + availXP + ")";
-                }
-                if (currencyIndex == 2)
-                {
-                    currencyCost.text = "Price (Gem): " + 1; // add multipler for upgrade count  
-                    textLineTwo.text = "Available Gems (" + inventory.keyItems[0].itemCount + ")";
-                }
-                return;
-            }
         }
 
     }
@@ -782,5 +542,4 @@ public class BlacksmithUI : MonoBehaviour
             CloseUI();
         }
     }
-
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.Playables;
 
 public class HornRoomParent : RoomPropParent
@@ -19,8 +20,7 @@ public class HornRoomParent : RoomPropParent
         SceneController controller = FindObjectOfType<SceneController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
 
-        
-        if (roomParent.roomType == CubeRoom.RoomType.NPC)
+        if (roomParent.roomType == CubeRoom.RoomType.battle)
         {
             controller.activePlayable = demonessPlayable;
             controller.endAction = EndEnter;
@@ -47,7 +47,8 @@ public class HornRoomParent : RoomPropParent
             demonessPlayable.Play();
             yield return new WaitForSeconds(clipTime);
             EndEnter();
-        }
+        }        
+
         if (roomParent.roomType == CubeRoom.RoomType.quest)
         {
             controller.activePlayable = demonessPlayable;
@@ -84,21 +85,34 @@ public class HornRoomParent : RoomPropParent
 
     public void EndEnter()
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        MonsterController monsters = FindObjectOfType<MonsterController>();
+        PartyController party = FindObjectOfType<PartyController>();  
         SceneController controller = FindObjectOfType<SceneController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
 
         controller.activePlayable = null;
         controller.endAction = null;
-
 
         party.activeParty[0].torch.SetActive(false);
         foreach (DunModel model in party.activeParty)
         {
             model.gameObject.SetActive(false);
         }
+
+        StartDemonessBattle();
+    }
+
+
+    public void StartDemonessBattle()
+    {
+        BattleController battleC = FindObjectOfType<BattleController>();
+        battleC.afterBattleAction = DemonessBattleReturn;
+        battleC.SetBattle(0);
+    }
+
+    public void DemonessBattleReturn()
+    {
+        PlayerController player = FindObjectOfType<PlayerController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+
         player.transform.position = afterPlaySpawnPoint.transform.position;
         player.transform.rotation = afterPlaySpawnPoint.transform.rotation;
         player.controller.enabled = true;

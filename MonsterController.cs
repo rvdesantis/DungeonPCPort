@@ -7,8 +7,8 @@ using UnityEngine.Playables;
 public class MonsterController : MonoBehaviour
 {
     public List<DunModel> enemyMasterList;
-
-
+    public List<BattleModel> battleMasterList;
+    public int targetMonster;
 
 
 

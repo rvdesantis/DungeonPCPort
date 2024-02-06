@@ -1,9 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
-using static Unity.Burst.Intrinsics.X86;
+
 
 public class SideExtenderCube : Cube
 {
@@ -25,6 +24,8 @@ public class SideExtenderCube : Cube
     public DunModel rMonster;
     public List<PlayableDirector> monsterPlayables;
     public DunModel activeEnemy;
+    public int monsterNum;
+
 
 
     public void SetWalls(bool left = true)
@@ -228,6 +229,8 @@ public class SideExtenderCube : Cube
 
     public void TriggerEnemy()
     {
+        MonsterController monsters = FindObjectOfType<MonsterController>();
+
         bool left = lSmall.gameObject.activeSelf;
         triggered = true;
 
@@ -241,7 +244,8 @@ public class SideExtenderCube : Cube
             if (lMonster != null)
             {    
                 PlayableDirector monsterDir = monsterPlayables[lMonster.spawnPlayableInt];
-                lFakeWall.wallBroken = true;
+                monsterNum = monsters.enemyMasterList.IndexOf(lMonster);
+                lFakeWall.wallBroken = true;          
                 StartCoroutine(MonsterEventTimer(lMonster, monsterDir, true));
             }
         }
@@ -255,7 +259,8 @@ public class SideExtenderCube : Cube
             if (rMonster != null)
             {
                 PlayableDirector monsterDir = monsterPlayables[rMonster.spawnPlayableInt];
-                rFakeWall.wallBroken = true;
+                monsterNum = monsters.enemyMasterList.IndexOf(rMonster);
+                rFakeWall.wallBroken = true;      
                 StartCoroutine(MonsterEventTimer(rMonster, monsterDir, true));
             }
         }
@@ -267,6 +272,7 @@ public class SideExtenderCube : Cube
         PlayerController player = FindObjectOfType<PlayerController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
         SceneController controller = FindObjectOfType<SceneController>();
+        BattleUIController battleUI = FindObjectOfType<BattleUIController>();
   
         player.controller.enabled = false;  
         player.cinPersonCam.m_Priority = -1;
@@ -312,6 +318,7 @@ public class SideExtenderCube : Cube
         }
 
         uiController.compassObj.SetActive(false);
+        // battleUI.AssignFadeImage(monsterDir);
         monsterDir.Play();
 
         yield return new WaitForSeconds((float)monsterDir.duration);
@@ -326,7 +333,8 @@ public class SideExtenderCube : Cube
         PartyController party = FindObjectOfType<PartyController>();
         PlayerController player = FindObjectOfType<PlayerController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        SceneController controller = FindObjectOfType<SceneController>();        
+        BattleController battleController = FindObjectOfType<BattleController>();
 
         foreach (PlayableDirector monPlayable in monsterPlayables)
         {
@@ -353,11 +361,14 @@ public class SideExtenderCube : Cube
             }
         }
         activeEnemy.gameObject.SetActive(false);
+ 
+        // launch battle       
 
-        player.controller.enabled = true;
+        battleController.SetBattle(monsterNum);
+
+        player.controller.enabled = false;
         player.playerLight.enabled = true;
-        player.cinPersonCam.m_Priority = 5;
-        uiController.compassObj.SetActive(true);
+        player.cinPersonCam.m_Priority = -1;
     }
 
 }

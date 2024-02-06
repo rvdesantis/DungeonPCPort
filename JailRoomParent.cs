@@ -72,6 +72,11 @@ public class JailRoomParent : RoomPropParent
             }
             
         }
+
+        if (roomParent.roomType == CubeRoom.RoomType.shop || roomParent.roomType == CubeRoom.RoomType.NPC)
+        {
+            AddShop();            
+        }
     }
     public void AddRogue() // add a way of checking if has already been added to duplicate room
     {
