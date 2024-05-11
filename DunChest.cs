@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,21 +18,37 @@ public class DunChest : MonoBehaviour
     public AudioSource audioSource;
     public List<AudioClip> audioClips; // 0 - open, 1 - locked, 2 - treasure sound (coin, etc)
     public FakeWall fakeWall;
+    public bool fixedTreasure; 
 
-    public void MapCheck()
-    {
-        InventoryController inventory = FindObjectOfType<InventoryController>();
-        if (inventory.mapstatus != InventoryController.MapInventoryStatus.secret)
-        {
-            chestItem = inventory.mapItemPrefab;
-        }
-    }
+
 
     public IEnumerator OpenSequence()
     {
-        opened = true;
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+        InventoryController inventory = FindFirstObjectByType<InventoryController>();
+
+        float waitTime = 0;
+        if (!fixedTreasure)
+        {
+            chestItem = inventory.randomDunItem.RandomItem();      
+
+            if (chestItem.itemType == DunItem.ItemType.gold)
+            {
+                chestItem.itemCount = Random.Range(50, 250);
+            }
+            if (chestItem.itemType == DunItem.ItemType.XP)
+            {
+                chestItem.itemCount = Random.Range(50, 100);
+            }
+            if (chestItem.itemType != DunItem.ItemType.gold && chestItem.itemType != DunItem.ItemType.XP)
+            {
+                chestItem.itemCount = 1;
+            }
+        }
+        opened = true; 
         if (animType == AnimType.animator)
         {
+            waitTime = .5f;
             if (anim != null)
             {
                 anim.SetTrigger("openLid");
@@ -40,43 +57,33 @@ public class DunChest : MonoBehaviour
             {
                 audioSource.PlayOneShot(audioClips[0]);
             }
-            yield return new WaitForSeconds(.5f);
-            if (chestItem != null)
-            {
-                chestItem.PickUp();
-            }
-            if (audioClips.Count >= 3)
-            {
-                if (audioClips[2] != null)
-                {
-                    audioSource.PlayOneShot(audioClips[2]);
-                }
-            }
         }
         if (animType == AnimType.playable)
         {
+            waitTime = (float)openPlayable.duration;
             if (openPlayable != null)
             {
                 openPlayable.Play();
-                yield return new WaitForSeconds((float)openPlayable.duration);
-                if (chestItem != null)
-                {
-                    chestItem.PickUp();
-                }
             }
         }
-
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        yield return new WaitForSeconds(waitTime);
+        if (audioClips.Count >= 3)
+        {
+            if (audioClips[2] != null)
+            {
+                audioSource.PlayOneShot(audioClips[2]);
+            }
+        }
         uiController.ToggleKeyUI(gameObject, false);
         uiController.pickUpUI.gameObject.SetActive(true);
         uiController.pickUpUI.OpenImage(chestItem);
+        uiController.pickUpUI.afterAction = chestItem.PickUp;
     }
 
     public virtual void OpenChest()
     {
         if (inRange && !opened && !locked)
-        {
-            MapCheck();
+        {      
             if (fakeWall == null)
             {
                 StartCoroutine(OpenSequence());

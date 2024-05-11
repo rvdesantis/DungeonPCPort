@@ -8,6 +8,9 @@ using UnityEngine.Playables;
 
 public class SceneController : MonoBehaviour
 {
+    public static bool cleared;
+
+
     public SceneBuilder builder;
     public InputController inputController;
     public Cube sanctuary;
@@ -21,6 +24,7 @@ public class SceneController : MonoBehaviour
     public UnlockController unlockables;
     public SaveController saveController;
     public bool active;
+    public bool dunFull;
     public CinemachineVirtualCamera characterCam;
     public PlayableDirector activePlayable;
     public Action endAction;
@@ -28,12 +32,12 @@ public class SceneController : MonoBehaviour
     public enum GameState { Dungeon, Battle}
     public GameState gameState;
     public BattleController battleController;
-    
+    public StatsTracker statsTimer;
 
     public void SceneStart()
     {
         active = true;
-
+        saveController.StartLoader();
         // check to see if players have been selected yet.  
         if (party.activeParty.Count < 3)
         {
@@ -44,8 +48,6 @@ public class SceneController : MonoBehaviour
         {
             StartCoroutine(SceneStarter());
         }
-
-       
     }
 
     public void SetRandomParty()
@@ -178,7 +180,7 @@ public class SceneController : MonoBehaviour
 
     }
 
-    private IEnumerator SwapTrapCubes()
+    private IEnumerator SwapTrapCubes() // lowers fog walls at end
     {
         uiController.loadingBar.skullSlider.value = .9f;
         uiController.loadingBar.text.text = "Filling Traps...";
@@ -265,7 +267,7 @@ public class SceneController : MonoBehaviour
                     {
                         Debug.Log("Trap Swap Finished");
                         uiController.loadingBar.skullSlider.value = 1;
-                        uiController.loadingBar.text.text = "Opening...";
+                        uiController.loadingBar.text.text = "Opening..."; // ends here
 
                         foreach (GameObject fog in sanctuary.fogWalls)
                         {
@@ -273,16 +275,21 @@ public class SceneController : MonoBehaviour
                             fog.GetComponent<BoxCollider>().enabled = false;
                             playerController.audioSource.PlayOneShot(playerController.audioClips[0]);
                         }
-                    }
+                        dunFull = true;
+                        MusicController musicC = FindObjectOfType<MusicController>();
+                        musicC.CrossfadeToNextClip(musicC.dungeonMusicClips[UnityEngine.Random.Range(0, musicC.dungeonMusicClips.Count)]);
 
-                    yield return new WaitForSeconds(3);
-                    uiController.loadingBar.gameObject.SetActive(false);
+                        yield return new WaitForSeconds(1);
+                        statsTimer.StartTimer();
+                        uiController.loadingBar.gameObject.SetActive(false);
+                    }
+                  
                 }
             }
         }
     }
 
-    private IEnumerator SwapHallwayCubes() // lowers fog walls at end
+    private IEnumerator SwapHallwayCubes() 
     {
         uiController.loadingBar.skullSlider.value = .75f;
         uiController.loadingBar.text.text = "Adding Secrets...";
@@ -388,6 +395,20 @@ public class SceneController : MonoBehaviour
                 if (zz == (builder.createdHallCubes.Count / 20))
                 {
                     Debug.Log("Hallway Swap Finished, Starting Traps");
+                    foreach (Cube cube in builder.createdHallCubes)
+                    {
+                        int prop = UnityEngine.Random.Range(0, 50);
+                        if (prop == 49)
+                        {
+                            if (cube.randomProps.Count > 0)
+                            {
+                                int propNum = UnityEngine.Random.Range(0, cube.randomProps.Count);
+                                cube.randomProps[propNum].SetActive(true);
+                                Debug.Log("Prop Set Active in Hall Cube", cube.gameObject);
+
+                            }
+                        }
+                    }
                     StartCoroutine(SwapTrapCubes());
 
                 }

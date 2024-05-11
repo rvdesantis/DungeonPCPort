@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
+
 
 public class DunItem : MonoBehaviour
 {
@@ -13,81 +13,137 @@ public class DunItem : MonoBehaviour
     public Sprite icon;
     public int itemPrice;
     public string itemInfo;
+    public bool trinket;
 
+    public DunModel dunTarget;
+    public BattleModel battleTarget;
+    public float itemEffect;
+
+    public enum Rarity { common, uncommon, rare, epic, singular}
+    public Rarity rarity;
+
+    public virtual void UseItem(DunModel target = null, BattleModel battleTarget = null)
+    {
+
+    }
     public virtual void PickUp()
     {
         InventoryController inventory = FindObjectOfType<InventoryController>();
-
-        if (itemType == ItemType.gold)
+        if (!trinket)
         {
-            inventory.gold = inventory.gold + itemCount;
-        }
-        if (itemType == ItemType.XP)
-        {
-
-        }
-        if (itemType == ItemType.dungeon)
-        {
-            bool inList = false;
-            foreach (DunItem dunItem in inventory.dungeonItems)
+            if (itemType == ItemType.gold)
             {
-                if (dunItem == this)
+                inventory.AddGold(itemCount);
+            }
+            if (itemType == ItemType.XP)
+            {
+
+            }
+            if (itemType == ItemType.dungeon)
+            {
+                bool inList = false;
+                foreach (DunItem dunItem in inventory.dungeonItems)
                 {
-                    dunItem.itemCount = dunItem.itemCount + itemCount;
-                    inList = true;
+                    if (dunItem == this)
+                    {
+                        dunItem.itemCount = dunItem.itemCount + itemCount;
+                        inList = true;
+                        gameObject.SetActive(false);
+                        break;
+                    }
+                }
+
+                if (!inList)
+                {
+                    inventory.dungeonItems.Add(this);
                     gameObject.SetActive(false);
-                    break;
                 }
             }
-
-            if (!inList)
+            if (itemType == ItemType.battle)
             {
-                inventory.dungeonItems.Add(this);
-                gameObject.SetActive(false);
-            }
-        }
-        if (itemType == ItemType.battle)
-        {
-            bool inList = false;
-            foreach (DunItem battleItem in inventory.battleItems)
-            {
-                if (battleItem == this)
+                bool inList = false;
+                foreach (DunItem battleItem in inventory.battleItems)
                 {
-                    battleItem.itemCount = battleItem.itemCount + itemCount;
-                    inList = true;
+                    if (battleItem == this)
+                    {
+                        battleItem.itemCount = battleItem.itemCount + itemCount;
+                        inList = true;
+                        gameObject.SetActive(false);
+                        break;
+                    }
+                }
+
+                if (!inList)
+                {
+                    inventory.battleItems.Add(this);
                     gameObject.SetActive(false);
-                    break;
                 }
             }
-
-            if (!inList)
+            if (itemType == ItemType.keyItem)
             {
-                inventory.battleItems.Add(this);
-                gameObject.SetActive(false);
-            }
-        }
-        if (itemType == ItemType.keyItem)
-        {
-            bool inList = false;
-            foreach (DunItem keyItem in inventory.keyItems)
-            {
-                if (keyItem.itemName == itemName)
+                bool inList = false;
+                foreach (DunItem keyItem in inventory.keyItems)
                 {
-                    keyItem.itemCount = keyItem.itemCount + itemCount;                    
-                    inList = true;
+                    if (keyItem.itemName == itemName)
+                    {
+                        keyItem.itemCount = keyItem.itemCount + itemCount;
+                        inList = true;
+                        gameObject.SetActive(false);
+                        break;
+                    }
+                }
+
+                if (!inList)
+                {
+                    itemCount = 1;
+                    inventory.keyItems.Add(this);
                     gameObject.SetActive(false);
-                    break;
                 }
             }
-
-            if (!inList)
+        }
+        if (trinket)
+        {
+            if (itemType == ItemType.dungeon)
             {
-                itemCount = 1;
-                inventory.keyItems.Add(this);
-                gameObject.SetActive(false);
+                bool inList = false;
+                foreach (DunItem dunItem in inventory.trinketC.activeDunTrinkets)
+                {
+                    if (dunItem == this)
+                    {
+                        dunItem.itemCount = dunItem.itemCount + itemCount;
+                        inList = true;
+                        gameObject.SetActive(false);
+                        break;
+                    }
+                }
+
+                if (!inList)
+                {
+                    inventory.trinketC.activeDunTrinkets.Add(this);
+                    gameObject.SetActive(false);
+                }
+            }
+            if (itemType == ItemType.battle)
+            {
+                bool inList = false;
+                foreach (DunItem battleItem in inventory.trinketC.activeBattleTrinkets)
+                {
+                    if (battleItem == this)
+                    {
+                        battleItem.itemCount = battleItem.itemCount + itemCount;
+                        inList = true;
+                        gameObject.SetActive(false);
+                        break;
+                    }
+                }
+
+                if (!inList)
+                {
+                    inventory.trinketC.activeBattleTrinkets.Add(this);
+                    gameObject.SetActive(false);
+                }
             }
         }
-
         Debug.Log(itemCount + " " + itemName + " picked up");
 
         DunUIController uiController = FindObjectOfType<DunUIController>();

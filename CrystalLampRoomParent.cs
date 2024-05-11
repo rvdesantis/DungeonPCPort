@@ -38,6 +38,7 @@ public class CrystalLampRoomParent : RoomPropParent
         PlayerController player = FindObjectOfType<PlayerController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
         SceneController controller = FindObjectOfType<SceneController>();
+        MusicController music = FindObjectOfType<MusicController>();
 
         scorpSummonPlayable.time = scorpSummonPlayable.duration;
         activeModel.gameObject.SetActive(false);
@@ -49,6 +50,7 @@ public class CrystalLampRoomParent : RoomPropParent
         }
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
+        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
 
     public void SummonGEnd()
@@ -57,6 +59,7 @@ public class CrystalLampRoomParent : RoomPropParent
         PlayerController player = FindObjectOfType<PlayerController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
         SceneController controller = FindObjectOfType<SceneController>();
+        MusicController music = FindObjectOfType<MusicController>();
 
         activeModel.gameObject.SetActive(false);
         controller.activePlayable = null;
@@ -73,6 +76,8 @@ public class CrystalLampRoomParent : RoomPropParent
         {
             unlockables.UnlockNPC(0);
         }
+
+        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
 
     IEnumerator SummonETimer()
@@ -263,6 +268,8 @@ public class CrystalLampRoomParent : RoomPropParent
         }   
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
+        MusicController music = FindObjectOfType<MusicController>();
+        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
 
     IEnumerator ChaosOrbTimer()
@@ -293,6 +300,8 @@ public class CrystalLampRoomParent : RoomPropParent
         yield return new WaitForSeconds(clipTime);
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
+        MusicController music = FindObjectOfType<MusicController>();
+        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
 
     public void LampRoll()

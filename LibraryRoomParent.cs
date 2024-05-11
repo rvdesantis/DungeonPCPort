@@ -15,7 +15,7 @@ public class LibraryRoomParent : RoomPropParent
     public PlayableDirector vMageUnlockPlayable;
     public PlayableDirector templarGangIdle;
     public bool hostile;
-
+    public List<DunModel> templarModels;
 
 
     public override void EnvFill()
@@ -150,6 +150,10 @@ public class LibraryRoomParent : RoomPropParent
         templar1.AssignToDirector(templarGangIdle, 4);
         templar2.AssignToDirector(templarGangIdle, 5);
 
+        templarModels.Add(templar0);
+        templarModels.Add(templar1);
+        templarModels.Add(templar2);
+
         Debug.Log("Templar Gang Spawned in room(GameObject)", gameObject);
         templarGangIdle.Play();
         
@@ -206,6 +210,7 @@ public class LibraryRoomParent : RoomPropParent
         {
             EndVoidMageSummon();
         }
+
     }
 
     public void EndVoidMageSummon()
@@ -242,7 +247,10 @@ public class LibraryRoomParent : RoomPropParent
                 }
             }
         }
-      
+
+        MusicController music = FindObjectOfType<MusicController>();
+        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
+
     }
 
     IEnumerator HostileBattleTimer()
@@ -275,7 +283,10 @@ public class LibraryRoomParent : RoomPropParent
 
     public void TemplarBattleReturn()
     {
-
+        foreach (DunModel temp in templarModels)
+        {
+            temp.gameObject.SetActive(false);
+        }
     }
     public void TriggerTemplarBattle() // triggers battle if vMage is in party automatically
     {

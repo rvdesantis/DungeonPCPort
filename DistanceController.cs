@@ -85,7 +85,7 @@ public class DistanceController : MonoBehaviour
             CubeRoom roomComp = room.GetComponent<CubeRoom>();
             foreach (HallStarterCube starter2 in roomComp.starterCubes)
             {
-                if (Vector3.Distance(playerPosition, starter2.floorPoint.transform.position) < 6)
+                if (Vector3.Distance(playerPosition, starter2.floorPoint.transform.position) < 4)
                 {
                     mapController.LayerOnMap(room, 6, true);
                     // trigger room event

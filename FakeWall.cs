@@ -12,6 +12,11 @@ public class FakeWall : MonoBehaviour
     public bool locked;
     public GameObject objectSetActive;
     public PlayableDirector standardBreak;
+    public List<MeshRenderer> wallPieceMeshList;  
+    public enum HideType { treasure, monster, room}
+    public HideType hideType;
+
+    public Transform frontSpawnTransform;
 
     // Start is called before the first frame update
     void Start()
@@ -22,8 +27,7 @@ public class FakeWall : MonoBehaviour
     IEnumerator Break()
     {
         if (!wallBroken)
-        {
-            wallBroken = true;
+        {           
             standardBreak.Play();
             if (objectSetActive != null)
             {
@@ -31,6 +35,7 @@ public class FakeWall : MonoBehaviour
             }
             yield return new WaitForSeconds(1);
             blockCollider.enabled = false;
+            wallBroken = true;
         }
     }
 

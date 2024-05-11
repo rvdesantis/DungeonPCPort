@@ -31,6 +31,8 @@ public class SmallBoneRoomParent : RoomPropParent
         }
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
+        MusicController music = FindObjectOfType<MusicController>();
+        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
 
 

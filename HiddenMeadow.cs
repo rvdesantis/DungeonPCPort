@@ -13,14 +13,23 @@ public class HiddenMeadow : HiddenEndCube
     public DunChest cornerChest;
 
     public GameObject volumeObject;
+    public DunModel activeTreant;
+    public bool battleTrigger;
+    public BattleRoom battleRoom;
+    public float battleDistance;
 
+    public PlayerController player;
 
     public void FirstEnter()
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PartyController party = FindObjectOfType<PartyController>();    
         MonsterController monsters = FindAnyObjectByType<MonsterController>();
         DistanceController distance = FindObjectOfType<DistanceController>();
+
+        if (player == null)
+        {
+            player = FindAnyObjectByType<PlayerController>();
+        }
 
         party.AssignCamBrain(treantEnterPlayable, 3);
         foreach (DunModel model in party.activeParty)
@@ -32,8 +41,10 @@ public class HiddenMeadow : HiddenEndCube
         distance.chests.Add(cornerChest);
         cornerChest.gameObject.SetActive(true);
         volumeObject.SetActive(true);
-        
-        
+
+        activeTreant = Treant;
+
+        battleRoom.battleC = FindObjectOfType<BattleController>();
     }
 
     private void Update()
@@ -43,6 +54,17 @@ public class HiddenMeadow : HiddenEndCube
             opened = true;
             FirstEnter();
             Debug.Log("Trigger Enter Hidden Meadow");
+        }
+
+        if (opened && player != null && !battleTrigger)
+        {
+            if (Vector3.Distance(activeTreant.transform.position, player.transform.position) < battleDistance)
+            {
+                battleTrigger = true;
+                Debug.Log("Trigger Treant Battle");
+                activeTreant.gameObject.SetActive(false);
+                battleRoom.battleC.SetBattle(2);
+            }
         }
     }
 }

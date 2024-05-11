@@ -8,6 +8,7 @@ public class MonsterController : MonoBehaviour
 {
     public List<DunModel> enemyMasterList;
     public List<BattleModel> battleMasterList;
+    public List<BattleModel> bossMasterList;
     public int targetMonster;
 
 

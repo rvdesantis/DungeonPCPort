@@ -88,6 +88,10 @@ public class HornRoomParent : RoomPropParent
         PartyController party = FindObjectOfType<PartyController>();  
         SceneController controller = FindObjectOfType<SceneController>();
 
+        if (controller.activePlayable == demonessPlayable)
+        {
+            StartDemonessBattle();
+        }
         controller.activePlayable = null;
         controller.endAction = null;
 
@@ -97,7 +101,7 @@ public class HornRoomParent : RoomPropParent
             model.gameObject.SetActive(false);
         }
 
-        StartDemonessBattle();
+        
     }
 
 

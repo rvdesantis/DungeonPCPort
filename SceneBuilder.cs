@@ -345,6 +345,7 @@ public class SceneBuilder : MonoBehaviour
             Cube bossRoom = Instantiate(allBossRooms[x], bossPosition,bossRot);
             BossCube bossCube = bossRoom.GetComponent<BossCube>();
             createdBossRooms.Add(bossCube);
+            bossRoom.collisionChecker.gameObject.SetActive(false);
             bossCube.bossHallStarter = starter;
             bossCube.controller = sceneController;
             bossCube.positioner.SetActive(true);

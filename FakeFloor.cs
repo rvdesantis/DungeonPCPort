@@ -24,16 +24,16 @@ public class FakeFloor : MonoBehaviour
 
     public int launchNum;
 
-    public bool returnBack;
+
+    public Transform spawnPoint;
 
     public void StartBreak(bool back)
     {
         if (back)
         {
-            returnBack = true;
             fallRoom.returnPortal.transportPosition = front;
+            trapCube.transform.Rotate(0, 180, 0);
         }
-
         Fall();
     }
 
@@ -314,7 +314,8 @@ public class FakeFloor : MonoBehaviour
 
             controller.activePlayable = null;
             controller.endAction = null;
-
+            MusicController music = FindObjectOfType<MusicController>();
+            music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
         }        
     }
     private IEnumerator StandardFallTimer(PlayerController player)
@@ -376,6 +377,8 @@ public class FakeFloor : MonoBehaviour
         {
             EndFall();
         }
+        MusicController music = FindObjectOfType<MusicController>();
+        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
     private IEnumerator MonsterFallTimer(PlayerController player, int monsterNum)
     {

@@ -22,6 +22,7 @@ public class DemonicSmallParent : RoomPropParent
     }
     public void AfterEnter()
     {
+        Debug.Log("Starting Gargoyle Battle");
         PartyController party = FindObjectOfType<PartyController>();
         SceneController controller = FindObjectOfType<SceneController>();
         BattleController battleC = FindObjectOfType<BattleController>();
@@ -48,77 +49,75 @@ public class DemonicSmallParent : RoomPropParent
 
     IEnumerator FirstEnterENV()
     {
-        Debug.Log("Room ENV Enter Trigger");
+        Debug.Log("Garg Room Enter Trigger");
+        SceneController controller = FindObjectOfType<SceneController>();
+        PartyController party = FindObjectOfType<PartyController>();
+        PlayerController player = FindObjectOfType<PlayerController>();
+        MonsterController monsters = FindObjectOfType<MonsterController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
 
-            SceneController controller = FindObjectOfType<SceneController>();
-            PartyController party = FindObjectOfType<PartyController>();
-            PlayerController player = FindObjectOfType<PlayerController>();
-            MonsterController monsters = FindObjectOfType<MonsterController>();
-            DunUIController uiController = FindObjectOfType<DunUIController>();
+        controller.activePlayable = gargEnterPlayable;
+        controller.endAction += AfterEnter;
 
-            controller.activePlayable = gargEnterPlayable;
-            controller.endAction += AfterEnter;
-
-            party.AssignCamBrain(gargEnterPlayable, 3);
-            foreach (DunModel model in party.activeParty)
+        party.AssignCamBrain(gargEnterPlayable, 3);
+        foreach (DunModel model in party.activeParty)
+        {
+            model.AssignToDirector(gargEnterPlayable);
+            model.transform.position = gargEnterPlayable.transform.position;
+            model.transform.parent = gargEnterPlayable.transform;
+            model.gameObject.SetActive(true);
+            if (model.activeWeapon != null)
             {
-                model.AssignToDirector(gargEnterPlayable);
-                model.transform.position = gargEnterPlayable.transform.position;
-                model.transform.parent = gargEnterPlayable.transform;
-                model.gameObject.SetActive(true);
-                if (model.activeWeapon != null)
-                {
-                    model.activeWeapon.SetActive(false);
-                }
-                if (model.torch != null)
-                {
-                    model.torch.SetActive(false);
-                }
+                model.activeWeapon.SetActive(false);
             }
+            if (model.torch != null)
+            {
+                model.torch.SetActive(false);
+            }
+        }
            
 
-            DunModel garg0 = null;
-            DunModel garg1 = null;
-            DunModel garg2 = null;
-            foreach (DunModel enemy in monsters.enemyMasterList)
+        DunModel garg0 = null;
+        DunModel garg1 = null;
+        DunModel garg2 = null;
+        foreach (DunModel enemy in monsters.enemyMasterList)
+        {
+            if (enemy.spawnArea == DunModel.SpawnArea.smallRoom)
             {
-                if (enemy.spawnArea == DunModel.SpawnArea.smallRoom)
+                if (enemy.spawnPlayableInt == 0)
                 {
-                    if (enemy.spawnPlayableInt == 0)
-                    {
-                        garg0 = Instantiate(enemy, gargEnterPlayable.transform, false);
-                        garg0.gameObject.SetActive(true);
-                        garg0.transform.position = gargEnterPlayable.transform.position;
-                        garg0.AssignToDirector(gargEnterPlayable, 4);
-                        activeModels.Add(garg0);
+                    garg0 = Instantiate(enemy, gargEnterPlayable.transform, false);
+                    garg0.gameObject.SetActive(true);
+                    garg0.transform.position = gargEnterPlayable.transform.position;
+                    garg0.AssignToDirector(gargEnterPlayable, 4);
+                    activeModels.Add(garg0);
 
-                        garg1 = Instantiate(enemy, gargEnterPlayable.transform, false);
-                        garg1.gameObject.SetActive(true);
-                        garg1.transform.position = gargEnterPlayable.transform.position;
-                        garg1.AssignToDirector(gargEnterPlayable, 5);
-                        activeModels.Add(garg1);
+                    garg1 = Instantiate(enemy, gargEnterPlayable.transform, false);
+                    garg1.gameObject.SetActive(true);
+                    garg1.transform.position = gargEnterPlayable.transform.position;
+                    garg1.AssignToDirector(gargEnterPlayable, 5);
+                    activeModels.Add(garg1);
 
-                        garg2 = Instantiate(enemy, gargEnterPlayable.transform, false);
-                        garg2.gameObject.SetActive(true);
-                        garg2.transform.position = gargEnterPlayable.transform.position;
-                        garg2.AssignToDirector(gargEnterPlayable, 6);
-                        activeModels.Add(garg2);
-                        break;
-                    }
+                    garg2 = Instantiate(enemy, gargEnterPlayable.transform, false);
+                    garg2.gameObject.SetActive(true);
+                    garg2.transform.position = gargEnterPlayable.transform.position;
+                    garg2.AssignToDirector(gargEnterPlayable, 6);
+                    activeModels.Add(garg2);
+                    break;
                 }
             }
+        }
 
-            float clipTime = (float)gargEnterPlayable.duration;
-            player.controller.enabled = false;
-            uiController.compassObj.SetActive(false);
-            gargEnterPlayable.gameObject.SetActive(true);
-            gargEnterPlayable.Play();
-            yield return new WaitForSeconds(clipTime);
-            if (controller.activePlayable == gargEnterPlayable)
-            {
-                AfterEnter();
-            }
-       
+        float clipTime = (float)gargEnterPlayable.duration;
+        player.controller.enabled = false;
+        uiController.compassObj.SetActive(false);
+        gargEnterPlayable.gameObject.SetActive(true);
+        gargEnterPlayable.Play();
+        yield return new WaitForSeconds(clipTime);
+        if (controller.activePlayable == gargEnterPlayable)
+        {
+            AfterEnter();
+        }
     }
 
 

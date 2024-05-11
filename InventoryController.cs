@@ -12,7 +12,16 @@ public class InventoryController : MonoBehaviour
     public List<DunItem> dungeonItems;
     public List<DunItem> battleItems;
     public List<DunItem> keyItems;
-    
+
+    public List<DunItem> masterDungeonItems;
+    public List<DunItem> masterBattleItems;
+    public List<DunItem> masterKeyItems;
+
+    public TrinketController trinketC;
+
+    public RandomDunItem randomDunItem;
+    public RandomTrinketItem randomDunTrinket;
+
 
     public void StartReset()
     {
@@ -32,12 +41,15 @@ public class InventoryController : MonoBehaviour
 
     public int GetAvailableGold()
     {
-        int availGold = 0;
-        int bankGold = EnhancedPrefs.GetPlayerPref("goldBank", 0);
-
-        availGold = gold + bankGold;
-
+        int availGold = gold;
         return availGold;
+    }
+
+    public void AddGold(int goldAdd)
+    {
+        gold = gold + goldAdd;
+        EnhancedPrefs.SetPlayerPref("goldBank", gold);
+        EnhancedPrefs.SavePlayerPrefs();
     }
 
     public void ReduceGold(int goldCost)
@@ -49,18 +61,7 @@ public class InventoryController : MonoBehaviour
 
         if (gold < goldCost)
         {
-            if (GetAvailableGold() >= goldCost)
-            {
-                int neededGold = goldCost - gold;
-                int currentBank = EnhancedPrefs.GetPlayerPref("goldBank", 0);
-                int saveAmount = currentBank - neededGold;
-                EnhancedPrefs.SetPlayerPref("goldBank", saveAmount);
-                EnhancedPrefs.SavePlayerPrefs();
-            }
-            if (GetAvailableGold() < goldCost)
-            {
-                Debug.Log("Error, Tried to Reduce Gold Beyond the total Gold Amount in Inventory & Bank");
-            }
+            Debug.Log("Error, Tried to Reduce Gold Beyond the total Gold Amount in Inventory.  Check Gold Check");          
         }
     }
 

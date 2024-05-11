@@ -91,19 +91,21 @@ public class SideExtenderCube : Cube
             if (spawnableList[objectPick] == lChest.gameObject)
             {
                 sideType = SideType.chest;
+                lFakeWall.hideType = FakeWall.HideType.treasure;
                 distance.chests.Add(lChest);
                 lChest.gameObject.SetActive(true);
             }
             if (spawnableList[objectPick] == lPortal.gameObject)
             {
-                sideType = SideType.portal;          
+                sideType = SideType.portal;
+                lFakeWall.hideType = FakeWall.HideType.treasure;
             }
             // add NPC Spawn
 
             if (spawnableList[objectPick] == enemyObject)
             {
                 lFakeWall.locked = true;
-            
+                lFakeWall.hideType = FakeWall.HideType.monster;
                 List<DunModel> availableEnemies = new List<DunModel>();
 
                 foreach (DunModel enemy in monsters.enemyMasterList)
@@ -150,18 +152,21 @@ public class SideExtenderCube : Cube
             int objectPick = Random.Range(0, spawnableList.Count);
             if (spawnableList[objectPick] == rChest.gameObject)
             {
+                rFakeWall.hideType = FakeWall.HideType.treasure;
                 sideType = SideType.chest;
                 distance.chests.Add(rChest);
                 rChest.gameObject.SetActive(true);
             }
             if (spawnableList[objectPick] == rPortal.gameObject)
             {
+                rFakeWall.hideType = FakeWall.HideType.treasure;
                 sideType = SideType.portal;
               
             }
             // add NPC Spawn
             if (spawnableList[objectPick] == enemyObject)
             {
+                rFakeWall.hideType = FakeWall.HideType.monster;
                 rFakeWall.locked = true;
                 List<DunModel> availableEnemies = new List<DunModel>();
                 foreach (DunModel enemy in monsters.enemyMasterList)

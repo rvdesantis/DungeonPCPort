@@ -28,7 +28,7 @@ public class RoomPropParent : MonoBehaviour
 
     public bool active;
     public bool battleTriggered;
-    public int battleNum;
+
     
     public void AvailableWall()
     {
@@ -114,7 +114,7 @@ public class RoomPropParent : MonoBehaviour
         if (roomParent.roomType == CubeRoom.RoomType.NPC || roomParent.roomType == CubeRoom.RoomType.shop)
         {
             int count = NPCSpawn.Count;
-            if (count > 0)
+            if (count > 0) // creates specific NPC for environment instead of random NPC (shop, etc)
             {
                 int xx = Random.Range(0, count);
                 NPCSpawn[xx].SetActive(true);
@@ -127,9 +127,17 @@ public class RoomPropParent : MonoBehaviour
                 DunNPC npc = NPCSpawn[xx].GetComponent<DunNPC>();
                 distanceController.npcS.Add(npc);                
             }
-            if (count == 0)
+            if (count == 0) // adds random NPC 
             {
-                AddShop();
+                int x = Random.Range(0, 2);
+                if (x == 0)
+                {
+                    AddShop();
+                }
+                if (x == 1)
+                {
+                    AddNecro();
+                }
             }
         }
     }
@@ -163,20 +171,10 @@ public class RoomPropParent : MonoBehaviour
 
             List<DunModel> vendorLIst = new List<DunModel>();
             vendorLIst.Clear();
-
             vendorLIst.Add(NPCs.npcMasterList[2]);
             // add other shop vendors
-
             int y = Random.Range(0, vendorLIst.Count);
-
             DunModel shopNPC = Instantiate(vendorLIst[y], spawnTransform);
-
-            if (shopNPC == NPCs.npcMasterList[2])// battleshop
-            {
-                BattleShopNPC bShopNPC = shopNPC.GetComponent<BattleShopNPC>();
-                distanceController.npcS.Add(bShopNPC);
-                Debug.Log("Battle Shop Added", gameObject);
-            }
         }
 
         if (roomDeadEnds.Count == 0)
@@ -184,6 +182,36 @@ public class RoomPropParent : MonoBehaviour
             Debug.Log("No Available Dead Ends in Room for Shop");
         }
        
+    }
+    public virtual void AddNecro()
+    {
+        Debug.Log("Adding Shop To Room", roomParent.gameObject);
+        NPCController NPCs = FindObjectOfType<NPCController>();
+
+        List<DeadEndCube> roomDeadEnds = new List<DeadEndCube>();
+        foreach (HallStarterCube starter in roomParent.starterCubes)
+        {
+            if (starter.deadEnd.gameObject.activeSelf)
+            {
+                if (!starter.deadEnd.filled)
+                {
+                    roomDeadEnds.Add(starter.deadEnd);
+                }
+            }
+        }
+
+        if (roomDeadEnds.Count > 0)
+        {
+            int x = Random.Range(0, roomDeadEnds.Count);
+            Transform spawnTransform = roomDeadEnds[x].spawnPoint;   
+            NecromancerNPC necroPrefab = NPCs.npcMasterList[3].GetComponent<NecromancerNPC>();
+            NecromancerNPC newNecro = Instantiate(necroPrefab, spawnTransform);
+        }
+
+        if (roomDeadEnds.Count == 0)
+        {
+            Debug.Log("No Available Dead Ends in Room for Necro");
+        }
     }
 
     public IEnumerator SetActives()

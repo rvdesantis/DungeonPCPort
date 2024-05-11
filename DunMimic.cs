@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DunMimic : DunChest
 {
-
+    public GameObject mimicIndicator;
     public override void OpenChest()
     {
         if (inRange && !opened && !locked)
@@ -17,7 +17,7 @@ public class DunMimic : DunChest
             {
                 if (fakeWall.wallBroken)
                 {
-                    DunUIController uiController = FindObjectOfType<DunUIController>();
+                    DunUIController uiController = FindObjectOfType<DunUIController>();              
                     uiController.ToggleKeyUI(gameObject, false);
                     StartCoroutine(JumpTimer());
                 }
@@ -28,6 +28,7 @@ public class DunMimic : DunChest
     IEnumerator JumpTimer()
     {
         opened = true;
+        mimicIndicator.SetActive(false);
         if (animType == AnimType.animator)
         {
             if (anim != null)
@@ -43,13 +44,23 @@ public class DunMimic : DunChest
         LaunchBattle();
     }
 
+    public void MimicReturn()
+    {
+        anim.SetTrigger("death");
+    }    
+
     public void LaunchBattle()
     {
         SceneController controller = FindObjectOfType<SceneController>();
         BattleController battleC = controller.battleController;
 
         controller.playerController.controller.enabled = false;
+        battleC.afterBattleAction = null;
+        battleC.afterBattleAction = MimicReturn;
         battleC.SetBattle(13);
+        controller.uiController.interactParent.SetActive(false);
+        controller.uiController.interactUI.activeObj = null;
+ 
 
     }
 }

@@ -73,9 +73,21 @@ public class JailRoomParent : RoomPropParent
             
         }
 
-        if (roomParent.roomType == CubeRoom.RoomType.shop || roomParent.roomType == CubeRoom.RoomType.NPC)
+        if (roomParent.roomType == CubeRoom.RoomType.shop)
         {
-            AddShop();            
+            AddShop();
+        }
+        if (roomParent.roomType == CubeRoom.RoomType.NPC)
+        {
+            int x = Random.Range(0, 2);
+            if (x == 0)
+            {
+                AddShop();
+            }
+            if (x == 1)
+            {
+                AddNecro();
+            }
         }
     }
     public void AddRogue() // add a way of checking if has already been added to duplicate room
@@ -156,6 +168,7 @@ public class JailRoomParent : RoomPropParent
         {
             JailerReturnEnd();
         }
+
     }
     public void JailerReturnEnd()
     {
@@ -183,6 +196,8 @@ public class JailRoomParent : RoomPropParent
         controller.endAction = null;
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
+        MusicController music = FindObjectOfType<MusicController>();
+        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
 
     private void Update()

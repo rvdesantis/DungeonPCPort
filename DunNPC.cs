@@ -76,5 +76,10 @@ public class DunNPC : MonoBehaviour
         }
     }
 
+    public virtual void Confirm()
+    {
+
+    }
+
 
 }

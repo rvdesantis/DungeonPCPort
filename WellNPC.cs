@@ -7,14 +7,40 @@ public class WellNPC : DunNPC
     public int coinCount;
     public bool flipping;
     public GameObject healVFX;
+    public GameObject waterBucketVFX;
+    public InventoryController inventory;
 
+    bool GoldCheck()
+    {
+        bool funds = false;
+        if (inventory == null)
+        {
+            inventory = FindObjectOfType<InventoryController>();
+        }
+        int goldAmount = inventory.GetAvailableGold();
+        if (goldAmount > 0)
+        {
+            funds = true;
+        }
+        return funds;
+    }
     public override void NPCTrigger()
     {
         if (inRange && !flipping)
         {
-            flipping = true;
-            coinCount++;
-            StartCoroutine(WellTimer());
+            if (GoldCheck() == true)
+            {
+                flipping = true;
+                coinCount++;
+                StartCoroutine(WellTimer());
+            }
+            else
+            {
+                DunUIController uiController = FindObjectOfType<DunUIController>();
+                string goldString = "1 gold required to throw down well";
+                uiController.messagePanelUI.OpenMessage(goldString);
+                uiController.messagePanelUI.CloseMessageTimer(4);
+            }
         }
     }
 
@@ -22,9 +48,12 @@ public class WellNPC : DunNPC
     {
         DunUIController uiController = FindObjectOfType<DunUIController>();
         uiController.messagePanelUI.OpenMessage("you throw a coin down the well (-1 Gold)");
+        inventory.ReduceGold(1);
         audioSource.PlayOneShot(audioClips[0]);
+
         yield return new WaitForSeconds(.25f);
         audioSource.PlayOneShot(audioClips[1]);
+        waterBucketVFX.gameObject.SetActive(true);
         yield return new WaitForSeconds(1.75f);
         uiController.messagePanelUI.gameObject.SetActive(false);
         flipping = false;

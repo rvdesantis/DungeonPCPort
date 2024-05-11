@@ -22,7 +22,7 @@ public class Cube : MonoBehaviour
     public List<GameObject> floors;
     public List<GameObject> cealings;
     public List<GameObject> fogWalls;
-
+    public List<GameObject> randomProps;
     public bool BoxChecker()
     {
         bool collision = false;

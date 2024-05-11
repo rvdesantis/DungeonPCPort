@@ -55,6 +55,8 @@ public class StatueRoomParent : RoomPropParent
         {
             uiController.ToggleKeyUI(startSwitch.gameObject, false);
         }
+        MusicController music = FindObjectOfType<MusicController>();
+        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
     IEnumerator StartSwitch()
     {
