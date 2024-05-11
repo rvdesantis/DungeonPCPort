@@ -57,7 +57,9 @@ public class SpellSmithUI : MonoBehaviour
         spellImage.gameObject.SetActive(true);
         uiController.uiActive = false;
         controller.playerController.enabled = true;
+        controller.playerController.cinPersonCam.m_Priority = 10;
         activeSpellSmith.opened = false;
+        activeSpellSmith.faceCam.m_Priority = -1;
         uiController.isToggling = true;
 
         photoBooth.ResetBooth();
@@ -178,7 +180,8 @@ public class SpellSmithUI : MonoBehaviour
         activeSpellSmith = spellSmith;
         uiController.uiActive = true;
         controller.playerController.enabled = false;
-
+        controller.playerController.cinPersonCam.m_Priority = -1;
+        spellSmith.faceCam.m_Priority = 10;
         currencyImage.sprite = currencyIcons[0]; // sets to cold by default
         currencyCost.color = Color.yellow;
 
@@ -201,7 +204,7 @@ public class SpellSmithUI : MonoBehaviour
        
         int x = party.SpellUpCounters[0];
         int price = 100 * (1 + x);
-        currencyCost.text = "Price (Gold) " + price;
+        currencyCost.text = "";
 
         gameObject.SetActive(true);
         rButtons[0].Select();
@@ -215,15 +218,17 @@ public class SpellSmithUI : MonoBehaviour
     void UIUp()
     {
         toggling = true;
-        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+   
         if (index > 0)
         {
             index--;
             if (index == 3)
             {
+                uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
                 exitBT.Select();
                 textLineOne.text = "Close Menu?";
                 textLineTwo.text = "";
+                currencyCost.text = "";
                 topLArrow.gameObject.SetActive(false);
                 topRArrow.gameObject.SetActive(false);
                 midLArrow.gameObject.SetActive(false);
@@ -231,22 +236,44 @@ public class SpellSmithUI : MonoBehaviour
             }
             if (index == 2)
             {
+                uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
                 topLArrow.gameObject.SetActive(false);
                 topRArrow.gameObject.SetActive(false);
                 midLArrow.gameObject.SetActive(false);
                 midRArrow.gameObject.SetActive(false);
                 spellBT.Select();   
                 textLineOne.text = "Permanently Increase Spell Power?";
-                textLineTwo.text = "";
+                if (currencyIndex == 0)
+                {
+                    int x = party.SpellUpCounters[partyIndex];
+                    int price = 100 * (x + 1);
+                    currencyCost.text = "Price (Gold): " + price;
+                    textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
+                }
+                if (currencyIndex == 1)
+                {
+                    int x = party.SpellUpCounters[partyIndex];
+                    int price = 100 * (x + 1);
+                    currencyCost.text = "Price (XP): " + price;
+                    int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
+                    textLineTwo.text = activeModel.modelName + " XP (" + availXP + ")";
+                }
+                if (currencyIndex == 2)
+                {
+                    currencyCost.text = "Price (Gem): " + 1;
+                    textLineTwo.text = "Chaos Gem (" + inventory.keyItems[0].itemCount + ")";
+                }
 
             }
             if (index == 1)
             {
+                uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
                 topLArrow.gameObject.SetActive(false);
                 topRArrow.gameObject.SetActive(false);
                 midLArrow.gameObject.SetActive(true);
                 midRArrow.gameObject.SetActive(true);
                 textLineOne.text = "Select Currency";
+                currencyCost.text = "";
                 if (currencyIndex == 0)
                 {
                     textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
@@ -263,12 +290,14 @@ public class SpellSmithUI : MonoBehaviour
             }
             if (index == 0)
             {
+                uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
                 topLArrow.gameObject.SetActive(true);
                 topRArrow.gameObject.SetActive(true);
                 midLArrow.gameObject.SetActive(false);
                 midRArrow.gameObject.SetActive(false);
                 textLineOne.text = "Select Character";
-                textLineTwo.text = "(" + activeModel.modelName + ")";
+                textLineTwo.text = activeModel.modelName;
+                currencyCost.text = "";
             }
         }
         StartCoroutine(Toggle());
@@ -286,6 +315,7 @@ public class SpellSmithUI : MonoBehaviour
                 exitBT.Select();
                 textLineOne.text = "Close Menu?";
                 textLineTwo.text = "";
+                currencyCost.text = "";
                 topLArrow.gameObject.SetActive(false);
                 topRArrow.gameObject.SetActive(false);
                 midLArrow.gameObject.SetActive(false);
@@ -299,7 +329,26 @@ public class SpellSmithUI : MonoBehaviour
                 midRArrow.gameObject.SetActive(false);
                 spellBT.Select();
                 textLineOne.text = "Permanently Increase Spell Power?";
-                textLineTwo.text = "";
+                if (currencyIndex == 0)
+                {
+                    int x = party.SpellUpCounters[partyIndex];
+                    int price = 100 * (x + 1);
+                    currencyCost.text = "Price (Gold): " + price;
+                    textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
+                }
+                if (currencyIndex == 1)
+                {
+                    int x = party.SpellUpCounters[partyIndex];
+                    int price = 100 * (x + 1);
+                    currencyCost.text = "Price (XP): " + price;
+                    int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
+                    textLineTwo.text = activeModel.modelName + " XP (" + availXP + ")";
+                }
+                if (currencyIndex == 2)
+                {
+                    currencyCost.text = "Price (Gem): " + 1;
+                    textLineTwo.text = "Chaos Gem (" + inventory.keyItems[0].itemCount + ")";
+                }
             }
             if (index == 1)
             {
@@ -308,6 +357,7 @@ public class SpellSmithUI : MonoBehaviour
                 midLArrow.gameObject.SetActive(true);
                 midRArrow.gameObject.SetActive(true);
                 textLineOne.text = "Select Currency";
+                currencyCost.text = "";
                 if (currencyIndex == 0)
                 {
                     textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
@@ -329,7 +379,8 @@ public class SpellSmithUI : MonoBehaviour
                 midLArrow.gameObject.SetActive(false);
                 midRArrow.gameObject.SetActive(false);
                 textLineOne.text = "Select Character";
-                textLineTwo.text = "(" + activeModel.modelName + ")";
+                textLineTwo.text = activeModel.modelName;
+                currencyCost.text = "";
             }
         }
         StartCoroutine(Toggle());
@@ -337,9 +388,10 @@ public class SpellSmithUI : MonoBehaviour
 
     void UIRight()
     {
-        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+       
         if (index == 0) // character select
         {
+            uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
             toggling = true;
             int abc = partyIndex;
             rButtons[0].Select();
@@ -348,11 +400,11 @@ public class SpellSmithUI : MonoBehaviour
                 activeModel = party.activeParty[0];
                 partyIndex = 0;
                 textLineOne.text = "Select Character";
-                textLineTwo.text = "(" + activeModel.modelName + ")";
+                textLineTwo.text = activeModel.modelName;
 
                 photoBooth.SayCheese(activeModel);
-                int x = 1; // set to upgrade count for character party.active[0];
-                currencyCost.text = "GOLD: " + (x * 100);
+              
+
                 StartCoroutine(Toggle());
                 return;
             }
@@ -361,11 +413,11 @@ public class SpellSmithUI : MonoBehaviour
                 activeModel = party.activeParty[2];
                 partyIndex = 2;
                 textLineOne.text = "Select Character";
-                textLineTwo.text = "(" + activeModel.modelName + ")";
+                textLineTwo.text = activeModel.modelName;
 
                 photoBooth.SayCheese(activeModel);
-                int x = 1; // set to upgrade count for character party.active[0];
-                currencyCost.text = "GOLD: " + (x * 100);
+
+
                 StartCoroutine(Toggle());
                 return;
             }
@@ -374,17 +426,18 @@ public class SpellSmithUI : MonoBehaviour
                 activeModel = party.activeParty[1];
                 partyIndex = 1;
                 textLineOne.text = "Select Character";
-                textLineTwo.text = "(" + activeModel.modelName + ")";
+                textLineTwo.text = activeModel.modelName;
 
                 photoBooth.SayCheese(activeModel);
-                int x = 1; // set to upgrade count for character party.active[0];
-                currencyCost.text = "GOLD: " + (x * 100);
+
+
                 StartCoroutine(Toggle());
                 return;
             }
         }
         if (index == 1) // currency select
         {
+            uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
             toggling = true;
             currencyIndex++;
             if (currencyIndex == 3)
@@ -396,22 +449,15 @@ public class SpellSmithUI : MonoBehaviour
             textLineOne.text = "Select Currency";
             if (currencyIndex == 0)
             {
-                int x = party.SpellUpCounters[partyIndex];
-                int price = 100 * (x + 1);
-                currencyCost.text = "Price (Gold): " + price; // add multipler for upgrade count  
                 textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
             }
             if (currencyIndex == 1)
-            {
-                int x = party.SpellUpCounters[partyIndex];               
-                int price = 100 * (x + 1);
-                currencyCost.text = "Price (XP): " + price; // add multipler for upgrade count  
+            {   
                 int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
                 textLineTwo.text = activeModel.modelName + " XP (" + availXP + ")";
             }
             if (currencyIndex == 2)
             {
-                currencyCost.text = "Price (Gem): " + 1; // add multipler for upgrade count  
                 textLineTwo.text = "Available Gems (" + inventory.keyItems[0].itemCount + ")";
             }
             currencyImage.sprite = currencyIcons[currencyIndex];
@@ -422,9 +468,10 @@ public class SpellSmithUI : MonoBehaviour
 
     void UILeft()
     {
-        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+
         if (index == 0) // character select
         {
+            uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
             toggling = true;
             lButtons[0].Select();
             int abc = party.activeParty.IndexOf(activeModel);
@@ -434,11 +481,10 @@ public class SpellSmithUI : MonoBehaviour
                 activeModel = party.activeParty[1];
                 partyIndex = 1;
                 textLineOne.text = "Select Character";
-                textLineTwo.text = "(" + activeModel.modelName + ")";
-
+                textLineTwo.text = activeModel.modelName;
                 photoBooth.SayCheese(activeModel);
-                int x = 1; // set to upgrade count for character party.active[0];
-                currencyCost.text = "GOLD: " + (x * 100);
+             
+ 
                 StartCoroutine(Toggle());
                 return;
             }
@@ -447,11 +493,11 @@ public class SpellSmithUI : MonoBehaviour
                 activeModel = party.activeParty[0];
                 partyIndex = 0;
                 textLineOne.text = "Select Character";
-                textLineTwo.text = "(" + activeModel.modelName + ")";
+                textLineTwo.text = activeModel.modelName;
 
                 photoBooth.SayCheese(activeModel);
-                int x = 1; // set to upgrade count for character party.active[0];
-                currencyCost.text = "GOLD: " + (x * 100);
+
+  
                 StartCoroutine(Toggle());
                 return;
             }
@@ -460,11 +506,11 @@ public class SpellSmithUI : MonoBehaviour
                 activeModel = party.activeParty[2];
                 partyIndex = 2;
                 textLineOne.text = "Select Character";
-                textLineTwo.text = "(" + activeModel.modelName + ")";
+                textLineTwo.text = activeModel.modelName;
 
                 photoBooth.SayCheese(activeModel);
-                int x = 1; // set to upgrade count for character party.active[0];
-                currencyCost.text = "GOLD: " + (x * 100);
+
+    
                 StartCoroutine(Toggle());
                 return;
             }
@@ -472,6 +518,7 @@ public class SpellSmithUI : MonoBehaviour
         }
         if (index == 1) // currency select
         {
+            uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
             toggling = true;
             currencyIndex--;
             if (currencyIndex == -1)
@@ -482,24 +529,16 @@ public class SpellSmithUI : MonoBehaviour
             textLineOne.text = "Select Currency";
             if (currencyIndex == 0)
             {
-                int x = 0;
-                x = party.SpellUpCounters[partyIndex];        
-                int price = 100 * (x + 1);
-                currencyCost.text = "Price (Gold): " + price; // add multipler for upgrade count  
+
                 textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
             }
             if (currencyIndex == 1)
-            {
-                int x = 0;  
-                x = party.SpellUpCounters[partyIndex];            
-                int price = 100 * (x + 1);
-                currencyCost.text = "Price (XP): " + price; // add multipler for upgrade count  
+            { 
                 int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
                 textLineTwo.text = activeModel.modelName + " XP (" + availXP + ")";
             }
             if (currencyIndex == 2)
-            {
-                currencyCost.text = "Price (Gem): " + 1; // add multipler for upgrade count  
+            { 
                 textLineTwo.text = "Available Gems (" + inventory.keyItems[0].itemCount + ")";
             }
             currencyImage.sprite = currencyIcons[currencyIndex];

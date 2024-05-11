@@ -8,7 +8,7 @@ using UnityEngine.UI;
 
 public class ConfirmUI : MonoBehaviour
 {
-    public enum AttachedUI { BlackSmith, Magic, Campfire, NPC}
+    public enum AttachedUI { BlackSmith, Magic, Campfire, NPC, Shop, Inventory}
     public AttachedUI attachedUI;
     public TextMeshProUGUI message;
     public TextMeshProUGUI confirm;
@@ -17,8 +17,11 @@ public class ConfirmUI : MonoBehaviour
     public Button noBT;
 
     public BlacksmithUI blackSmithUI;
+    public ShopUI shopUI;
     public DunUIController uiController;
+    public InventoryUI inventoryUI;
     public CampfireUI campFireUI;
+
     public CinemachineVirtualCamera activeCAM;
     public PlayerController player;
     public Action targetAction;
@@ -31,51 +34,44 @@ public class ConfirmUI : MonoBehaviour
         }
     }
 
-    public void ConfirmMessageUI(string mss = "", bool blackSmith = false, bool magic = false, bool campFire = false, bool inputC = false)
+    public void ConfirmMessageUI(string mss = "", bool blackSmith = false, bool magic = false, bool campFire = false, bool inputC = false, bool inventory = false, bool bossRoom = false)
     {
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }    
+        message.text = mss;
         if (blackSmith)
         {
-            attachedUI = AttachedUI.BlackSmith;
-            message.text = mss;
-            targetAction += blackSmithUI.ConfirmUpgrade;
-            yesBT.Select();
+            attachedUI = AttachedUI.BlackSmith;           
+            targetAction += blackSmithUI.ConfirmUpgrade;   
         }
         if (magic)
         {
-            attachedUI = AttachedUI.Magic;
-            message.text = mss;
-            targetAction += uiController.spellSmithUI.ConfirmUpgrade;
-            yesBT.Select();
-        }
-        if (campFire)
-        {
-            campFireUI.bankBT.interactable = false;
-            campFireUI.partyBT.interactable = false;
-            campFireUI.exitBT.interactable = false;
-
-            attachedUI = AttachedUI.Campfire;
-            message.text = mss;
-            targetAction += campFireUI.Bank;
-            gameObject.SetActive(true);
-            yesBT.Select();
-        }
+            attachedUI = AttachedUI.Magic;          
+            targetAction += uiController.spellSmithUI.ConfirmUpgrade;      
+        }       
         if (inputC)
         {
-            message.text = mss;
-            targetAction += NoButton;
-            gameObject.SetActive(true);
-            yesBT.Select();
+            targetAction += NoButton;          
         }
+        if (inventory)
+        {
+            attachedUI = AttachedUI.Inventory;
+            targetAction += inventoryUI.TriggerUseItem;
+        }
+        yesBT.Select();
 
     }
 
-    public void ConfirmMessageNPC(string mss, BlacksmithNPC blacksmith = null, SpellNPC spellSmith = null, ShopNPC shopNPC = null, TemplarNPC templar = null, GobMapVendorNPC goblin = null)
+    public void ConfirmMessageNPC(string mss, BlacksmithNPC blacksmith = null, ShopUI ShopUI = null, TemplarNPC templar = null, GobMapVendorNPC goblin = null, NecromancerNPC necro = null)
     {
         PlayerController player = FindObjectOfType<PlayerController>();
         player.enabled = false;
-        targetAction = null;
+    
         if (blacksmith != null)
         {
+            targetAction = null;
             message.text = mss;
             targetAction += blacksmith.OpenUI;
             gameObject.SetActive(true);
@@ -83,6 +79,7 @@ public class ConfirmUI : MonoBehaviour
         }
         if (templar != null)
         {
+            targetAction = null;
             message.text = mss;
             targetAction += templar.TriggerAttackConf;
             gameObject.SetActive(true);
@@ -90,19 +87,33 @@ public class ConfirmUI : MonoBehaviour
         }
         if (goblin != null)
         {
+            targetAction = null;
             message.text = mss;
             targetAction += goblin.Confirm;
             gameObject.SetActive(true);
             yesBT.Select();
         }
-
+        if (ShopUI) // target action nulled and set by ShopUI
+        {
+            attachedUI = AttachedUI.Shop;
+            message.text = mss;
+            gameObject.SetActive(true);
+            yesBT.Select();
+        }
+        if (necro != null)
+        {
+            targetAction = null;
+            message.text = mss;
+            targetAction += necro.Resurrect;
+            gameObject.SetActive(true);
+            yesBT.Select();
+        }
     }
 
 
 
     public void YesButton()
     {
-    
         targetAction.Invoke();
         targetAction = null;
         if (activeCAM != null)
@@ -143,6 +154,23 @@ public class ConfirmUI : MonoBehaviour
             campFireUI.exitBT.interactable = true;
 
             campFireUI.exitBT.Select();
+        }
+        if (attachedUI == AttachedUI.Shop)
+        {
+            foreach (Button bt in shopUI.itemButtons)
+            {
+                int x = shopUI.itemButtons.IndexOf(bt);
+                int count = shopUI.currentShop.itemsForSale.Count;
+                if (x < count)
+                {
+                    bt.interactable = true;
+                }
+            }
+            shopUI.itemButtons[0].Select();
+        }
+        if (attachedUI == AttachedUI.Inventory)
+        {
+            inventoryUI.BackUseItem();
         }
         player.enabled = true;
         uiController.isToggling = true;

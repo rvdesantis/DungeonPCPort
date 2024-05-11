@@ -36,9 +36,14 @@ public class CharacterUI : MonoBehaviour
 
     public Button rArrowBT;
     public Button lArrowBT;
-    public Button relic0BT;
-    public Button relic1BT;
-    public Button relic2BT;
+
+    public Image spell0Image;
+    public Image spell1Image;
+    public Image spell2Image;
+
+    public TextMeshProUGUI spellTXT0;
+    public TextMeshProUGUI spellTXT1;
+    public TextMeshProUGUI spellTXT2;
 
     public Button exitBT;
     public Button selectBT;
@@ -50,6 +55,9 @@ public class CharacterUI : MonoBehaviour
     public GameObject infoTab;
     public TextMeshProUGUI heroInfoTabTXT;
     public TextMeshProUGUI heroLoreTabTXT;
+    public List<GameObject> selectParents;
+    public List<TextMeshProUGUI> selectParentTXTs;
+    public List<AudioClip> uiSounds;
     IEnumerator ToggleTimer()
     {
         yield return new WaitForSeconds(.25f);
@@ -117,6 +125,8 @@ public class CharacterUI : MonoBehaviour
             }
         }
 
+        int x = party.activeParty.IndexOf(activeHero);
+
         string nameStats = "";
         nameStats = nameStats + activeHero.modelName + "\n";
         int health = battleMod.health;
@@ -173,7 +183,8 @@ public class CharacterUI : MonoBehaviour
             weaponImage.sprite = weaponSprites[1];
         }
 
-        // check for Relics
+        
+
         if (select)
         {
             if (uiType == UIType.CMenu)
@@ -185,6 +196,69 @@ public class CharacterUI : MonoBehaviour
             heroLoreTabTXT.text = activeHero.modelLore;
             exitBT.gameObject.SetActive(false);
             selectBT.gameObject.SetActive(true);
+
+            BattleModel activeBattle = null;
+            foreach (BattleModel bModel in party.combatMaster)
+            {
+                if (bModel.modelName == activeHero.modelName)
+                {
+                    activeBattle = bModel;
+                    break;
+                }
+            }
+            int spellCount = battleMod.masterSpells.Count;
+            if (spellCount > 0)
+            {
+                spell0Image.sprite = activeBattle.activeSpells[0].spellIcon;
+                spellTXT0.text = activeBattle.activeSpells[0].spellName;
+                spell1Image.gameObject.SetActive(false);
+                spell2Image.gameObject.SetActive(false);
+            }
+            if (spellCount > 1)
+            {
+                spell1Image.gameObject.SetActive(true);
+                spellTXT1.text = activeBattle.activeSpells[1].spellName;
+                spell1Image.sprite = activeBattle.activeSpells[1].spellIcon;
+            }
+            if (spellCount > 2)
+            {
+                spell2Image.gameObject.SetActive(true);
+                spellTXT2.text = activeBattle.activeSpells[2].spellName;
+                spell2Image.sprite = activeBattle.activeSpells[2].spellIcon;
+            }
+        }
+        if (!select)
+        {
+            // set Spells
+            BattleModel activeBattle = null;
+            foreach (BattleModel bModel in party.combatParty)
+            {
+                if (bModel.modelName == activeHero.modelName)
+                {
+                    activeBattle = bModel;
+                    break;
+                }
+            }
+            int spellCount = battleMod.activeSpells.Count;
+            if (spellCount > 0)
+            {
+                spell0Image.sprite = activeBattle.activeSpells[0].spellIcon;
+                spellTXT0.text = activeBattle.activeSpells[0].spellName;
+                spell1Image.gameObject.SetActive(false);
+                spell2Image.gameObject.SetActive(false);
+            }
+            if (spellCount > 1)
+            {
+                spell1Image.gameObject.SetActive(true);
+                spellTXT1.text = activeBattle.activeSpells[1].spellName;
+                spell1Image.sprite = activeBattle.activeSpells[1].spellIcon;
+            }
+            if (spellCount > 2)
+            {
+                spell2Image.gameObject.SetActive(true);
+                spellTXT2.text = activeBattle.activeSpells[2].spellName;
+                spell2Image.sprite = activeBattle.activeSpells[2].spellIcon;
+            }
         }
 
         StartCoroutine(ToggleTimer());
@@ -198,6 +272,7 @@ public class CharacterUI : MonoBehaviour
 
         if (!toggling)
         {
+            uiController.uiAudioSource.PlayOneShot(uiSounds[1]);
             if (uiType == UIType.CMenu)
             {
                 if (partyIndex == 0)
@@ -235,6 +310,7 @@ public class CharacterUI : MonoBehaviour
     {    
         if (!toggling)
         {
+            uiController.uiAudioSource.PlayOneShot(uiSounds[1]);
             if (uiType == UIType.CMenu)
             {
                 if (partyIndex == 0)

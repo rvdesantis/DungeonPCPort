@@ -40,13 +40,6 @@ public class CampfireUI : MonoBehaviour
         }
     }
 
-    public void Bank()
-    {
-        uiController.uiAudioSource.PlayOneShot(uiSounds[3]);
-        SaveController save = FindObjectOfType<SaveController>();
-        save.HomeBank();
-    }
-
     public void BankButton()
     {
         uiController.uiAudioSource.PlayOneShot(uiSounds[2]);
@@ -70,8 +63,9 @@ public class CampfireUI : MonoBehaviour
         {
             if (infoTXT.text != bankString)
             {
-                infoTXT.text = bankString;
-                uiController.uiAudioSource.PlayOneShot(uiSounds[0]);
+                int currentBank = EnhancedPrefs.GetPlayerPref("goldBank", 0);
+                string bankUpdate = currentBank + "G currently in bank\n";
+                infoTXT.text = bankUpdate + bankString;
             }
         }
 

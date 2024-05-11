@@ -42,15 +42,59 @@ public class DunUIController : MonoBehaviour
     public ShopUI shopUI;
     public ConfirmUI confirmUI;
 
-    IEnumerator ToggleTimer()
+    IEnumerator ToggleTimer(float toggleTimer)
     {
-        yield return new WaitForSeconds(.25f);
+        isToggling = true;
+        yield return new WaitForSeconds(toggleTimer);
         isToggling = false;
     }
 
-    public void RemoteToggleTimer()
+    public void RemoteToggleTimer(float timer = .25f)
     {
-        StartCoroutine(ToggleTimer());
+        StartCoroutine(ToggleTimer(timer));
+    }
+
+    public void CloseMenuUI()
+    {
+        isToggling = true;
+        Cursor.visible = false;
+        Button reset = startButtons[1];
+        reset.gameObject.SetActive(false);
+        startButtons[1].gameObject.SetActive(false);
+        startButtons[2].gameObject.SetActive(false);
+        startButtons[3].gameObject.SetActive(false);
+        startButtons[4].gameObject.SetActive(false);
+        startButtons[5].gameObject.SetActive(false);
+        startButtons[6].gameObject.SetActive(false);
+        buttonFrameUI.SetActive(false);
+        uiActive = false;
+
+        compassObj.SetActive(true);
+        lowerUIobj.SetActive(true);
+
+        StartCoroutine(ToggleTimer(.25f));
+    }
+
+    public void OpenMenuUI()
+
+    {
+        isToggling = true;
+        Cursor.visible = true;
+        compassObj.SetActive(false);
+        lowerUIobj.SetActive(false);
+        Button reset = startButtons[1];
+        reset.gameObject.SetActive(true);
+        reset.Select();
+
+        startButtons[2].gameObject.SetActive(true);
+        startButtons[3].gameObject.SetActive(true);
+        startButtons[4].gameObject.SetActive(true);
+        startButtons[5].gameObject.SetActive(true);
+        startButtons[6].gameObject.SetActive(true);
+        uiActive = true;
+        buttonFrameUI.SetActive(true);
+        uiAudioSource.PlayOneShot(uiSounds[0]);
+        StartCoroutine(ToggleTimer(.25f));
     }
 
     public void UIExitGame()
@@ -164,30 +208,23 @@ public class DunUIController : MonoBehaviour
         inventoryUI.gameObject.SetActive(false);
     }
 
+    public void ResetAllDataBT()
+    {
+        UnlockController unlockC = FindObjectOfType<UnlockController>();
+        SceneBuilder builder = controller.builder;
+        unlockC.ResetAllData();
+        builder.ReLoadScene();
+    }
+
     private void Update()
     {
-        if (!isToggling && controller.active)
+        if (!isToggling && controller.active && controller.gameState == SceneController.GameState.Dungeon)
         {
             if (!uiActive)
             {
                 if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton7))
                 {
-                    isToggling = true;
-                    Cursor.visible = true;
-                    compassObj.SetActive(false);
-                    lowerUIobj.SetActive(false);
-                    Button reset = startButtons[1];
-                    reset.gameObject.SetActive(true);
-                    reset.Select();
-
-                    startButtons[2].gameObject.SetActive(true);
-                    startButtons[3].gameObject.SetActive(true);
-                    startButtons[4].gameObject.SetActive(true);
-                    startButtons[5].gameObject.SetActive(true);
-                    uiActive = true;
-                    buttonFrameUI.SetActive(true);
-                    uiAudioSource.PlayOneShot(uiSounds[0]);
-                    StartCoroutine(ToggleTimer());
+                    OpenMenuUI();
                 }
                 if (Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.JoystickButton2))
                 {
@@ -201,7 +238,7 @@ public class DunUIController : MonoBehaviour
 
                         inventoryUI.gameObject.SetActive(true);
                         OpenDunInventory();
-                        StartCoroutine(ToggleTimer());
+                        StartCoroutine(ToggleTimer(.25f));
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.C) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.JoystickButton6))
@@ -217,7 +254,7 @@ public class DunUIController : MonoBehaviour
 
                         characterUI.gameObject.SetActive(true);
                         characterUI.LoadStats(party.activeParty[0]);
-                        StartCoroutine(ToggleTimer());
+                        StartCoroutine(ToggleTimer(.25f));
                     }
                 }
             }
@@ -226,22 +263,8 @@ public class DunUIController : MonoBehaviour
             {                
                 if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.JoystickButton7))
                 {
-                    isToggling = true;
-                    Cursor.visible = false;
-                    Button reset = startButtons[1];
-                    reset.gameObject.SetActive(false);
-                    startButtons[1].gameObject.SetActive(false);
-                    startButtons[2].gameObject.SetActive(false);
-                    startButtons[3].gameObject.SetActive(false);
-                    startButtons[4].gameObject.SetActive(false);
-                    startButtons[5].gameObject.SetActive(false);
-
-                    buttonFrameUI.SetActive(false);
-                    uiActive = false;
-                  
-                    compassObj.SetActive(true);
-                    lowerUIobj.SetActive(true);
-                    StartCoroutine(ToggleTimer());
+                    CloseMenuUI();
+                    StartCoroutine(ToggleTimer(.25f));
 
                     if (inventoryUI.gameObject.activeSelf)
                     {
@@ -287,7 +310,7 @@ public class DunUIController : MonoBehaviour
                         isToggling = true;
                         Cursor.visible = false;
                         CloseDunInventory();    
-                        StartCoroutine(ToggleTimer());
+                        StartCoroutine(ToggleTimer(.25f));
                     }
                 }
             }

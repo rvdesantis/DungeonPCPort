@@ -12,6 +12,8 @@ public class UnlockedUI : MonoBehaviour
     public DunUIController uiController;
     public PartyController party;
     public Image unlockImage;
+    public List<Sprite> standardSprites;
+
     public RawImage photoBoothRaw;
     public Photobooth photoBooth;
     public TextMeshProUGUI typeTXT;
@@ -21,7 +23,7 @@ public class UnlockedUI : MonoBehaviour
     public Action nextUnlockAction;
     public bool toggleTimer;
 
-    public void OpenUnlockUI(string unlockInfo, bool finalUnlock, int unlockIndex, bool character = false, bool npc = false, bool item = false, bool enemy = false)
+    public void OpenUnlockUI(string unlockInfo, bool finalUnlock, int unlockIndex, bool character = false, bool npc = false, bool item = false, bool enemy = false, bool room = false, bool boss = false, bool mechanic = false)
     {
         uiController.uiActive = true;
         controller.playerController.enabled = false;  
@@ -35,23 +37,47 @@ public class UnlockedUI : MonoBehaviour
             photoBoothRaw.gameObject.SetActive(true);
             photoBooth.SayCheese(party.masterParty[unlockIndex]);
         }
-        if (npc)
+        if (npc) // standard image 0
         {
             typeTXT.text = "New NPC Character";
             unlockImage.gameObject.SetActive(true);
             photoBoothRaw.gameObject.SetActive(false);
+            unlockImage.sprite = standardSprites[0];
         }
-        if (item)
+        if (item) // standard image 1
         {
             typeTXT.text = "New Item";
             unlockImage.gameObject.SetActive(true);
             photoBoothRaw.gameObject.SetActive(false);
+            unlockImage.sprite = standardSprites[1];
         }
-        if (enemy)
+        if (enemy) // standard image 2
         {
             typeTXT.text = "New Enemy";
             unlockImage.gameObject.SetActive(true);
             photoBoothRaw.gameObject.SetActive(false);
+            unlockImage.sprite = standardSprites[2];
+        }
+        if (room) // standard image 3
+        {
+            typeTXT.text = "New Room";
+            unlockImage.gameObject.SetActive(true);
+            photoBoothRaw.gameObject.SetActive(false);
+            unlockImage.sprite = standardSprites[3];
+        }
+        if (boss) // standard image 4
+        {
+            typeTXT.text = "New Boss";
+            unlockImage.gameObject.SetActive(true);
+            photoBoothRaw.gameObject.SetActive(false);
+            unlockImage.sprite = standardSprites[4];
+        }
+        if (mechanic) // standard image 5
+        {
+            typeTXT.text = "New Game Mechanic";
+            unlockImage.gameObject.SetActive(true);
+            photoBoothRaw.gameObject.SetActive(false);
+            unlockImage.sprite = standardSprites[5];
         }
         gameObject.SetActive(true);
 

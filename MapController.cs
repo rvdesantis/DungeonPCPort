@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
-using System;
-using System.Linq.Expressions;
+using UnityEngine.UI;
 
 public class MapController : MonoBehaviour
 {
@@ -22,6 +21,120 @@ public class MapController : MonoBehaviour
 
     public List<string> layerNames; // map - 6 / hiddenmap - 7
 
+    public float moveSpeed;
+    public GameObject camObject;
+    public List<GameObject> boundries;
+
+    public List<Image> mapInputImages;
+    public List<Image> mapJoyImages;
+
+    private void Start()
+    {
+        
+    }
+
+    public void JoyStickSwap()
+    {
+        foreach (Image image in mapInputImages)
+        {
+            image.gameObject.SetActive(false);
+        }
+        foreach (Image image in mapJoyImages)
+        {
+            image.gameObject.SetActive(true);
+        }
+    }
+
+    public void ShowMapOutLine()
+    {
+        foreach (Cube room in sceneBuilder.createdRooms)
+        {
+            LayerOnMap(room, 6, false);
+        } 
+        foreach (Cube hall in sceneBuilder.createdHallCubes)
+        {
+            LayerOnMap(hall, 6, false);
+        }
+        foreach (Cube turn in sceneBuilder.createdTurns)
+        {
+            LayerOnMap(turn, 6, false);
+        }
+        foreach (Cube end in sceneBuilder.createdDeadEnds)
+        {
+            LayerOnMap(end, 6, false);
+        }
+        foreach (Cube trap in sceneBuilder.createdHallSideCubes)
+        {
+            LayerOnMap(trap, 6, false);
+        }
+        foreach (Cube trap in sceneBuilder.createdTrapHalls)
+        {
+            LayerOnMap(trap, 6, false);
+        }
+
+        InventoryController inventory = FindObjectOfType<InventoryController>();
+
+        if (inventory.mapstatus == InventoryController.MapInventoryStatus.sketched)
+        {
+            inventory.mapstatus = InventoryController.MapInventoryStatus.outlined;
+        }
+    }
+
+    public void ShowFullMap(bool secrets = false)
+    {
+        foreach (Cube room in sceneBuilder.createdRooms)
+        {
+            LayerOnMap(room, 6, true);
+        }
+        foreach (Cube hall in sceneBuilder.createdHallCubes)
+        {
+            LayerOnMap(hall, 6, true);
+        }
+        foreach (Cube turn in sceneBuilder.createdTurns)
+        {
+            LayerOnMap(turn, 6, true);
+        }
+        foreach (Cube end in sceneBuilder.createdDeadEnds)
+        {
+            LayerOnMap(end, 6, true);
+        }
+        foreach (Cube trap in sceneBuilder.createdHallSideCubes)
+        {
+            LayerOnMap(trap, 6, false);
+        }
+        foreach (Cube trap in sceneBuilder.createdTrapHalls)
+        {
+            LayerOnMap(trap, 6, false);
+        }
+        foreach (Cube boss in sceneBuilder.createdBossRooms)
+        {
+            LayerOnMap(boss, 6, true);
+        }
+
+        InventoryController inventory = FindObjectOfType<InventoryController>();
+
+        if (inventory.mapstatus != InventoryController.MapInventoryStatus.secret)
+        {
+            inventory.mapstatus = InventoryController.MapInventoryStatus.full;
+        }
+
+        if (secrets)
+        {
+            foreach (Cube end in sceneBuilder.createdSecretEnds)
+            {
+                LayerOnMap(end, 6, true);
+                inventory.mapstatus = InventoryController.MapInventoryStatus.secret;
+            }
+            foreach (Cube trap in sceneBuilder.createdHallSideCubes)
+            {
+                LayerOnMap(trap, 6, true);
+            }
+            foreach (Cube trap in sceneBuilder.createdTrapHalls)
+            {
+                LayerOnMap(trap, 6, true);
+            }
+        }
+    }
 
     public void GatherMap()
     {
@@ -78,19 +191,28 @@ public class MapController : MonoBehaviour
 
         if (mapParentObject.activeSelf)
         {
-            playerController.active = true;
+            playerController.enabled = true;
             mapParentObject.SetActive(false);
             uiController.uiActive = false;
+            uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[3]);
+            uiController.lowerUIobj.SetActive(true);          
+            uiController.compassObj.SetActive(true);
+
             StartCoroutine(EnableToggling());
             return;
         }
 
         if (!mapParentObject.activeSelf)
         {
-            playerController.active = false;      
+            playerController.enabled = false;      
             PlaceCamera();
             uiController.uiActive = true;
+            uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[2]);
             mapParentObject.SetActive(true);
+
+            uiController.lowerUIobj.SetActive(false);   
+            uiController.compassObj.SetActive(false);
+
             StartCoroutine(EnableToggling());
             return;
         }
@@ -99,6 +221,7 @@ public class MapController : MonoBehaviour
     public void PlaceCamera()
     {
         mapCam.transform.position = new Vector3(playerController.transform.position.x, 100, playerController.transform.position.z);
+        mapCam.orthographicSize = 50;
     }
 
     private IEnumerator GatherMapIcons()
@@ -115,7 +238,7 @@ public class MapController : MonoBehaviour
         }
  
         yield return new WaitForSeconds(.1f);
-        foreach (Cube end in sceneBuilder.allDeadEnds)
+        foreach (Cube end in sceneBuilder.createdDeadEnds)
         {        
             SpriteRenderer targetIcon = end.mapIcon.icon;
             endIcons.Add(targetIcon);
@@ -170,30 +293,61 @@ public class MapController : MonoBehaviour
         {
             float scrollInput = Input.GetAxis("Mouse ScrollWheel");
             float stickInput = Input.GetAxis("Joystick Right Vertical");
+            float joystickHorizontalInput = Input.GetAxis("Joystick Horizontal");
+            float joystickVerticalInput = Input.GetAxis("Joystick Vertical");
+
+
+            if (Input.GetKey(KeyCode.D) || joystickHorizontalInput > 0.5f)
+            {
+                camObject.transform.position = Vector3.Lerp(camObject.transform.position, boundries[3].transform.position, moveSpeed);
+            }
+            if (Input.GetKey(KeyCode.A) || joystickHorizontalInput < -0.5f)
+            {
+                camObject.transform.position = Vector3.Lerp(camObject.transform.position, boundries[2].transform.position, moveSpeed);
+            }
+            if (Input.GetKey(KeyCode.S) || joystickVerticalInput > 0.5f)
+            {
+                camObject.transform.position = Vector3.Lerp(camObject.transform.position, boundries[0].transform.position, moveSpeed);
+            }
+            if (Input.GetKey(KeyCode.W) || joystickVerticalInput < -0.5f)
+            {
+                camObject.transform.position = Vector3.Lerp(camObject.transform.position, boundries[1].transform.position, moveSpeed);
+            }
+
+            
+
+
             if (scrollInput > 0f || stickInput < -0.5f)
             {
-                if (mapCam.fieldOfView > 30)
+                if (mapCam.orthographicSize > 30)
                 {
-                    mapCam.fieldOfView = mapCam.fieldOfView - 5;
+                    mapCam.orthographicSize = mapCam.orthographicSize - 5;
                 }
             }
             else if (scrollInput < 0f || stickInput > 0.5f)
             {
-                if (mapCam.fieldOfView < 100)
+                if (mapCam.orthographicSize < 500)
                 {
-                    mapCam.fieldOfView = mapCam.fieldOfView + 5;
+                    mapCam.orthographicSize = mapCam.orthographicSize + 5;
                 }
+            }
+
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                ToggleMap();
             }
         }
         if (buildFinished)
         {
-            if (Input.GetKey(KeyCode.M) || Input.GetKey(KeyCode.JoystickButton3) || Input.GetKey(KeyCode.Mouse2))
+            if (!uiController.uiActive || mapParentObject.activeSelf)
             {
-                ToggleMap();
-                return;
+                if (Input.GetKey(KeyCode.M) || Input.GetKey(KeyCode.JoystickButton3) || Input.GetKey(KeyCode.Mouse2) || Input.GetKey(KeyCode.Alpha2))
+                {
+                    ToggleMap();
+                    return;
+                }
             }
         }
-
     }
 
 
