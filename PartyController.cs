@@ -15,6 +15,7 @@ public class PartyController : MonoBehaviour
 
     public List<BattleModel> combatParty;
     public List<BattleModel> combatMaster;
+    public List<int> combatHealthTracker;
 
     public List<int> PowerUpCounters;
     public List<int> DEFUpCounters;
@@ -55,38 +56,44 @@ public class PartyController : MonoBehaviour
             Vector3 refresh = new Vector3(setModel.transform.position.x, 0, setModel.transform.position.z);
             setModel.transform.position = refresh;
         }
+
+        combatHealthTracker[0] = combatParty[0].health;
+        combatHealthTracker[1] = combatParty[1].health;
+        combatHealthTracker[2] = combatParty[2].health;
     }
 
     public void DungeonHeal(int healAmount = 0, bool healAll = false, int healPosition = 0)
     {
+        PartyController party = FindObjectOfType<PartyController>();
         if (healAll)
         {
             foreach (BattleModel battleModel in combatParty)
             {
-                int currentHealth = EnhancedPrefs.GetPlayerPref(battleModel.modelName + "HP", battleModel.health);
+                int index = combatParty.IndexOf(battleModel);
+                int currentHealth = party.combatHealthTracker[index];
                 int newHealth = currentHealth + healAmount;
                 if (newHealth > battleModel.maxH)
                 {
                     newHealth = battleModel.maxH;
                 }
-                EnhancedPrefs.SetPlayerPref(battleModel.modelName + "HP", newHealth);
-                battleModel.health = newHealth;
+
+                party.combatHealthTracker[index] = newHealth;
             }
-            EnhancedPrefs.SavePlayerPrefs();
+   
             player.vfxLIST[1].gameObject.SetActive(true);
             player.vfxLIST[1].Play();
         }
         else
         {
             BattleModel battleModel = combatParty[healPosition];
-            int currentHealth = EnhancedPrefs.GetPlayerPref(battleModel.modelName + "HP", battleModel.health);
+            int currentHealth = party.combatHealthTracker[healPosition];
             int newHealth = currentHealth + healAmount;
             if (newHealth > battleModel.maxH)
             {
                 newHealth = battleModel.maxH;
             }
-            EnhancedPrefs.SetPlayerPref(battleModel.modelName + "HP", newHealth);
-            battleModel.health = newHealth;
+
+            party.combatHealthTracker[healPosition] = newHealth;
         }
     }
 

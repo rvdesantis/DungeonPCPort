@@ -10,16 +10,10 @@ public class SaveController : MonoBehaviour
     public InventoryController inventory;
 
 
-    public void HomeBank()
+    public void GoldBank()
     {
         int goldCount = inventory.gold;
-        int bankCount = EnhancedPrefs.GetPlayerPref("goldBank", 0);
-
-        int newBank = goldCount + bankCount;
-
-        EnhancedPrefs.SetPlayerPref("goldBank", newBank);
-        inventory.gold = 0;
-
+        EnhancedPrefs.SetPlayerPref("goldBank", goldCount);
         EnhancedPrefs.SavePlayerPrefs();
     }
 
@@ -62,5 +56,15 @@ public class SaveController : MonoBehaviour
         battleModel.powerBonusPercent = EnhancedPrefs.GetPlayerPref(name + "PowPercent", 0);
         battleModel.defBonusPercent = EnhancedPrefs.GetPlayerPref(name + "DefPercent", 0);
         battleModel.spellBonusPercent = EnhancedPrefs.GetPlayerPref(name + "SpellPercent", 0);
+    }
+
+    public void StartLoader()
+    {
+        int gold = EnhancedPrefs.GetPlayerPref("goldBank", 0);
+        if (gold < 50)
+        {
+            gold = 50;
+        }
+        inventory.gold = gold;
     }
 }

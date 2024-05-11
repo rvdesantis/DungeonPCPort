@@ -68,7 +68,7 @@ public class SelectController : MonoBehaviour
             delayAction = controller.SceneStart;
         }
         selectIndex = 0;
-        characterUI.LoadStats(partyModels[0], true);
+
         StartCoroutine(SelectTimer());
     }
 
@@ -77,21 +77,30 @@ public class SelectController : MonoBehaviour
         startPlayable.Play();
         vCams[0].m_Priority = 10;
         yield return new WaitForSeconds((float)startPlayable.duration);
+        characterUI.gameObject.SetActive(true);
+        characterUI.LoadStats(partyModels[0], true);
         builder.StartBuild();
     }
 
     public void AddToParty()
     {  
         int x = party.masterParty.IndexOf(partyModels[selectIndex]);
-
+        controller.uiController.uiAudioSource.PlayOneShot(characterUI.uiSounds[0]);
         party.activeParty.Add(party.masterParty[x]);
         party.combatParty.Add(party.combatMaster[x]);
 
         partyModels[selectIndex].gameObject.SetActive(false);
 
+        int curIndex = party.activeParty.Count - 1;
+        characterUI.selectParents[curIndex].SetActive(true);
+        characterUI.selectParentTXTs[curIndex].text = party.activeParty[curIndex].modelName;
+
         if (party.activeParty.Count == 3)
         {
             party.LoadCounters();
+            characterUI.selectParents[0].SetActive(false);
+            characterUI.selectParents[1].SetActive(false);
+            characterUI.selectParents[2].SetActive(false);
             if (builder.frameBuild)
             {
                 controller.SceneStart();

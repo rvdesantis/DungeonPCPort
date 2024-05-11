@@ -76,7 +76,7 @@ public class SpellNPC : DunNPC
             SpellSmithUI spellSmithUI = uiController.spellSmithUI;
 
             if (spellSmithUI != null)
-            {
+            {          
                 spellSmithUI.OpenSmithUI(multiplier, this);
             }
             if (spellSmithUI == null)

@@ -16,8 +16,11 @@ public class BattleRoom : MonoBehaviour
     public List<GameObject> activeObjects;
     public List<DunItem> battleTrinkets;
     public CinemachineVirtualCamera mainCam;
+    public List<CinemachineVirtualCamera> targetingCams;
     public PlayableDirector introPlayable;
     public List<PlayableDirector> intros;
+    public float comboOffset;
+    public Transform afterBattleSpawnPoint;
 
     public void SetProps(int monsterNum) // for small & large room, roof gameobject is set by battle intro playable
     {      
@@ -26,17 +29,18 @@ public class BattleRoom : MonoBehaviour
 
     public void IntroTimer()
     {
+        if (battleC == null)
+        {
+            battleC = FindObjectOfType<BattleController>();
+        }
         mainCam.m_Priority = 20;
         if (introPlayable != null)
         {
             introPlayable.Play();
             StartCoroutine(IntroTimerRoutine());
         }
-        else
+        if (introPlayable == null)
         {
-            battleC.battleUI.endBattleBT.gameObject.SetActive(true);
-            battleC.battleUI.endBattleBT.Select();
-
             foreach (BattleModel heroMod in battleC.heroParty)
             {
                 heroMod.anim.SetTrigger("unsheath");
@@ -47,10 +51,6 @@ public class BattleRoom : MonoBehaviour
     IEnumerator IntroTimerRoutine()
     {
         yield return new WaitForSeconds((float)introPlayable.duration);
-        // set button for testing
-        battleC.battleUI.endBattleBT.gameObject.SetActive(true);
-        battleC.battleUI.endBattleBT.Select();
-        
         foreach (BattleModel heroMod in battleC.heroParty)
         {
             heroMod.anim.SetTrigger("unsheath");

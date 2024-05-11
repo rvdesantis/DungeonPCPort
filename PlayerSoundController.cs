@@ -10,7 +10,7 @@ public class PlayerSoundController : MonoBehaviour
     public List<AudioClip> stepSoundsNormal;
     public List<AudioClip> stepSoundsGravel;
     public List<AudioClip> stepSoundsWet;
-    public enum FloorType {stone, gravel, wet }
+    public enum FloorType { stone, gravel, wet }
     public FloorType floorType;
 
     public bool engaged;
@@ -18,6 +18,12 @@ public class PlayerSoundController : MonoBehaviour
     public void WalkSounds()
     {
 
+    }
+
+    public void StopSounds()
+    {
+        engaged = false;
+        audioSource.Stop();
     }
 
     IEnumerator StepSounds()
@@ -45,9 +51,16 @@ public class PlayerSoundController : MonoBehaviour
 
     private void Update()
     {
-        if (playerController.walking && !engaged && uiController.uiActive == false)
+        if (playerController.walking && !engaged && uiController.uiActive == false && playerController.enabled)
         {
             StartCoroutine(StepSounds());
+        }
+        if (!playerController.walking || uiController.uiActive || !playerController.enabled)
+        {
+            if (audioSource.isPlaying && engaged)
+            {
+                StopSounds();
+            }
         }
 
     }
