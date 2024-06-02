@@ -95,9 +95,6 @@ public class BattleModel : DunModel
         {
             battleC = FindObjectOfType<BattleController>();
         }
-
- 
-
         if (battleC.heroIndex == 0) // works for Hero side
         {
             afterAction = null;
@@ -149,15 +146,23 @@ public class BattleModel : DunModel
         if (skip || dead || DeadEnemiesCheck())
         {
             skip = false;
+            anim.SetBool("injured", false);
             battleC.heroIndex++;
             afterAction.Invoke();
             afterAction = null;
         }
     }
-
+    public void TimelineHit()
+    {
+        anim.SetTrigger("hit");
+    }
+    public virtual void GetHit(BattleModel modelSource)
+    {
+        anim.SetTrigger("hit");
+    }
     public virtual void TriggerTargetHit() // set on attack animation, or triggered in spell script
     {
-        actionTarget.anim.SetTrigger("hit");
+        actionTarget.GetHit(this);
         if (actionType == ActionType.melee)
         {
             actionTarget.impactFX.StandardImpact();
@@ -190,21 +195,23 @@ public class BattleModel : DunModel
         }
     }
 
-    public virtual void TakeDamage(int damage, BattleModel damSource)
+    public virtual void TakeDamage(int damage, BattleModel damSource, bool crit = false)
     {
         if (battleC == null)
         {
             battleC = FindObjectOfType<BattleController>();
         }
-
-
         DamageMSS damCan = Instantiate(battleC.damageCanvas, hitTarget.transform.position, Quaternion.identity);   
-        damCan.activeCam = battleC.bCamController.activeCam;     
+        damCan.activeCam = battleC.bCamController.activeCam;    
 
-        damCan.ShowDamage(damage, gameObject);
-
-  
-
+        if (crit)
+        {
+            damCan.ShowDamage(damage, true);
+        }
+        if (!crit)
+        {
+            damCan.ShowDamage(damage);
+        }
         health = health - damage;
         if (health <= 0)
         {
@@ -237,16 +244,7 @@ public class BattleModel : DunModel
 
         yield return new WaitForSeconds(.75f);
 
-        int crit = UnityEngine.Random.Range(0, 100);
-        if (crit >= critChance )
-        {
-            anim.SetTrigger("attack0");
-        }
-        if (crit < critChance)
-        {
-            Debug.Log(modelName + " CRIT HIT!");
-            anim.SetTrigger("attack1");
-        }
+        anim.SetTrigger("attack0");
 
         yield return new WaitForSeconds(strikeTimer);
 
@@ -260,6 +258,12 @@ public class BattleModel : DunModel
 
         float powerAdjusted = (float)powerBonusPercent / 100f + 1f;
         float powerX = powerAdjusted * power;
+        float powerStatusBoost = 0f;
+        if (statusC.boost)
+        {
+            powerStatusBoost = statusC.boostAmount;
+        }
+        powerX = powerX + powerStatusBoost;
 
         int damageAmount = Mathf.RoundToInt(powerX) - Mathf.RoundToInt(defX);
         if (damageAmount < 0)
@@ -268,11 +272,19 @@ public class BattleModel : DunModel
         }     
 
         Debug.Log(modelName + " attacking " + target.modelName + " for " + damageAmount + " damage");
-        target.TakeDamage(damageAmount, this);
+        if (powerStatusBoost > 0)
+        {
+            target.TakeDamage(damageAmount, this, true);
+        }
+        if (powerStatusBoost == 0)
+        {
+            target.TakeDamage(damageAmount, this);
+        }
 
         transform.position = returnPos;
         
         yield return new WaitForSeconds(1.5f);
+        statusC.ActivateBoost(false);
         battleC.heroIndex++;
         afterAction.Invoke();
         afterAction = null;

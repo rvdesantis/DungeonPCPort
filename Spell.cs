@@ -23,6 +23,8 @@ public class Spell : MonoBehaviour
     public CastType castType;
 
     public Transform targetTransform;
+    public enum SpellTargeting { enemies, party, all}
+    public SpellTargeting spellTargeting;
 
     public List<ParticleSystem> spellFX;
     public List<ParticleSystem> spellImpactFX;

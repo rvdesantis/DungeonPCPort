@@ -27,10 +27,14 @@ public class DamageMSS : MonoBehaviour
         targetPos = startPos + (Vector3.up * floatHeight);
     }
 
-    public void ShowDamage(int damage, GameObject targetObj)
+    public void ShowDamage(int damage, bool crit = false)
     {
         transform.LookAt(activeCam.transform);
         damTXT.text = damage.ToString();
+        if (crit)
+        {
+            damTXT.text = damTXT.text + "(CRIT)";
+        }
         StartCoroutine(DamageTimer());
     }
 

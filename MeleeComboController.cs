@@ -10,11 +10,9 @@ public class MeleeComboController : MonoBehaviour
     public List<PlayableDirector> comboPlayables;
     public bool triggered;
 
-    public void StartMeleeCombo()
+    public void StartMeleeCombo(int comboNum)
     {
-        // determineComboNum
-        triggered = true;
-        StartCoroutine(MeleeComboTimer(0));
+        StartCoroutine(MeleeComboTimer(comboNum));
     }
 
     IEnumerator MeleeComboTimer(int ComboNum)
@@ -28,9 +26,9 @@ public class MeleeComboController : MonoBehaviour
 
         PlayableDirector comboPlayable = comboPlayables[ComboNum];
         comboPlayable.transform.position = battleC.activeRoom.playerSpawnPoints[0].transform.position + new Vector3(-battleC.activeRoom.comboOffset, 0, 0);
+
         foreach (BattleModel mod in battleC.heroParty)
         {
-            mod.AssignBattleDirector(comboPlayable);
             mod.transform.parent = comboPlayable.transform;
             mod.transform.position = comboPlayable.transform.position;
         }
@@ -45,7 +43,7 @@ public class MeleeComboController : MonoBehaviour
                 enMod.transform.position = battleC.activeRoom.enemySpawnPoints[0].transform.position;
             }
         }
-        comboTarget.AssignBattleDirector(comboPlayable, 4);
+        battleC.comboC.AssignComboPlayable(comboTarget ,comboPlayable, 4);
 
         comboPlayable.Play();
         yield return new WaitForSeconds((float)comboPlayable.duration + .1f);

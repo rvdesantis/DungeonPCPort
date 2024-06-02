@@ -383,46 +383,177 @@ public class BattleUIController : MonoBehaviour
     public void SpellSelectBT(int btNum)
     {
         int x = battleC.heroIndex;
-        battleC.heroParty[x].actionType = BattleModel.ActionType.spell;
-        battleC.heroParty[x].selectedSpell = battleC.heroParty[x].activeSpells[btNum];
-        if (!battleC.enemyParty[0].dead)
+        BattleModel activeHero = battleC.heroParty[x];
+        activeHero.actionType = BattleModel.ActionType.spell;
+        activeHero.selectedSpell = battleC.heroParty[x].activeSpells[btNum];
+        if (activeHero.selectedSpell.spellTargeting == Spell.SpellTargeting.enemies)
         {
-            string name = battleC.enemyParty[0].modelName;
-            enemySelectButtons[0].gameObject.SetActive(true);
-            enemyBTText[0].text = name;
-            enemySelectButtons[0].Select();
-
-            enemySelectSliders[0].maxValue = battleC.enemyParty[0].maxH;
-            enemySelectSliders[0].value = battleC.enemyParty[0].health;
-        }
-        if (!battleC.enemyParty[1].dead)
-        {
-            string name = battleC.enemyParty[1].modelName;
-            enemySelectButtons[1].gameObject.SetActive(true);
-            enemyBTText[1].text = name;
-
-            enemySelectSliders[1].maxValue = battleC.enemyParty[1].maxH;
-            enemySelectSliders[1].value = battleC.enemyParty[1].health;
-
-            if (!enemySelectButtons[0].gameObject.activeSelf)
+            if (!battleC.enemyParty[0].dead)
             {
-                enemySelectButtons[1].Select();
+                string name = battleC.enemyParty[0].modelName;
+                enemySelectButtons[0].gameObject.SetActive(true);
+                enemyBTText[0].text = name;
+                enemySelectButtons[0].Select();
+
+                enemySelectSliders[0].maxValue = battleC.enemyParty[0].maxH;
+                enemySelectSliders[0].value = battleC.enemyParty[0].health;
+            }
+            if (!battleC.enemyParty[1].dead)
+            {
+                string name = battleC.enemyParty[1].modelName;
+                enemySelectButtons[1].gameObject.SetActive(true);
+                enemyBTText[1].text = name;
+
+                enemySelectSliders[1].maxValue = battleC.enemyParty[1].maxH;
+                enemySelectSliders[1].value = battleC.enemyParty[1].health;
+
+                if (!enemySelectButtons[0].gameObject.activeSelf)
+                {
+                    enemySelectButtons[1].Select();
+                }
+            }
+            if (!battleC.enemyParty[2].dead)
+            {
+                string name = battleC.enemyParty[2].modelName;
+                enemySelectButtons[2].gameObject.SetActive(true);
+                enemyBTText[2].text = name;
+
+                enemySelectSliders[2].maxValue = battleC.enemyParty[2].maxH;
+                enemySelectSliders[2].value = battleC.enemyParty[2].health;
+
+                if (!enemySelectButtons[0].gameObject.activeSelf && !enemySelectButtons[1].gameObject.activeSelf)
+                {
+                    enemySelectButtons[2].Select();
+                }
             }
         }
-        if (!battleC.enemyParty[2].dead)
+        if (activeHero.selectedSpell.spellTargeting == Spell.SpellTargeting.party)
         {
-            string name = battleC.enemyParty[2].modelName;
-            enemySelectButtons[2].gameObject.SetActive(true);
-            enemyBTText[2].text = name;
-
-            enemySelectSliders[2].maxValue = battleC.enemyParty[2].maxH;
-            enemySelectSliders[2].value = battleC.enemyParty[2].health;
-
-            if (!enemySelectButtons[0].gameObject.activeSelf && !enemySelectButtons[1].gameObject.activeSelf)
+            if (!battleC.heroParty[0].dead)
             {
-                enemySelectButtons[2].Select();
+                string name = battleC.heroParty[0].modelName;
+                partySelectButtons[0].gameObject.SetActive(true);
+                partyBTText[0].text = name;
+
+                partySelectSliders[0].maxValue = battleC.heroParty[0].maxH;
+                partySelectSliders[0].value = battleC.heroParty[0].health;
+                if (x == 0)
+                {
+                    partySelectButtons[0].Select();
+                }
             }
-        }     
+            if (!battleC.heroParty[1].dead)
+            {
+                string name = battleC.heroParty[1].modelName;
+                partySelectButtons[1].gameObject.SetActive(true);
+                partyBTText[1].text = name;
+
+                partySelectSliders[1].maxValue = battleC.heroParty[1].maxH;
+                partySelectSliders[1].value = battleC.heroParty[1].health;
+
+                if (x == 1)
+                {
+                    partySelectButtons[1].Select();
+                }
+            }
+            if (!battleC.heroParty[2].dead)
+            {
+                string name = battleC.heroParty[2].modelName;
+                partySelectButtons[2].gameObject.SetActive(true);
+                partyBTText[2].text = name;
+
+                partySelectSliders[2].maxValue = battleC.heroParty[2].maxH;
+                partySelectSliders[2].value = battleC.heroParty[2].health;
+
+                if (x == 2)
+                {
+                    partySelectButtons[2].Select();
+                }
+            }
+        }
+        if (activeHero.selectedSpell.spellTargeting == Spell.SpellTargeting.all)
+        {
+            if (!battleC.enemyParty[0].dead)
+            {
+                string name = battleC.enemyParty[0].modelName;
+                enemySelectButtons[0].gameObject.SetActive(true);
+                enemyBTText[0].text = name;
+                enemySelectButtons[0].Select();
+
+                enemySelectSliders[0].maxValue = battleC.enemyParty[0].maxH;
+                enemySelectSliders[0].value = battleC.enemyParty[0].health;
+            }
+            if (!battleC.enemyParty[1].dead)
+            {
+                string name = battleC.enemyParty[1].modelName;
+                enemySelectButtons[1].gameObject.SetActive(true);
+                enemyBTText[1].text = name;
+
+                enemySelectSliders[1].maxValue = battleC.enemyParty[1].maxH;
+                enemySelectSliders[1].value = battleC.enemyParty[1].health;
+
+                if (!enemySelectButtons[0].gameObject.activeSelf)
+                {
+                    enemySelectButtons[1].Select();
+                }
+            }
+            if (!battleC.enemyParty[2].dead)
+            {
+                string name = battleC.enemyParty[2].modelName;
+                enemySelectButtons[2].gameObject.SetActive(true);
+                enemyBTText[2].text = name;
+
+                enemySelectSliders[2].maxValue = battleC.enemyParty[2].maxH;
+                enemySelectSliders[2].value = battleC.enemyParty[2].health;
+
+                if (!enemySelectButtons[0].gameObject.activeSelf && !enemySelectButtons[1].gameObject.activeSelf)
+                {
+                    enemySelectButtons[2].Select();
+                }
+            }
+
+            if (!battleC.heroParty[0].dead)
+            {
+                string name = battleC.heroParty[0].modelName;
+                partySelectButtons[0].gameObject.SetActive(true);
+                partyBTText[0].text = name;
+
+                partySelectSliders[0].maxValue = battleC.heroParty[0].maxH;
+                partySelectSliders[0].value = battleC.heroParty[0].health;
+                if (x == 0)
+                {
+                    partySelectButtons[0].Select();
+                }
+            }
+            if (!battleC.heroParty[1].dead)
+            {
+                string name = battleC.heroParty[1].modelName;
+                partySelectButtons[1].gameObject.SetActive(true);
+                partyBTText[1].text = name;
+
+                partySelectSliders[1].maxValue = battleC.heroParty[1].maxH;
+                partySelectSliders[1].value = battleC.heroParty[1].health;
+
+                if (x == 1)
+                {
+                    partySelectButtons[1].Select();
+                }
+            }
+            if (!battleC.heroParty[2].dead)
+            {
+                string name = battleC.heroParty[2].modelName;
+                partySelectButtons[2].gameObject.SetActive(true);
+                partyBTText[2].text = name;
+
+                partySelectSliders[2].maxValue = battleC.heroParty[2].maxH;
+                partySelectSliders[2].value = battleC.heroParty[2].health;
+
+                if (x == 2)
+                {
+                    partySelectButtons[2].Select();
+                }
+            }
+        }
     }
 
 
