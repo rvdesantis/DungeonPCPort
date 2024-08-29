@@ -6,6 +6,7 @@ using UnityEngine;
 public class Spell : MonoBehaviour
 {
     public string spellName;
+    public string spellInfo;
     public enum SpellType { heal, fire, thunder, voidMag, ice, nature, offense, defense}
     public SpellType spellType;
     public int spellCost;

@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 using UnityEngine.Playables;
+
 
 public class StatueRoomParent : RoomPropParent
 {
@@ -25,9 +25,9 @@ public class StatueRoomParent : RoomPropParent
     public bool gravityOff;
     public bool skippedTrigger;
 
-
-
-
+    public GameObject rotationRoomParent;
+    public bool leftRotation;
+    public Transform startPoint;
 
     private void Start()
     {
@@ -37,17 +37,30 @@ public class StatueRoomParent : RoomPropParent
 
     public void EndStart()
     {
+        rotationRoomParent.gameObject.SetActive(true);
+
         SceneController controller = FindObjectOfType<SceneController>();
         PlayerController player = FindObjectOfType<PlayerController>();
         PartyController party = FindObjectOfType<PartyController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
+        
 
+        foreach (DunSwitch sw in wallSwitches)
+        {
+            sw.locked = true;
+            sw.switchAnim.SetTrigger("switchOn");
+        }
+        swapSwitchN.locked = true;
+        swapSwitchN.switchAnim.SetTrigger("switchOn");
+        swapSwitchS.locked = true;
+        swapSwitchS.switchAnim.SetTrigger("switchOn");
         controller.activePlayable = null;
         controller.endAction = null;
         foreach (DunModel model in party.activeParty)
         {
             model.gameObject.SetActive(false);
         }
+        player.transform.position = startPoint.position;
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
         uiController.rangeImage.gameObject.SetActive(false);
@@ -90,6 +103,7 @@ public class StatueRoomParent : RoomPropParent
         player.controller.enabled = false;
         uiController.compassObj.SetActive(false);
         crystalSwitchPlayable.Play();
+        player.transform.position = startPoint.position;
         yield return new WaitForSeconds(clipTime);
 
        if (controller.activePlayable != null)
@@ -114,18 +128,6 @@ public class StatueRoomParent : RoomPropParent
                 wallCovers[x].SetActive(true);
             }
         }
-        // add a check for switch room activation, set to default for testing
-
-        foreach(DunSwitch sw in wallSwitches)
-        {
-            sw.locked = true;
-            sw.switchAnim.SetTrigger("switchOn");
-        }
-        swapSwitchN.locked = true;
-        swapSwitchN.switchAnim.SetTrigger("switchOn");
-        swapSwitchS.locked = true;
-        swapSwitchS.switchAnim.SetTrigger("switchOn");
-
         DistanceController distance = FindObjectOfType<DistanceController>();
         distance.switches.Add(startSwitch);
     }

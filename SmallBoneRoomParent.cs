@@ -6,9 +6,12 @@ using UnityEngine.Playables;
 public class SmallBoneRoomParent : RoomPropParent
 {
     public PlayableDirector evilRDirector;
+    public PlayableDirector wolfDirector;
     public bool enterTrigger;
+    public bool rabbit;
     public GameObject afterPlaySpawnPoint;
     public DunModel activeModel;
+    public List<DunModel> activeWolves;
 
     public void AfterEnter()
     {
@@ -17,22 +20,38 @@ public class SmallBoneRoomParent : RoomPropParent
         PlayerController player = FindObjectOfType<PlayerController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
 
+        Debug.Log("Starting Battle Launch");
         controller.activePlayable = null;
         controller.endAction = null;
-
-        if (controller.activePlayable == evilRDirector)
+        if (rabbit)
         {
-            controller.activePlayable = null;
+            activeModel.gameObject.SetActive(false);
+            foreach (DunModel model in party.activeParty)
+            {
+                model.gameObject.SetActive(false);
+            }             
+            AfterBattle();
+            return;
         }
-        activeModel.gameObject.SetActive(false);
-        foreach (DunModel model in party.activeParty)
+        if (!rabbit)
         {
-            model.gameObject.SetActive(false);
+            Debug.Log("Starting Wolf Launch");
+            foreach (DunModel woofy in activeWolves)
+            {
+                woofy.gameObject.SetActive(false);
+            }
+            foreach (DunModel model in party.activeParty)
+            {
+                model.gameObject.SetActive(false);
+            }
+            if (activeModel != null)
+            {
+                activeModel.gameObject.SetActive(false);
+            }
+            controller.battleController.afterBattleAction = AfterBattle;
+            Debug.Log("Beginning Battle");
+            controller.battleController.SetBattle(17);
         }
-        player.controller.enabled = true;
-        uiController.compassObj.SetActive(true);
-        MusicController music = FindObjectOfType<MusicController>();
-        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
 
 
@@ -45,50 +64,119 @@ public class SmallBoneRoomParent : RoomPropParent
         MonsterController monsters = FindObjectOfType<MonsterController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
 
-        controller.activePlayable = evilRDirector;
-        controller.endAction += AfterEnter;
-
-        party.AssignCamBrain(evilRDirector, 3);
-        foreach (DunModel model in party.activeParty)
+        int hopper = Random.Range(0, 10);
+        if (hopper == 0)
         {
-            model.AssignToDirector(evilRDirector);
-            model.transform.position = evilRDirector.transform.position;
-            model.transform.parent = evilRDirector.transform;
-            model.gameObject.SetActive(true);
-            if (model.activeWeapon != null)
-            {
-                model.activeWeapon.SetActive(false);
-            }
-        }
-        party.activeParty[0].torch.SetActive(false);
+            rabbit = true;
+            controller.activePlayable = evilRDirector;
+            controller.endAction += AfterEnter;
 
-        DunModel bunny = null;
-        foreach (DunModel enemy in monsters.enemyMasterList)
-        {
-            if (enemy.spawnArea == DunModel.SpawnArea.smallRoom)
+            party.AssignCamBrain(evilRDirector, 3);
+            foreach (DunModel model in party.activeParty)
             {
-                if (enemy.spawnPlayableInt == 2)
+                model.AssignToDirector(evilRDirector);
+                model.transform.position = evilRDirector.transform.position;
+                model.transform.parent = evilRDirector.transform;
+                model.gameObject.SetActive(true);
+                if (model.activeWeapon != null)
                 {
-                    bunny = Instantiate(enemy, evilRDirector.transform, false);
-                    bunny.gameObject.SetActive(true);
-                    bunny.transform.position = evilRDirector.transform.position;
-                    bunny.AssignToDirector(evilRDirector, 4);
-                    activeModel = bunny;
-                    break;
+                    model.activeWeapon.SetActive(false);
                 }
             }
-        }
-            
-        float clipTime = (float)evilRDirector.duration;
-        player.controller.enabled = false;
-        uiController.compassObj.SetActive(false);
-        evilRDirector.Play();
-        yield return new WaitForSeconds(clipTime);
-        if (controller.activePlayable == evilRDirector)
-        {
-            AfterEnter();
-        }
+            party.activeParty[0].torch.SetActive(false);
 
+            DunModel bunny = null;
+            foreach (DunModel enemy in monsters.enemyMasterList)
+            {
+                if (enemy.spawnArea == DunModel.SpawnArea.smallRoom)
+                {
+                    if (enemy.spawnPlayableInt == 2)
+                    {
+                        bunny = Instantiate(enemy, evilRDirector.transform, false);
+                        bunny.gameObject.SetActive(true);
+                        bunny.transform.position = evilRDirector.transform.position;
+                        bunny.AssignToDirector(evilRDirector, 4);
+                        activeModel = bunny;
+                        break;
+                    }
+                }
+            }
+
+            float clipTime = (float)evilRDirector.duration;
+            player.controller.enabled = false;
+            uiController.compassObj.SetActive(false);
+            evilRDirector.Play();
+            yield return new WaitForSeconds(clipTime);
+            if (controller.activePlayable == evilRDirector)
+            {
+                AfterEnter();
+            }
+        }
+        if (hopper != 0)
+        {
+            controller.activePlayable = wolfDirector;
+            controller.endAction = null;
+            controller.endAction += AfterEnter;
+
+            party.AssignCamBrain(wolfDirector, 3);
+            foreach (DunModel model in party.activeParty)
+            {
+                model.AssignToDirector(wolfDirector);
+                model.transform.position = wolfDirector.transform.position;
+                model.transform.parent = wolfDirector.transform;
+                model.gameObject.SetActive(true);
+                if (model.activeWeapon != null)
+                {
+                    model.activeWeapon.SetActive(false);
+                }
+            }
+            party.activeParty[0].torch.SetActive(true);
+
+            DunModel wolf = null;          
+  
+            wolf = Instantiate(monsters.enemyMasterList[17], wolfDirector.transform, false);
+            wolf.gameObject.SetActive(true);
+            wolf.transform.position = wolfDirector.transform.position;
+            wolf.AssignToDirector(wolfDirector, 4);
+
+            DunModel wolf2 = null;
+
+            wolf2 = Instantiate(monsters.enemyMasterList[17], wolfDirector.transform, false);
+            wolf2.gameObject.SetActive(true);
+            wolf2.transform.position = wolfDirector.transform.position;
+            wolf2.AssignToDirector(wolfDirector, 5);           
+
+            DunModel wolf3 = null;
+
+            wolf3 = Instantiate(monsters.enemyMasterList[17], wolfDirector.transform, false);
+            wolf3.gameObject.SetActive(true);
+            wolf3.transform.position = wolfDirector.transform.position;
+            wolf3.AssignToDirector(wolfDirector, 6);
+
+            activeWolves.Add(wolf);
+            activeWolves.Add(wolf2);
+            activeWolves.Add(wolf3);
+
+            float clipTime = (float)wolfDirector.duration;
+            player.controller.enabled = false;
+            uiController.compassObj.SetActive(false);
+            wolfDirector.Play();
+            Debug.Log("Starting Wolf Playable");
+            yield return new WaitForSeconds(clipTime);
+            
+            if (controller.activePlayable == wolfDirector)
+            {  
+                AfterEnter();
+            }
+        }
+    }
+
+    public override void AfterBattle()
+    {
+        PlayerController player = FindObjectOfType<PlayerController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+        player.controller.enabled = true;
+        uiController.compassObj.SetActive(true);
     }
 
     private void Update()

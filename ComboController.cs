@@ -59,14 +59,17 @@ public class ComboController : MonoBehaviour
                                     if (hero.modelName == fireMage.modelName)
                                     {
                                         battleC.comboC.AssignComboPlayable(hero, meleeComboC.comboPlayables[0], 0);
+                                        battleC.comboC.AssignComboPlayable(hero, meleeComboC.comboPlayables[0], 4);
                                     }
                                     if (hero.modelName == madien.modelName)
                                     {
                                         battleC.comboC.AssignComboPlayable(hero, meleeComboC.comboPlayables[0], 1);
+                                        battleC.comboC.AssignComboPlayable(hero, meleeComboC.comboPlayables[0], 5);
                                     }
                                     if (hero.modelName == warrior.modelName)
                                     {
                                         battleC.comboC.AssignComboPlayable(hero, meleeComboC.comboPlayables[0], 2);
+                                        battleC.comboC.AssignComboPlayable(hero, meleeComboC.comboPlayables[0], 6);
                                     }
                                 }
                                 meleeComboC.StartMeleeCombo(0);

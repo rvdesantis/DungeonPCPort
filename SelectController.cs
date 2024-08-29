@@ -18,6 +18,7 @@ public class SelectController : MonoBehaviour
     public List<int> camIndexList;
     public PlayableDirector startPlayable;
     public Action delayAction;
+    public bool toggle;
 
     public void FinalizeHeroes()
     {
@@ -83,53 +84,64 @@ public class SelectController : MonoBehaviour
     }
 
     public void AddToParty()
-    {  
-        int x = party.masterParty.IndexOf(partyModels[selectIndex]);
-        controller.uiController.uiAudioSource.PlayOneShot(characterUI.uiSounds[0]);
-        party.activeParty.Add(party.masterParty[x]);
-        party.combatParty.Add(party.combatMaster[x]);
-
-        partyModels[selectIndex].gameObject.SetActive(false);
-
-        int curIndex = party.activeParty.Count - 1;
-        characterUI.selectParents[curIndex].SetActive(true);
-        characterUI.selectParentTXTs[curIndex].text = party.activeParty[curIndex].modelName;
-
-        if (party.activeParty.Count == 3)
+    {
+        if (!toggle)
         {
-            party.LoadCounters();
-            characterUI.selectParents[0].SetActive(false);
-            characterUI.selectParents[1].SetActive(false);
-            characterUI.selectParents[2].SetActive(false);
-            if (builder.frameBuild)
-            {
-                controller.SceneStart();
-                characterUI.CloseUI();
-                foreach (CinemachineVirtualCamera cam in vCams)
-                {
-                    cam.m_Priority = -1;
-                }
-                
-            }
-            if (!builder.frameBuild)
-            {
-                characterUI.CloseUI();
-                foreach (CinemachineVirtualCamera cam in vCams)
-                {
-                    cam.m_Priority = -1;
-                    controller.playerController.firstPersonCam.depth = 1;
-                    controller.playerController.cinPersonCam.m_Priority = 5;
-                }
-            }
-        }
+            toggle = true;
+            int x = party.masterParty.IndexOf(partyModels[selectIndex]);
+            controller.uiController.uiAudioSource.PlayOneShot(characterUI.uiSounds[0]);
+            party.activeParty.Add(party.masterParty[x]);
+            party.combatParty.Add(party.combatMaster[x]);
 
-        if (party.activeParty.Count < 3)
-        {
-           RightArrowAdd();
-        }
+            partyModels[selectIndex].gameObject.SetActive(false);
+
+            int curIndex = party.activeParty.Count - 1;
+            Debug.Log("Tab Index " + curIndex);
+            characterUI.selectParents[curIndex].SetActive(true);
+            characterUI.selectParentTXTs[curIndex].text = party.activeParty[curIndex].modelName;
+
+            if (party.activeParty.Count == 3)
+            {
+                party.LoadCounters();
+                characterUI.selectParents[0].SetActive(false);
+                characterUI.selectParents[1].SetActive(false);
+                characterUI.selectParents[2].SetActive(false);
+                if (builder.frameBuild)
+                {
+                    controller.SceneStart();
+                    characterUI.CloseUI();
+                    foreach (CinemachineVirtualCamera cam in vCams)
+                    {
+                        cam.m_Priority = -1;
+                    }
+
+                }
+                if (!builder.frameBuild)
+                {
+                    characterUI.CloseUI();
+                    foreach (CinemachineVirtualCamera cam in vCams)
+                    {
+                        cam.m_Priority = -1;
+                        controller.playerController.firstPersonCam.depth = 1;
+                        controller.playerController.cinPersonCam.m_Priority = 5;
+                    }
+                }
+            }
+
+            if (party.activeParty.Count < 3)
+            {
+                RightArrowAdd();
+            }
+
+            StartCoroutine(AddTimer());
+        }       
     }
 
-    
+    IEnumerator AddTimer()
+    {
+        yield return new WaitForSeconds(.25f);
+        toggle = false;
+    }
 
     int IndexChecker(bool left)
     {

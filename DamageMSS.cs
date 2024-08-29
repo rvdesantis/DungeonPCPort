@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using Cinemachine;
 using TMPro;
 using System.Linq.Expressions;
+using DTT.Utils.Extensions;
 
 public class DamageMSS : MonoBehaviour
 {
@@ -31,6 +32,18 @@ public class DamageMSS : MonoBehaviour
     {
         transform.LookAt(activeCam.transform);
         damTXT.text = damage.ToString();
+        if (crit)
+        {
+            damTXT.text = damTXT.text + "(CRIT)";
+        }
+        StartCoroutine(DamageTimer());
+    }
+
+    public void ShowHeal(int healamount, bool crit = false)
+    {
+        transform.LookAt(activeCam.transform);
+        damTXT.text = healamount.ToString();
+        damTXT.color = Color.green;
         if (crit)
         {
             damTXT.text = damTXT.text + "(CRIT)";

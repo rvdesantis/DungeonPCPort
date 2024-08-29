@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using Unity.VisualScripting;
 using TMPro;
 using CryptUI.Scripts;
+using UnityEngine.EventSystems;
 
 public class BattleUIController : MonoBehaviour
 {
@@ -20,21 +21,51 @@ public class BattleUIController : MonoBehaviour
     public AudioSource audioSource;
     public List<AudioClip> audioClips;
 
+    public List<Sprite> actionIconsGray;
+    public List<Sprite> actionIconsColor;
+    public List<Image> lActionIcons;
+    public List<Image> rActionIcons;
+
     public List<Button> lActionButtons;
     public List<Button> lSpellButtons;
-    public List<TextMeshProUGUI> lSpellText;
-    public List<Button> lItemButtons;
-    public List<TextMeshProUGUI> lItemText;
-    public GameObject lInfoFrame;
-    public TextMeshProUGUI lInfoTXT;
+    public List<TextMeshProUGUI> lSpellText;   
 
     public List<Button> rActionButtons;
     public List<Button> rSpellButtons;
     public List<TextMeshProUGUI> rSpellText;
+    public GameObject lSpellObj;
+    public GameObject rSpellObj;
+    public Image lSpellIcon;
+    public Image rSpellIcon;
+    public TextMeshProUGUI lSpellTXT;
+    public TextMeshProUGUI rSpellTXT;
+
+    public GameObject lItemFrame;
+    public GameObject rItemFrame;
+    public Image lItemIcon;
+    public Image rItemIcon;
+
+    public Button leftLArrowItemBT;
+    public Button leftRArrowItemBT;
+    public Button rightLArrowItemBT;
+    public Button rightRArrowItemBT;
+
+    public List<Button> lItemButtons;
     public List<Button> rItemButtons;
-    public List<TextMeshProUGUI> rItemText;
+
+    public TextMeshProUGUI lItemTXT;
+    public TextMeshProUGUI rItemTXT;
+
+    public GameObject lInfoFrame;
+    public TextMeshProUGUI lInfoTXT;
+
+
+
     public GameObject rInfoFrame;
     public TextMeshProUGUI rInfoTXT;
+
+    public int itemIndex;
+    public int spellIndex;  
 
     public List<Button> enemySelectButtons;
     public List<Button> partySelectButtons;
@@ -160,6 +191,7 @@ public class BattleUIController : MonoBehaviour
                 bt.gameObject.SetActive(false);
             }
         }
+        lSpellObj.SetActive(false);
         foreach (Button bt in rSpellButtons)
         {
             if (bt.gameObject.activeSelf)
@@ -167,7 +199,7 @@ public class BattleUIController : MonoBehaviour
                 bt.gameObject.SetActive(false);
             }
         }
-
+        rSpellObj.SetActive(false);
 
         foreach (Button bt in lItemButtons)
         {
@@ -183,7 +215,8 @@ public class BattleUIController : MonoBehaviour
                 bt.gameObject.SetActive(false);
             }
         }
-
+        rItemFrame.SetActive(false);
+        lItemFrame.SetActive(false);
 
         int x = battleC.heroIndex;
         battleC.heroParty[x].actionType = BattleModel.ActionType.melee;        
@@ -237,7 +270,6 @@ public class BattleUIController : MonoBehaviour
                 bt.gameObject.SetActive(false);
             }
         }
-
         foreach (Button bt in partySelectButtons)
         {
             if (bt.gameObject.activeSelf)
@@ -262,43 +294,33 @@ public class BattleUIController : MonoBehaviour
         {
             bt.gameObject.SetActive(false);
         }
+        rItemFrame.SetActive(false);
+        lItemFrame.SetActive(false);
 
-        if (rActionButtons[1].gameObject.activeSelf)
-        {
-            rActionButtons[1].Select();
-        }
-        if (lActionButtons[1].gameObject.activeSelf)
-        {
-            lActionButtons[1].Select();
-        }         
         int x = battleC.heroIndex;
         BattleModel activeBModel = battleC.heroParty[x];
 
         if (activeBModel.activeSpells.Count > 0)
-        {          
+        {
+            spellIndex = 0;
             if (x == 1)
             {
-                for (int i = 0; i < activeBModel.activeSpells.Count; i++)
-                {
-                    lSpellButtons[i].gameObject.SetActive(true);
-                    lSpellText[i].text = activeBModel.activeSpells[i].spellName;
-                    if (i == 0)
-                    {
-                        lSpellButtons[i].Select();
-                    }
-                }
+                lSpellObj.SetActive(true);
+                lSpellTXT.text = activeBModel.activeSpells[0].spellInfo;
+                lSpellIcon.sprite = activeBModel.activeSpells[0].spellIcon;
+                lSpellText[0].text = activeBModel.activeSpells[0].spellName;
+                lSpellButtons[0].gameObject.SetActive(true);
+                lSpellButtons[0].Select();
             }
             if (x != 1)
             {
-                for (int i = 0; i < activeBModel.activeSpells.Count; i++)
-                {
-                    rSpellButtons[i].gameObject.SetActive(true);
-                    rSpellText[i].text = activeBModel.activeSpells[i].spellName;
-                    if (i == 0)
-                    {
-                        rSpellButtons[i].Select();
-                    }
-                }
+                rSpellObj.SetActive(true);
+                rSpellTXT.text = activeBModel.activeSpells[0].spellInfo;
+                rSpellIcon.sprite = activeBModel.activeSpells[0].spellIcon;
+                rSpellButtons[0].gameObject.SetActive(true);
+                rSpellText[0].text = activeBModel.activeSpells[0].spellName;
+                rSpellButtons[0].gameObject.SetActive(true);
+                rSpellButtons[0].Select();
             }
             return;
         }
@@ -380,12 +402,12 @@ public class BattleUIController : MonoBehaviour
         }
     }
 
-    public void SpellSelectBT(int btNum)
+    public void SpellSelectBT()
     {
         int x = battleC.heroIndex;
         BattleModel activeHero = battleC.heroParty[x];
         activeHero.actionType = BattleModel.ActionType.spell;
-        activeHero.selectedSpell = battleC.heroParty[x].activeSpells[btNum];
+        activeHero.selectedSpell = battleC.heroParty[x].activeSpells[spellIndex];
         if (activeHero.selectedSpell.spellTargeting == Spell.SpellTargeting.enemies)
         {
             if (!battleC.enemyParty[0].dead)
@@ -554,6 +576,9 @@ public class BattleUIController : MonoBehaviour
                 }
             }
         }
+
+        lSpellObj.SetActive(false);
+        rSpellObj.SetActive(false);
     }
 
 
@@ -563,11 +588,12 @@ public class BattleUIController : MonoBehaviour
         {
             bt.gameObject.SetActive(false);
         }
+        lSpellObj.SetActive(false);
         foreach (Button bt in rSpellButtons)
         {
             bt.gameObject.SetActive(false);
         }
-
+        rSpellObj.SetActive(false);
         foreach (Button bt in enemySelectButtons)
         {
             if (bt.gameObject.activeSelf)
@@ -583,33 +609,32 @@ public class BattleUIController : MonoBehaviour
                 bt.gameObject.SetActive(false);
             }
         }
-
-
+        itemIndex = 0;
+        int x = battleC.heroIndex;
         InventoryController inventory = battleC.inventory;
         int itemCount = battleC.inventory.battleItems.Count;
         if (itemCount > 0)
         {
-            for (int i = 0; i < itemCount; i++)
+            List<BattleItem> activeBattleItems = battleC.inventory.battleItems;
+            if (x == 1)
             {
-                if (lActionButtons[2].gameObject.activeSelf)
-                {
-                    lItemButtons[i].gameObject.SetActive(true);
-                    lItemText[i].text = inventory.battleItems[i].itemName;
-                    if (i == 0)
-                    {
-                        lItemButtons[0].Select();
-                    }
-                }
-                if (rActionButtons[2].gameObject.activeSelf)
-                {
-                    rItemButtons[i].gameObject.SetActive(true);
-                    rItemText[i].text = inventory.battleItems[i].itemName;
-                    if (i == 0)
-                    {
-                        rItemButtons[0].Select();
-                    }
-                }
+                lItemFrame.SetActive(true);
+                lItemTXT.text = activeBattleItems[0].itemInfo;
+                lItemIcon.sprite = activeBattleItems[0].icon;
+
+                lItemButtons[0].gameObject.SetActive(true);
+                lItemButtons[0].Select();               
             }
+            if (x != 1)
+            {
+                rItemFrame.SetActive(true);
+                rItemTXT.text = activeBattleItems[0].itemInfo;
+                rItemIcon.sprite = activeBattleItems[0].icon;
+
+                rItemButtons[0].gameObject.SetActive(true);
+                rItemButtons[0].Select();
+            }
+            return;
         }
         if (itemCount == 0)
         {
@@ -618,7 +643,9 @@ public class BattleUIController : MonoBehaviour
         }
     }
 
-    public void ItemSelectBT(int btNum)
+
+
+    public void ItemSelectBT()
     {
         int x = battleC.heroIndex;
         battleC.heroParty[x].actionType = BattleModel.ActionType.item;
@@ -629,79 +656,398 @@ public class BattleUIController : MonoBehaviour
         foreach (Button bt in rItemButtons)
         {
             bt.gameObject.SetActive(false);
-        }
+        } 
+        BattleItem selectedItem = null;
+        selectedItem = battleC.inventory.battleItems[itemIndex];
+        battleC.heroParty[x].selectedItem = selectedItem;
 
-        battleC.heroParty[x].selectedItem = battleC.inventory.battleItems[btNum];
-
-        if (!battleC.enemyParty[0].dead)
+        if (selectedItem.itemTarget == BattleItem.BattleTarget.heroes)
         {
-            string name = battleC.enemyParty[0].modelName;
-            enemySelectButtons[0].gameObject.SetActive(true);
-            enemyBTText[0].text = name;
-
-            enemySelectSliders[0].maxValue = battleC.enemyParty[0].maxH;
-            enemySelectSliders[0].value = battleC.enemyParty[0].health;  
-        }
-        if (!battleC.enemyParty[1].dead)
-        {
-            string name = battleC.enemyParty[1].modelName;
-            enemySelectButtons[1].gameObject.SetActive(true);
-            enemyBTText[1].text = name;
-
-            enemySelectSliders[1].maxValue = battleC.enemyParty[1].maxH;
-            enemySelectSliders[1].value = battleC.enemyParty[1].health;
-        }
-        if (!battleC.enemyParty[2].dead)
-        {
-            string name = battleC.enemyParty[2].modelName;
-            enemySelectButtons[2].gameObject.SetActive(true);
-            enemyBTText[2].text = name;
-
-            enemySelectSliders[2].maxValue = battleC.enemyParty[2].maxH;
-            enemySelectSliders[2].value = battleC.enemyParty[2].health;
-        }
-
-        if (!battleC.heroParty[0].dead)
-        {
-            string name = battleC.heroParty[0].modelName;
-            partySelectButtons[0].gameObject.SetActive(true);
-            partyBTText[0].text = name;
-
-            partySelectSliders[0].maxValue = battleC.heroParty[0].maxH;
-            partySelectSliders[0].value = battleC.heroParty[0].health;
-            if (x == 0)
+            lItemFrame.gameObject.SetActive(false);
+            rItemFrame.gameObject.SetActive(false);
+            if (!battleC.heroParty[0].dead)
             {
-                partySelectButtons[0].Select();
+                string name = battleC.heroParty[0].modelName;
+                partySelectButtons[0].gameObject.SetActive(true);
+                partyBTText[0].text = name;
+
+                partySelectSliders[0].maxValue = battleC.heroParty[0].maxH;
+                partySelectSliders[0].value = battleC.heroParty[0].health;
+                if (x == 0)
+                {
+                    partySelectButtons[0].Select();
+                }
+            }
+
+            if (!battleC.heroParty[1].dead)
+            {
+                string name = battleC.heroParty[1].modelName;
+                partySelectButtons[1].gameObject.SetActive(true);
+                partyBTText[1].text = name;
+
+                partySelectSliders[1].maxValue = battleC.heroParty[1].maxH;
+                partySelectSliders[1].value = battleC.heroParty[1].health;
+
+                if (x == 1)
+                {
+                    partySelectButtons[1].Select();
+                }
+            }
+
+            if (!battleC.heroParty[2].dead)
+            {
+                string name = battleC.heroParty[2].modelName;
+                partySelectButtons[2].gameObject.SetActive(true);
+                partyBTText[2].text = name;
+
+                partySelectSliders[2].maxValue = battleC.heroParty[2].maxH;
+                partySelectSliders[2].value = battleC.heroParty[2].health;
+
+                if (x == 2)
+                {
+                    partySelectButtons[2].Select();
+                }
             }
         }
-
-        if (!battleC.heroParty[1].dead)
+        if (selectedItem.itemTarget == BattleItem.BattleTarget.enemies)
         {
-            string name = battleC.heroParty[1].modelName;
-            partySelectButtons[1].gameObject.SetActive(true);
-            partyBTText[1].text = name;
-
-            partySelectSliders[1].maxValue = battleC.heroParty[1].maxH;
-            partySelectSliders[1].value = battleC.heroParty[1].health;
-
-            if (x == 1)
+            lItemFrame.gameObject.SetActive(false);
+            rItemFrame.gameObject.SetActive(false);
+            if (!battleC.enemyParty[0].dead)
             {
-                partySelectButtons[1].Select();
+                string name = battleC.enemyParty[0].modelName;
+                enemySelectButtons[0].gameObject.SetActive(true);
+                enemyBTText[0].text = name;
+
+                enemySelectSliders[0].maxValue = battleC.enemyParty[0].maxH;
+                enemySelectSliders[0].value = battleC.enemyParty[0].health;
+            }
+            if (!battleC.enemyParty[1].dead)
+            {
+                string name = battleC.enemyParty[1].modelName;
+                enemySelectButtons[1].gameObject.SetActive(true);
+                enemyBTText[1].text = name;
+
+                enemySelectSliders[1].maxValue = battleC.enemyParty[1].maxH;
+                enemySelectSliders[1].value = battleC.enemyParty[1].health;
+            }
+            if (!battleC.enemyParty[2].dead)
+            {
+                string name = battleC.enemyParty[2].modelName;
+                enemySelectButtons[2].gameObject.SetActive(true);
+                enemyBTText[2].text = name;
+
+                enemySelectSliders[2].maxValue = battleC.enemyParty[2].maxH;
+                enemySelectSliders[2].value = battleC.enemyParty[2].health;
             }
         }
-
-        if (!battleC.heroParty[2].dead)
+        if (selectedItem.itemTarget == BattleItem.BattleTarget.all)
         {
-            string name = battleC.heroParty[2].modelName;
-            partySelectButtons[2].gameObject.SetActive(true);
-            partyBTText[2].text = name;
-
-            partySelectSliders[2].maxValue = battleC.heroParty[2].maxH;
-            partySelectSliders[2].value = battleC.heroParty[2].health;
-
-            if (x == 2)
+            lItemFrame.gameObject.SetActive(false);
+            rItemFrame.gameObject.SetActive(false);
+            if (!battleC.enemyParty[0].dead)
             {
-                partySelectButtons[2].Select();
+                string name = battleC.enemyParty[0].modelName;
+                enemySelectButtons[0].gameObject.SetActive(true);
+                enemyBTText[0].text = name;
+
+                enemySelectSliders[0].maxValue = battleC.enemyParty[0].maxH;
+                enemySelectSliders[0].value = battleC.enemyParty[0].health;
+            }
+            if (!battleC.enemyParty[1].dead)
+            {
+                string name = battleC.enemyParty[1].modelName;
+                enemySelectButtons[1].gameObject.SetActive(true);
+                enemyBTText[1].text = name;
+
+                enemySelectSliders[1].maxValue = battleC.enemyParty[1].maxH;
+                enemySelectSliders[1].value = battleC.enemyParty[1].health;
+            }
+            if (!battleC.enemyParty[2].dead)
+            {
+                string name = battleC.enemyParty[2].modelName;
+                enemySelectButtons[2].gameObject.SetActive(true);
+                enemyBTText[2].text = name;
+
+                enemySelectSliders[2].maxValue = battleC.enemyParty[2].maxH;
+                enemySelectSliders[2].value = battleC.enemyParty[2].health;
+            }
+
+            if (!battleC.heroParty[0].dead)
+            {
+                string name = battleC.heroParty[0].modelName;
+                partySelectButtons[0].gameObject.SetActive(true);
+                partyBTText[0].text = name;
+
+                partySelectSliders[0].maxValue = battleC.heroParty[0].maxH;
+                partySelectSliders[0].value = battleC.heroParty[0].health;
+                if (x == 0)
+                {
+                    partySelectButtons[0].Select();
+                }
+            }
+            if (!battleC.heroParty[1].dead)
+            {
+                string name = battleC.heroParty[1].modelName;
+                partySelectButtons[1].gameObject.SetActive(true);
+                partyBTText[1].text = name;
+
+                partySelectSliders[1].maxValue = battleC.heroParty[1].maxH;
+                partySelectSliders[1].value = battleC.heroParty[1].health;
+
+                if (x == 1)
+                {
+                    partySelectButtons[1].Select();
+                }
+            }
+            if (!battleC.heroParty[2].dead)
+            {
+                string name = battleC.heroParty[2].modelName;
+                partySelectButtons[2].gameObject.SetActive(true);
+                partyBTText[2].text = name;
+
+                partySelectSliders[2].maxValue = battleC.heroParty[2].maxH;
+                partySelectSliders[2].value = battleC.heroParty[2].health;
+
+                if (x == 2)
+                {
+                    partySelectButtons[2].Select();
+                }
+            }
+        }
+        if (selectedItem.itemTarget == BattleItem.BattleTarget.dead)
+        {
+            int deadCount = 0;
+            foreach (BattleModel bMod in battleC.heroParty)
+            {
+                if (bMod.dead && !bMod.pHolder)
+                {
+                    deadCount++;
+                }
+            }
+            foreach (BattleModel bMod in battleC.enemyParty)
+            {
+                if (bMod.dead && !bMod.pHolder)
+                {
+                    deadCount++;
+                }
+            }
+            if (deadCount > 0)
+            {
+                lItemFrame.gameObject.SetActive(false);
+                rItemFrame.gameObject.SetActive(false);
+
+                if (battleC.enemyParty[0].dead && !battleC.enemyParty[0].pHolder)
+                {
+                    string name = battleC.enemyParty[0].modelName;
+                    enemySelectButtons[0].gameObject.SetActive(true);
+                    enemySelectButtons[0].Select();
+                    enemyBTText[0].text = name;
+
+                    enemySelectSliders[0].maxValue = battleC.enemyParty[0].maxH;
+                    enemySelectSliders[0].value = battleC.enemyParty[0].health;
+                }
+                if (battleC.enemyParty[1].dead && !battleC.enemyParty[1].pHolder)
+                {
+                    string name = battleC.enemyParty[1].modelName;
+                    enemySelectButtons[1].gameObject.SetActive(true);
+                    enemySelectButtons[1].Select();
+                    enemyBTText[1].text = name;
+
+                    enemySelectSliders[1].maxValue = battleC.enemyParty[1].maxH;
+                    enemySelectSliders[1].value = battleC.enemyParty[1].health;
+                }
+                if (battleC.enemyParty[2].dead && !battleC.enemyParty[2].pHolder)
+                {
+                    string name = battleC.enemyParty[2].modelName;
+                    enemySelectButtons[2].gameObject.SetActive(true);
+                    enemySelectButtons[2].Select();
+                    enemyBTText[2].text = name;
+
+                    enemySelectSliders[2].maxValue = battleC.enemyParty[2].maxH;
+                    enemySelectSliders[2].value = battleC.enemyParty[2].health;
+                }
+
+                if (battleC.heroParty[0].dead && !battleC.heroParty[0].pHolder)
+                {
+                    string name = battleC.heroParty[0].modelName;
+                    partySelectButtons[0].gameObject.SetActive(true);
+                    partySelectButtons[0].Select();
+                    partyBTText[0].text = name;
+
+                    partySelectSliders[0].maxValue = battleC.heroParty[0].maxH;
+                    partySelectSliders[0].value = battleC.heroParty[0].health;
+                }
+                if (battleC.heroParty[1].dead && !battleC.heroParty[1].pHolder)
+                {
+                    string name = battleC.heroParty[1].modelName;
+                    partySelectButtons[1].gameObject.SetActive(true);
+                    partySelectButtons[1].Select();
+                    partyBTText[1].text = name;
+
+                    partySelectSliders[1].maxValue = battleC.heroParty[1].maxH;
+                    partySelectSliders[1].value = battleC.heroParty[1].health;
+                }
+                if (battleC.heroParty[2].dead && !battleC.heroParty[2].pHolder)
+                {
+                    string name = battleC.heroParty[2].modelName;
+                    partySelectButtons[2].gameObject.SetActive(true);
+                    partyBTText[2].text = name;
+
+                    partySelectSliders[2].maxValue = battleC.heroParty[2].maxH;
+                    partySelectSliders[2].value = battleC.heroParty[2].health;
+                    partySelectButtons[2].Select();
+
+                }
+            }
+            if (deadCount == 0)
+            {
+                audioSource.PlayOneShot(audioClips[1]);
+                if (lItemFrame.activeSelf)
+                {
+                    lItemFrame.gameObject.SetActive(false);
+                    lActionButtons[2].Select();
+                }
+                if (rItemFrame.activeSelf)
+                {
+                    rItemFrame.gameObject.SetActive(false);
+                    rActionButtons[2].Select();
+                }
+   
+                
+            }
+
+        }
+
+    }
+
+    public void ItemArrowLeft(bool leftPanel)
+    {
+        int itemCount = battleC.inventory.battleItems.Count;  
+        if (itemCount != 0)
+        {
+            bool reduced = false;
+            if (itemIndex != 0)
+            {
+                itemIndex--;
+                reduced = true;
+            }
+            if (itemIndex == 0 && !reduced)
+            {
+                itemIndex = itemCount - 1;
+            }
+
+            if (leftPanel)
+            {
+                lItemIcon.sprite = battleC.inventory.battleItems[itemIndex].icon;
+                lItemTXT.text = battleC.inventory.battleItems[itemIndex].itemInfo;
+            }
+            if (!leftPanel)
+            {
+                rItemIcon.sprite = battleC.inventory.battleItems[itemIndex].icon;
+                rItemTXT.text = battleC.inventory.battleItems[itemIndex].itemInfo;
+            }
+        }   
+    }
+
+    public void ItemArrowRight(bool leftPanel)
+    {
+        int itemCount = battleC.inventory.battleItems.Count;
+        if (itemCount != 0)
+        {
+            bool increased = false;
+            if (itemIndex != itemCount - 1)
+            {
+                itemIndex++;
+                increased = true;
+            }
+            if (itemIndex == itemCount - 1 && !increased)
+            {
+                itemIndex = 0;
+            }
+
+            if (leftPanel)
+            {
+                lItemIcon.sprite = battleC.inventory.battleItems[itemIndex].icon;
+                lItemTXT.text = battleC.inventory.battleItems[itemIndex].itemInfo;
+            }
+            if (!leftPanel)
+            {
+                rItemIcon.sprite = battleC.inventory.battleItems[itemIndex].icon;
+                rItemTXT.text = battleC.inventory.battleItems[itemIndex].itemInfo;
+            }
+        }
+    }
+
+    public void SpellArrowLeft(bool leftPanel)
+    {
+        bool clicked = false;
+        BattleModel activeBModel = battleC.heroParty[battleC.heroIndex];
+        if (activeBModel.activeSpells.Count == 1)
+        {
+            Debug.Log("Only 1 Spell in " + activeBModel.modelName + " active Spells");
+        }
+        if (activeBModel.activeSpells.Count > 1)
+        {
+            if (spellIndex != 0)
+            {
+                clicked = true;
+                spellIndex--;
+            }
+            if (spellIndex == 0 & !clicked)
+            {
+                clicked = true;
+                spellIndex = activeBModel.activeSpells.Count - 1;
+
+            }
+
+            if (leftPanel)
+            {
+                lSpellTXT.text = activeBModel.activeSpells[spellIndex].spellInfo;
+                lSpellIcon.sprite = activeBModel.activeSpells[spellIndex].spellIcon;
+                lSpellText[0].text = activeBModel.activeSpells[spellIndex].spellName;
+            }
+            if (!leftPanel)
+            {
+                rSpellTXT.text = activeBModel.activeSpells[spellIndex].spellInfo;
+                rSpellIcon.sprite = activeBModel.activeSpells[spellIndex].spellIcon;
+                rSpellText[0].text = activeBModel.activeSpells[spellIndex].spellName;
+            }
+        }
+    }
+
+    public void SpellArrowRight(bool leftPanel)
+    {
+        bool clicked = false;
+        BattleModel activeBModel = battleC.heroParty[battleC.heroIndex];
+        if (activeBModel.activeSpells.Count == 1)
+        {
+            Debug.Log("Only 1 Spell in " + activeBModel.modelName + " active Spells");
+        }
+        if (activeBModel.activeSpells.Count > 1)
+        {
+            if (spellIndex != activeBModel.activeSpells.Count - 1)
+            {
+                clicked = true;
+                spellIndex++;
+            }
+            if (spellIndex == activeBModel.activeSpells.Count - 1 & !clicked)
+            {
+                clicked = true;
+                spellIndex = 0;
+            }
+
+            if (leftPanel)
+            {
+                lSpellTXT.text = activeBModel.activeSpells[spellIndex].spellInfo;
+                lSpellIcon.sprite = activeBModel.activeSpells[spellIndex].spellIcon;
+                lSpellText[0].text = activeBModel.activeSpells[spellIndex].spellName;
+            }
+            if (!leftPanel)
+            {
+                rSpellTXT.text = activeBModel.activeSpells[spellIndex].spellInfo;
+                rSpellIcon.sprite = activeBModel.activeSpells[spellIndex].spellIcon;
+                rSpellText[0].text = activeBModel.activeSpells[spellIndex].spellName;
             }
         }
     }
@@ -751,10 +1097,12 @@ public class BattleUIController : MonoBehaviour
         {
             bt.gameObject.SetActive(false);
         }
+        lSpellObj.SetActive(false);
         foreach (Button bt in rSpellButtons)
         {
             bt.gameObject.SetActive(false);
         }
+        rSpellObj.SetActive(false);
         lHealthSlider.gameObject.SetActive(false);
         rHealthSlider.gameObject.SetActive(false);
         lInfoFrame.SetActive(false);
@@ -790,10 +1138,12 @@ public class BattleUIController : MonoBehaviour
         {
             bt.gameObject.SetActive(false);
         }
+        lSpellObj.SetActive(false);
         foreach (Button bt in rSpellButtons)
         {
             bt.gameObject.SetActive(false);
         }
+        rSpellObj.SetActive(false);
         lInfoFrame.SetActive(false);
         rInfoFrame.SetActive(false);
         
@@ -821,4 +1171,105 @@ public class BattleUIController : MonoBehaviour
 
 
     } 
+
+    public void ButtonChecker()
+    {
+        if (lActionButtons[0].gameObject.activeSelf || rActionButtons[0].gameObject.activeSelf)
+        {
+            if (EventSystem.current.currentSelectedGameObject == lActionButtons[0].gameObject)
+            {
+                if (lActionIcons[0].sprite != actionIconsColor[0])
+                {
+                    lActionIcons[0].sprite = actionIconsColor[0];
+                }
+            }
+            if (EventSystem.current.currentSelectedGameObject == lActionButtons[1].gameObject)
+            {
+                if (lActionIcons[1].sprite != actionIconsColor[1])
+                {
+                    lActionIcons[1].sprite = actionIconsColor[1];
+                }
+            }
+            if (EventSystem.current.currentSelectedGameObject == lActionButtons[2].gameObject)
+            {
+                if (lActionIcons[2].sprite != actionIconsColor[2])
+                {
+                    lActionIcons[2].sprite = actionIconsColor[2];
+                }
+            }
+
+            if (EventSystem.current.currentSelectedGameObject != lActionButtons[0].gameObject)
+            {
+                if (lActionIcons[0].sprite != actionIconsGray[0])
+                {
+                    lActionIcons[0].sprite = actionIconsGray[0];
+                }
+            }
+            if (EventSystem.current.currentSelectedGameObject != lActionButtons[1].gameObject)
+            {
+                if (lActionIcons[1].sprite != actionIconsGray[1])
+                {
+                    lActionIcons[1].sprite = actionIconsGray[1];
+                }
+            }
+            if (EventSystem.current.currentSelectedGameObject != lActionButtons[2].gameObject)
+            {
+                if (lActionIcons[2].sprite != actionIconsGray[2])
+                {
+                    lActionIcons[2].sprite = actionIconsGray[2];
+                }
+            }
+
+
+            if (EventSystem.current.currentSelectedGameObject == rActionButtons[0].gameObject)
+            {
+                if (rActionIcons[0].sprite != actionIconsColor[0])
+                {
+                    rActionIcons[0].sprite = actionIconsColor[0];
+                }
+            }
+            if (EventSystem.current.currentSelectedGameObject == rActionButtons[1].gameObject)
+            {
+                if (rActionIcons[1].sprite != actionIconsColor[1])
+                {
+                    rActionIcons[1].sprite = actionIconsColor[1];
+                }
+            }
+            if (EventSystem.current.currentSelectedGameObject == rActionButtons[2].gameObject)
+            {
+                if (rActionIcons[2].sprite != actionIconsColor[2])
+                {
+                    rActionIcons[2].sprite = actionIconsColor[2];
+                }
+            }
+
+            if (EventSystem.current.currentSelectedGameObject != rActionButtons[0].gameObject)
+            {
+                if (rActionIcons[0].sprite != actionIconsGray[0])
+                {
+                    rActionIcons[0].sprite = actionIconsGray[0];
+                }
+            }
+            if (EventSystem.current.currentSelectedGameObject != rActionButtons[1].gameObject)
+            {
+                if (rActionIcons[1].sprite != actionIconsGray[1])
+                {
+                    rActionIcons[1].sprite = actionIconsGray[1];
+                }
+            }
+            if (EventSystem.current.currentSelectedGameObject != rActionButtons[2].gameObject)
+            {
+                if (rActionIcons[2].sprite != actionIconsGray[2])
+                {
+                    rActionIcons[2].sprite = actionIconsGray[2];
+                }
+            }
+        }
+
+    }
+
+    private void FixedUpdate()
+    {
+        ButtonChecker();
+    }
 }

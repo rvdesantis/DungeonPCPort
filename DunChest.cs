@@ -30,7 +30,7 @@ public class DunChest : MonoBehaviour
         float waitTime = 0;
         if (!fixedTreasure)
         {
-            chestItem = inventory.randomDunItem.RandomItem();      
+            chestItem = inventory.randomALLItem.DunItemShuffle();      
 
             if (chestItem.itemType == DunItem.ItemType.gold)
             {

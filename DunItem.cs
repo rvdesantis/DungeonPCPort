@@ -26,6 +26,11 @@ public class DunItem : MonoBehaviour
     {
 
     }
+
+    public virtual void ConfirmItem()
+    {
+
+    }
     public virtual void PickUp()
     {
         InventoryController inventory = FindObjectOfType<InventoryController>();
@@ -46,7 +51,7 @@ public class DunItem : MonoBehaviour
                 {
                     if (dunItem == this)
                     {
-                        dunItem.itemCount = dunItem.itemCount + itemCount;
+                        dunItem.itemCount = dunItem.itemCount + 1;
                         inList = true;
                         gameObject.SetActive(false);
                         break;
@@ -56,6 +61,7 @@ public class DunItem : MonoBehaviour
                 if (!inList)
                 {
                     inventory.dungeonItems.Add(this);
+                    itemCount++;
                     gameObject.SetActive(false);
                 }
             }
@@ -66,7 +72,7 @@ public class DunItem : MonoBehaviour
                 {
                     if (battleItem == this)
                     {
-                        battleItem.itemCount = battleItem.itemCount + itemCount;
+                        battleItem.itemCount = battleItem.itemCount + 1;
                         inList = true;
                         gameObject.SetActive(false);
                         break;
@@ -75,7 +81,9 @@ public class DunItem : MonoBehaviour
 
                 if (!inList)
                 {
-                    inventory.battleItems.Add(this);
+                    BattleItem battleComponent = GetComponent<BattleItem>();
+                    inventory.battleItems.Add(battleComponent);
+                    itemCount++;
                     gameObject.SetActive(false);
                 }
             }
@@ -86,7 +94,7 @@ public class DunItem : MonoBehaviour
                 {
                     if (keyItem.itemName == itemName)
                     {
-                        keyItem.itemCount = keyItem.itemCount + itemCount;
+                        keyItem.itemCount = keyItem.itemCount + 1;
                         inList = true;
                         gameObject.SetActive(false);
                         break;
@@ -110,7 +118,7 @@ public class DunItem : MonoBehaviour
                 {
                     if (dunItem == this)
                     {
-                        dunItem.itemCount = dunItem.itemCount + itemCount;
+                        dunItem.itemCount = dunItem.itemCount + 1;
                         inList = true;
                         gameObject.SetActive(false);
                         break;
@@ -130,7 +138,7 @@ public class DunItem : MonoBehaviour
                 {
                     if (battleItem == this)
                     {
-                        battleItem.itemCount = battleItem.itemCount + itemCount;
+                        battleItem.itemCount = battleItem.itemCount + 1;
                         inList = true;
                         gameObject.SetActive(false);
                         break;

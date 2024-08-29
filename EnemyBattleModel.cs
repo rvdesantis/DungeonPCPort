@@ -4,6 +4,16 @@ using UnityEngine;
 
 public class EnemyBattleModel : BattleModel
 {
+    private void OnEnable()
+    {
+        if (!pHolder)
+        {
+            if (dead && health == 0)
+            {
+                Die(this);
+            }
+        }
+    }
 
     public override void IntroPlayable()
     {
@@ -80,20 +90,17 @@ public class EnemyBattleModel : BattleModel
         {
             battleC = FindObjectOfType<BattleController>();
         }
-
+        Debug.Log("StartAction() started for enemy " + battleC.enemyIndex);
         if (battleC.enemyIndex == 0) // works for Enemy side
         {
-            afterAction = null;
             afterAction = battleC.enemyParty[1].StartAction;
         }
         if (battleC.enemyIndex == 1)
         {
-            afterAction = null;
             afterAction = battleC.enemyParty[2].StartAction;
         }
         if (battleC.enemyIndex == 2)
         {
-            afterAction = null;
             afterAction = battleC.StartPostEnemyTimer;
         }
 
@@ -145,27 +152,39 @@ public class EnemyBattleModel : BattleModel
         {
             float xFL = strikeDistance + actionTarget.hitbuffer;
             Vector3 attackPosition = actionTarget.transform.position + (actionTarget.transform.forward * xFL);
+            if (actionTarget.verticalHitBuffer != 0)
+            {
+                attackPosition = attackPosition + new Vector3(0, actionTarget.verticalHitBuffer, 0);
+            }
             Vector3 returnPos = transform.position;
             transform.position = attackPosition;
-
-            int crit = Random.Range(0, 100);
-            if (crit >= critChance)
+            if (actionTarget.verticalHitBuffer == 0)
             {
-                anim.SetTrigger("attack0");
+                transform.LookAt(actionTarget.transform);
             }
-            if (crit < critChance)
+            anim.SetTrigger("attack0");
+            if (attCam != null)
             {
-                Debug.Log(modelName + " CRIT HIT!");
-                anim.SetTrigger("attack1");
+                attCam.m_Priority = 20;
             }
             yield return new WaitForSeconds(strikeTimer);
+
+            if (attCam != null)
+            {
+                attCam.m_Priority = -10;
+            }
 
             float defAdjusted = (float)actionTarget.defBonusPercent / 100f + 1f;
             float defX = defAdjusted * actionTarget.def;
 
             float powerAdjusted = (float)powerBonusPercent / 100f + 1f;
             float powerX = powerAdjusted * power;
-
+            float powerStatusBoost = 0f;
+            if (statusC.boost)
+            {
+                powerStatusBoost = statusC.boostAmount;
+            }
+            powerX = powerX + powerStatusBoost;
             int damageAmount = Mathf.RoundToInt(powerX) - Mathf.RoundToInt(defX);
             if (damageAmount < 0)
             {
@@ -186,5 +205,6 @@ public class EnemyBattleModel : BattleModel
         Debug.Log(modelName + " has Died", gameObject);
         anim.SetTrigger("dead");
         dead = true;
+        statusC.ResetAll();
     }
 }

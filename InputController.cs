@@ -14,6 +14,7 @@ public class InputController : MonoBehaviour
 
     public bool isActionBTDown = false;
     public float timeHeldDown = 0f;
+    public float timeNotHeld = 0f;
     public bool actionHOLD;
     public string[] joystickNames;
     public bool joyConnect;
@@ -27,19 +28,18 @@ public class InputController : MonoBehaviour
             {
                 isActionBTDown = true;
                 timeHeldDown = 0f;
+                timeNotHeld = 0f;
+                uiController.skipUI.slider.value = 0;
+                uiController.skipUI.slider.gameObject.SetActive(true);
                 if (uiController.joystick && controller.activePlayable != null)
                 {
                     uiController.skipUI.spaceBar.gameObject.SetActive(false);
                     uiController.skipUI.aButton.gameObject.SetActive(true);
-                    uiController.skipUI.slider.value = 0;
-                    uiController.skipUI.slider.gameObject.SetActive(true);
                 }
                 if (!uiController.joystick && controller.activePlayable != null)
                 {
                     uiController.skipUI.spaceBar.gameObject.SetActive(true);
                     uiController.skipUI.aButton.gameObject.SetActive(false);
-                    uiController.skipUI.slider.value = 0;
-                    uiController.skipUI.slider.gameObject.SetActive(true);
                 }
             }
             else
@@ -70,6 +70,10 @@ public class InputController : MonoBehaviour
         {
             isActionBTDown = false;
             timeHeldDown = 0f;
+            uiController.skipUI.spaceBar.gameObject.SetActive(false);
+            uiController.skipUI.aButton.gameObject.SetActive(false);
+            uiController.skipUI.slider.value = 0;
+            uiController.skipUI.slider.gameObject.SetActive(false);
         }
     }
 

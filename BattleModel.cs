@@ -25,7 +25,7 @@ public class BattleModel : DunModel
 
     public StatusController statusC;
     public Spell selectedSpell;
-    public DunItem selectedItem;
+    public BattleItem selectedItem;
 
     public List<Spell> activeSpells;
     public List<Spell> masterSpells;
@@ -33,6 +33,7 @@ public class BattleModel : DunModel
     public float strikeDistance;
     public float strikeTimer;
     public float hitbuffer;
+    public float verticalHitBuffer = 0;
     public Transform hitTarget;
     public ImpactFXController impactFX; 
     public CinemachineVirtualCamera attCam;
@@ -42,6 +43,7 @@ public class BattleModel : DunModel
     public BattleModel actionTarget;
     public int gold;
     public bool dead;
+    public bool pHolder;
     public PlayableDirector battleStartPlayable;
     public Action afterAction;
     public bool skip;
@@ -50,6 +52,9 @@ public class BattleModel : DunModel
     public Vector3 spawnPoint;
 
     public List<AudioClip> actionSounds;
+    public List<GameObject> weaponAuras;
+
+    
 
     public virtual void IntroPlayable()
     {
@@ -119,7 +124,7 @@ public class BattleModel : DunModel
             {
                 actionTarget = battleC.enemyParty[0];               
             }
-            if (actionTarget.dead)
+            if (actionTarget.dead && actionType != ActionType.item)
             {
                 foreach (BattleModel enemy in battleC.enemyParty)
                 {
@@ -173,6 +178,7 @@ public class BattleModel : DunModel
                     audioSource.PlayOneShot(actionSounds[0]);
                 }
             }
+            statusC.statusCircleFX[0].Stop();
         }
         if (actionType == ActionType.spell)
         {
@@ -202,7 +208,20 @@ public class BattleModel : DunModel
             battleC = FindObjectOfType<BattleController>();
         }
         DamageMSS damCan = Instantiate(battleC.damageCanvas, hitTarget.transform.position, Quaternion.identity);   
-        damCan.activeCam = battleC.bCamController.activeCam;    
+        damCan.activeCam = battleC.bCamController.activeCam;
+
+        if (damSource.actionType == ActionType.melee)
+        {
+            if (statusC.DEFboost > 0)
+            {
+                damage = damage - statusC.DEFboost;
+                if (damage < 0)
+                {
+                    damage = 0;
+                }
+                statusC.ActivateDEF(false);
+            }
+        }
 
         if (crit)
         {
@@ -212,6 +231,9 @@ public class BattleModel : DunModel
         {
             damCan.ShowDamage(damage);
         }
+        // check for DEF Boost
+
+
         health = health - damage;
         if (health <= 0)
         {
@@ -233,10 +255,18 @@ public class BattleModel : DunModel
     {
         float xFL = strikeDistance + actionTarget.hitbuffer;
         Vector3 attackPosition = actionTarget.transform.position + (actionTarget.transform.forward * xFL); 
+        if (actionTarget.verticalHitBuffer != 0)
+        {
+            attackPosition = attackPosition + new Vector3(0, actionTarget.verticalHitBuffer, 0);
+        }
         Vector3 returnPos = transform.position;
 
         transform.position = attackPosition;
-        transform.LookAt(actionTarget.transform);
+        if (actionTarget.verticalHitBuffer == 0)
+        {
+            transform.LookAt(actionTarget.transform);
+        }
+
         if (attCam != null)
         {
             attCam.m_Priority = 20;
@@ -295,6 +325,7 @@ public class BattleModel : DunModel
         Debug.Log(modelName + " has Died", gameObject);
         anim.SetTrigger("dead");
         dead = true;
+        statusC.ResetAll();
     }
 
     public virtual void Raise()
@@ -336,13 +367,14 @@ public class BattleModel : DunModel
         afterAction = null;
     }
 
-    public virtual void UseItem(BattleModel target, DunItem item)
+    public virtual void UseItem(BattleModel target, BattleItem item)
     {
         anim.SetTrigger("item");
+        Debug.Log(modelName + " using item, targeting " + target.modelName + " using " + item.itemName, gameObject);
         StartCoroutine(ItemTimer(target, item));
     }
 
-    IEnumerator ItemTimer(BattleModel target, DunItem item)
+    IEnumerator ItemTimer(BattleModel target, BattleItem item)
     {
         Debug.Log(modelName + " used " + item.itemName + " targeting " + target.modelName);
         DunItem usedItem = Instantiate(item, target.transform.transform.position, target.transform.rotation);
@@ -403,5 +435,56 @@ public class BattleModel : DunModel
             }            
             activeWeapon.SetActive(true);
         }
+    }
+
+    public void WeaponAuraOff()
+    {
+        foreach (GameObject auras in weaponAuras)
+        {
+            auras.SetActive(false);
+        }
+    }
+    public void WeaponAuraFire()
+    {
+        weaponAuras[0].SetActive(true);
+    }
+
+    public void WeaponAuraDark()
+    {
+        weaponAuras[1].SetActive(true);
+    }
+
+    public void WeaponAuraIce()
+    {
+        weaponAuras[3].SetActive(true);
+    }
+
+    public void WeaponAuraPoison()
+    {
+        weaponAuras[2].SetActive(true);
+    }
+
+    public void WeaponAuraLightning()
+    {
+        weaponAuras[4].SetActive(true);
+    }
+
+    public void ResetWeaponAuras()
+    {
+        foreach (GameObject obj in weaponAuras)
+        {
+            obj.SetActive(false);
+        }
+    }
+
+    public void TimeLineBlankScript() // 
+    {
+
+    }
+
+    public void TimelineFireHit()
+    {
+        actionTarget.GetHit(this);
+        actionTarget.impactFX.ElementalImpact(0);
     }
 }

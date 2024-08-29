@@ -9,20 +9,21 @@ public class InventoryController : MonoBehaviour
     public MapInventoryStatus mapstatus;
     public MapItem mapItemPrefab;
     public int gold;
+    public List<DunItem> treasurePool;
     public List<DunItem> dungeonItems;
-    public List<DunItem> battleItems;
+    public List<BattleItem> battleItems;
     public List<DunItem> keyItems;
 
     public List<DunItem> masterDungeonItems;
-    public List<DunItem> masterBattleItems;
+    public List<BattleItem> masterBattleItems;
     public List<DunItem> masterKeyItems;
 
     public TrinketController trinketC;
 
     public RandomDunItem randomDunItem;
     public RandomTrinketItem randomDunTrinket;
-
-
+    public RandomTrinketItem randomBattleTrinket;
+    public RandomItemALL randomALLItem;
     public void StartReset()
     {
         foreach (DunItem item in dungeonItems)
@@ -37,7 +38,39 @@ public class InventoryController : MonoBehaviour
         {
             item.itemCount = 0;
         }
+
+
+        FillTreasurePool();
     }
+
+    public void FillTreasurePool()
+    {
+        foreach (DunItem dun in masterDungeonItems) // includes map prefab
+        {
+            treasurePool.Add(dun);
+        }
+        foreach (BattleItem bat in masterBattleItems)
+        {
+            int x = masterBattleItems.IndexOf(bat);
+            if (x != 0 && x != 2) // to remove battle potions & revive, mirrored in dungeon items
+            {
+                treasurePool.Add(bat);
+            }
+        }
+        foreach (DunTrinket dunT in trinketC.masterDunTrinkets)
+        {
+            treasurePool.Add(dunT);
+        }
+        foreach (DunTrinket batT in trinketC.masterBattleTrinkets)
+        {
+            int x = trinketC.masterBattleTrinkets.IndexOf(batT);
+            if (x != 1) // to remove puppy trinket
+            {
+                treasurePool.Add(batT);
+            }
+        }
+    }
+
 
     public int GetAvailableGold()
     {

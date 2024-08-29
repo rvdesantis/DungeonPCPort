@@ -20,7 +20,7 @@ public class BattleRoom : MonoBehaviour
     public PlayableDirector introPlayable;
     public List<PlayableDirector> intros;
     public float comboOffset;
-    public Transform afterBattleSpawnPoint;
+    public Transform afterBattleSpawnPoint;    
 
     public void SetProps(int monsterNum) // for small & large room, roof gameobject is set by battle intro playable
     {      

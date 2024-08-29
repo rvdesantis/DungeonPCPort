@@ -46,6 +46,7 @@ public class DemonMinionBattle : EnemyBattleModel
 
     public override void StartAction()
     {
+        Debug.Log("Starting Demon Start Action", gameObject);
         if (battleC == null)
         {
             battleC = FindObjectOfType<BattleController>();
@@ -54,17 +55,20 @@ public class DemonMinionBattle : EnemyBattleModel
        
         if (battleC.enemyIndex == 1)
         {
+            Debug.Log("Assigning After Action", gameObject);
             afterAction = null;
             afterAction = battleC.enemyParty[2].StartAction;
         }
         if (battleC.enemyIndex == 2)
         {
+            Debug.Log("Assigning After Action", gameObject);
             afterAction = null;
             afterAction = battleC.StartPostEnemyTimer;
         }
 
         if (skip || dead || DeadEnemiesCheck())
         {
+            Debug.Log("Demon Skip or Dead", gameObject);
             skip = false;
             battleC.enemyIndex++;
             afterAction.Invoke();
@@ -72,32 +76,38 @@ public class DemonMinionBattle : EnemyBattleModel
             return;
         }
         if (!skip && !dead)
-        {
-            if (DemonTeamUpChecker())
+        {            
+            int x = battleC.enemyParty.IndexOf(this);
+            
+
+            if (x == 1)
             {
-                int x = battleC.enemyParty.IndexOf(this);
-                int y = battleC.enemyParty.IndexOf(partnerDemon);
-
-                if (x < y)
+                Debug.Log("Demon in position 1, checking for combo");
+                if (DemonTeamUpChecker())
                 {
-                    Debug.Log("Triggering Combo", gameObject);
-                    SelectRandomTarget();
-                    int z = battleC.heroParty.IndexOf(actionTarget);
+                    if (!partnerDemon.skip && !partnerDemon.dead)
+                    {
+                        Debug.Log("Triggering Combo", gameObject);
+                        SelectRandomTarget();
+                        int z = battleC.heroParty.IndexOf(actionTarget);
 
-                    afterAction = null;
-                    afterAction = battleC.StartPostEnemyTimer;
-                    StartCoroutine(ComboTimer(z));
-                    return;
-                }
-                if (y > x)
-                {
+                        afterAction = null;
+                        afterAction = battleC.StartPostEnemyTimer;
+                        StartCoroutine(ComboTimer(z));
+                        return;
+                    }
+                    else
                     SelectRandomTarget();
                     Attack(actionTarget);
                     return;
                 }
-
-            }
-            else
+                if (!DemonTeamUpChecker())
+                {
+                    SelectRandomTarget();
+                    Attack(actionTarget);
+                }
+            }            
+            if (x != 1)
             {
                 SelectRandomTarget();
                 Attack(actionTarget);
@@ -131,7 +141,7 @@ public class DemonMinionBattle : EnemyBattleModel
         }
         if (partnerDemon != null)
         {
-            if (!partnerDemon.skip && !partnerDemon.dead)
+            if (!partnerDemon.skip && !partnerDemon.dead && !skip && !dead)
             {
                 combo = true;
             }
@@ -172,7 +182,7 @@ public class DemonMinionBattle : EnemyBattleModel
         actionTarget.impactFX.StandardImpact();
 
         int totalDEF = Mathf.RoundToInt(actionTarget.def * (1 + (actionTarget.defBonusPercent / 100)));
-        int damageAmount = (power * 3) - totalDEF;
+        int damageAmount = (power * 2) - totalDEF;
         Debug.Log("Combo Targeting " + actionTarget.modelName + ", Power " + damageAmount +", vs " + totalDEF + " DEF");
         actionTarget.TakeDamage(damageAmount, this);
         yield return new WaitForSeconds(timer -1.8f);

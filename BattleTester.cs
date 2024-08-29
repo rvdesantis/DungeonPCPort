@@ -10,7 +10,7 @@ public class BattleTester : BattleController
         if (bossBattle)
         {
             bossBattle = false;
-        }      
+        }
         if (!battleUI.phaseUI.gameObject.activeSelf)
         {
             battleUI.phaseUI.gameObject.SetActive(true);
@@ -236,6 +236,82 @@ public class BattleTester : BattleController
             // set Skip to player 1 
             hero0.skip = true;
         }
+        if (enemyNum == 6) // scorp
+        {
+            activeRoom = battleRooms[2];
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[2])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+            activeRoom.gameObject.SetActive(true);
+            activeRoom.SetProps(6);
+            activeRoom.introPlayable = null;
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+
+
+            enemy0 = Instantiate(monsters.battleMasterList[6], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+        }
+        if (enemyNum == 8)
+        {
+            activeRoom = battleRooms[2];
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[2])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+            activeRoom.gameObject.SetActive(true);
+            activeRoom.SetProps(2);
+            activeRoom.introPlayable = null;
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+
+
+            enemy0 = Instantiate(monsters.battleMasterList[8], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+        }
         if (enemyNum == 10)
         {
             activeRoom = battleRooms[2];
@@ -418,6 +494,67 @@ public class BattleTester : BattleController
             enemy2 = Instantiate(monsters.battleMasterList[16], activeRoom.enemySpawnPoints[2].transform);
             enemyParty.Add(enemy2);
         }
+        if (enemyNum == 17)
+        {
+            activeRoom = battleRooms[2];
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[2])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+            activeRoom.gameObject.SetActive(true);
+            activeRoom.SetProps(4);
+            activeRoom.introPlayable = activeRoom.intros[0]; // assign playable from list for small & large rooms
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+            int pupChance = Random.Range(0, 3);
+            if (pupChance == 0)
+            {
+                enemy0 = Instantiate(monsters.battleMasterList[18], activeRoom.enemySpawnPoints[0].transform);
+            }
+            if (pupChance != 0)
+            {
+                enemy0 = Instantiate(monsters.battleMasterList[17], activeRoom.enemySpawnPoints[0].transform);
+            }
+
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(monsters.battleMasterList[17], activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(monsters.battleMasterList[17], activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+
+            if (pupChance == 0)
+            {
+                WolfBattleModel puppy = enemy0.GetComponent<WolfBattleModel>();
+                if (puppy != null)
+                {
+                    Debug.Log("Wolf component captured");
+                    puppy.pup = true;
+                    puppy.wolves.Add(enemy1);
+                    puppy.wolves.Add(enemy2);
+                }
+                if (puppy == null)
+                {
+                    Debug.Log("ERROR: Failed to capture Wolf Battle Model Component", enemy0.gameObject);
+                }
+            }
+        }
         bCamController.activeCam = activeRoom.mainCam;
 
         foreach (BattleModel enemyMod in enemyParty)
@@ -435,6 +572,8 @@ public class BattleTester : BattleController
             heroMod.spellBonusPercent = EnhancedPrefs.GetPlayerPref(heroMod.modelName + "SpellPercent", 0f);
             heroMod.spawnPoint = heroMod.transform.position;
 
+            heroMod.anim.SetTrigger("unsheath");
+
             if (heroMod.health == 0)
             {
                 heroMod.dead = true;
@@ -444,6 +583,122 @@ public class BattleTester : BattleController
         comboC.BattleReset();
         heroIndex = 0;
         enemyIndex = 0;
+
+        foreach (BattleTrinket battleT in activeTrinkets)
+        {
+            if (battleT.combatPhase == BattleTrinket.BattlePhase.start)
+            {
+                battleT.ActiveBattleTrinket();
+            }
+        }
         StartCoroutine(StartIntroPhase());
+    }
+
+    public override void SetBossBattle(int bossNum, BattleRoom bossRoom)
+    {
+        if (!battleUI.phaseUI.gameObject.activeSelf)
+        {
+            battleUI.phaseUI.gameObject.SetActive(true);
+        }
+        phase = BattlePhase.start;
+        battleUI.phaseUI.ringAnims[0].SetBool("highLight", true);
+        musicC.CrossfadeToNextClip(musicC.battleMusicClips[UnityEngine.Random.Range(0, musicC.battleMusicClips.Count)]);
+        Debug.Log("Setting Up Battle For Boss Number " + bossNum);
+
+        if (bossNum == 0)
+        {
+            activeRoom = bossRoom;
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+            enemy0 = Instantiate(monsters.bossMasterList[0], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+
+            comboC.BattleReset();
+            heroIndex = 0;
+            enemyIndex = 0;
+            StartCoroutine(StartIntroPhase());
+
+        }
+        if (bossNum == 1)
+        {
+            activeRoom = battleRooms[3];
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[3])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+            activeRoom.gameObject.SetActive(true);
+            activeRoom.SetProps(2); // garg environment in small room position 1
+            activeRoom.introPlayable = activeRoom.intros[0]; // assign playable from list for small & large rooms
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+            enemy0 = Instantiate(monsters.bossMasterList[1], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+
+            enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+
+            enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+
+            enemy0.spawnPoint = enemy0.transform.position;
+
+            comboC.BattleReset();
+            heroIndex = 0;
+            enemyIndex = 0;
+            StartCoroutine(StartIntroPhase());
+        }
+
+        bCamController.activeCam = activeRoom.mainCam;
+        foreach (BattleModel heroMod in heroParty)
+        {
+            int x = heroParty.IndexOf(heroMod);
+            heroMod.health = heroMod.maxH;
+            heroMod.defBonusPercent = EnhancedPrefs.GetPlayerPref(heroMod.modelName + "DefPercent", 0f);
+            heroMod.powerBonusPercent = EnhancedPrefs.GetPlayerPref(heroMod.modelName + "PowPercent", 0f);
+            heroMod.spellBonusPercent = EnhancedPrefs.GetPlayerPref(heroMod.modelName + "SpellPercent", 0f);
+            heroMod.spawnPoint = heroMod.transform.position;
+
+            if (heroMod.health == 0)
+            {
+                heroMod.dead = true;
+                heroMod.anim.SetTrigger("dead");
+            }
+
+            heroMod.activeWeapon.SetActive(true);
+        }
     }
 }

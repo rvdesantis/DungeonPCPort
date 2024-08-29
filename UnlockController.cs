@@ -19,14 +19,13 @@ public class UnlockController : MonoBehaviour
     public List<DunNPC> unlockableNPC;
     public List<DunItem> unlockableItems;
 
-
     public bool resetDataOnLoad;
 
     private void Start()
     {
         if (resetDataOnLoad)
         {
-            ResetAllData(true);
+            ResetAllData();
         }
     }
 
@@ -35,7 +34,7 @@ public class UnlockController : MonoBehaviour
         resetDataOnLoad = true;
     }
 
-    public void ResetAllData(bool resetGold = false)
+    public void ResetAllData()
     {
         resetDataOnLoad = false;
         EnhancedPrefs.SetPlayerPref("rogueUnlock", false);
@@ -58,10 +57,7 @@ public class UnlockController : MonoBehaviour
         }
 
         sanctuary.sanctVendors[2].gameObject.SetActive(false);
-        if (resetGold)
-        {
-            EnhancedPrefs.SetPlayerPref("goldBank", 0);
-        }
+
         EnhancedPrefs.SavePlayerPrefs();       
     }
 

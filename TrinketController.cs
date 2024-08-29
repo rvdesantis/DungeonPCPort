@@ -13,6 +13,8 @@ public class TrinketController : MonoBehaviour
     public List<DunItem> masterDunTrinkets;
     public List<DunItem> masterBattleTrinkets;
 
+    public List<BattleTrinket> masterBattleTs;
+    public ChaosOrbTrinket staticChaosOrbTrinket; // not in master list since C Orbs are a Key Item, and not in the master Battle Trinket List
 
 
 }

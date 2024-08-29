@@ -34,7 +34,7 @@ public class BattleController : MonoBehaviour
 
     public bool bossBattle;
 
-    public List<DunItem> activeTrinkets;
+    public List<BattleTrinket> activeTrinkets;
     public DamageMSS damageCanvas;
     public Action afterBattleAction;
 
@@ -51,7 +51,7 @@ public class BattleController : MonoBehaviour
         return x;
     }
 
-    public void SetBossBattle(int bossNum, BattleRoom bossRoom)
+    public virtual void SetBossBattle(int bossNum, BattleRoom bossRoom)
     {
         statsTimer.battles++;
         statsTimer.bosses++;
@@ -89,25 +89,71 @@ public class BattleController : MonoBehaviour
             hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
             heroParty.Add(hero2);
 
-
-
             enemy0 = Instantiate(monsters.bossMasterList[0], activeRoom.enemySpawnPoints[0].transform);
             enemyParty.Add(enemy0);
             enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
             enemyParty.Add(enemy1);
             enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
             enemyParty.Add(enemy2);
+
+            comboC.BattleReset();
+            heroIndex = 0;
+            enemyIndex = 0;
+            StartCoroutine(StartIntroPhase());
+            sceneController.playerController.transform.position = bossRoom.afterBattleSpawnPoint.position;
+            sceneController.playerController.transform.rotation = bossRoom.afterBattleSpawnPoint.rotation;
         }
 
+        if (bossNum == 1)
+        {
+            activeRoom = battleRooms[3];
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[3])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+            activeRoom.gameObject.SetActive(true);
+            activeRoom.SetProps(2); // garg environment in small room position 1
+            activeRoom.introPlayable = activeRoom.intros[0]; // assign playable from list for small & large rooms
 
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+            enemy0 = Instantiate(monsters.bossMasterList[1], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy0.spawnPoint = enemy0.transform.position;
+
+            enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+
+            enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+
+            comboC.BattleReset();
+            heroIndex = 0;
+            enemyIndex = 0;
+            StartCoroutine(StartIntroPhase());
+        }
 
         bCamController.activeCam = activeRoom.mainCam;
-
         foreach (BattleModel enemyMod in enemyParty)
         {
             enemyMod.anim.SetTrigger("taunt");
         }
-
         foreach (BattleModel heroMod in heroParty)
         {
             int x = heroParty.IndexOf(heroMod);
@@ -122,13 +168,7 @@ public class BattleController : MonoBehaviour
                 heroMod.dead = true;
                 heroMod.anim.SetTrigger("dead");
             }
-        }
-        comboC.BattleReset();
-        heroIndex = 0;
-        enemyIndex = 0;
-        StartCoroutine(StartIntroPhase());
-        sceneController.playerController.transform.position = bossRoom.afterBattleSpawnPoint.position;
-        sceneController.playerController.transform.rotation = bossRoom.afterBattleSpawnPoint.rotation;
+        }       
     }
 
     public virtual void SetBattle(int enemyNum)
@@ -368,6 +408,82 @@ public class BattleController : MonoBehaviour
             // set Skip to player 1 
             hero0.skip = true;
         }
+        if (enemyNum == 6) // scorp
+        {
+            activeRoom = battleRooms[2];
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[2])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+            activeRoom.gameObject.SetActive(true);
+            activeRoom.SetProps(6);
+            activeRoom.introPlayable = null;
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+
+
+            enemy0 = Instantiate(monsters.battleMasterList[6], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+        }
+        if (enemyNum == 8)
+        {
+            activeRoom = battleRooms[2];
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[2])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+            activeRoom.gameObject.SetActive(true);
+            activeRoom.SetProps(2);
+            activeRoom.introPlayable = null;
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+
+
+            enemy0 = Instantiate(monsters.battleMasterList[8], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+        }
         if (enemyNum == 10)
         {
             activeRoom = battleRooms[2];
@@ -417,8 +533,8 @@ public class BattleController : MonoBehaviour
                 }
             }
             activeRoom.gameObject.SetActive(true);
-            activeRoom.SetProps(2); // garg environment in small room position 1
-            activeRoom.introPlayable = activeRoom.intros[0]; // assign playable from list for small & large rooms
+            activeRoom.SetProps(2); 
+            activeRoom.introPlayable = activeRoom.intros[0]; 
 
             BattleModel hero0 = null;
             BattleModel hero1 = null;
@@ -550,6 +666,67 @@ public class BattleController : MonoBehaviour
             enemy2 = Instantiate(monsters.battleMasterList[16], activeRoom.enemySpawnPoints[2].transform);
             enemyParty.Add(enemy2);
         }
+        if (enemyNum == 17)
+        {
+            activeRoom = battleRooms[2];
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[2])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+            activeRoom.gameObject.SetActive(true);
+            activeRoom.SetProps(4);
+            activeRoom.introPlayable = activeRoom.intros[0]; // assign playable from list for small & large rooms
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+            int pupChance = UnityEngine.Random.Range(0, 3);
+            if (pupChance == 0)
+            {
+                enemy0 = Instantiate(monsters.battleMasterList[18], activeRoom.enemySpawnPoints[0].transform);
+            }
+            if (pupChance != 0)
+            {
+                enemy0 = Instantiate(monsters.battleMasterList[17], activeRoom.enemySpawnPoints[0].transform);
+            }
+
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(monsters.battleMasterList[17], activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(monsters.battleMasterList[17], activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+
+            if (pupChance == 0)
+            {
+                WolfBattleModel puppy = enemy0.GetComponent<WolfBattleModel>();
+                if (puppy != null)
+                {
+                    Debug.Log("Wolf component captured");
+                    puppy.pup = true;
+                    puppy.wolves.Add(enemy1);
+                    puppy.wolves.Add(enemy2);
+                }
+                if (puppy == null)
+                {
+                    Debug.Log("ERROR: Failed to capture Wolf Battle Model Component", enemy0.gameObject);
+                }
+            }
+        }
         bCamController.activeCam = activeRoom.mainCam;
         
         foreach (BattleModel enemyMod in enemyParty)
@@ -567,6 +744,8 @@ public class BattleController : MonoBehaviour
             heroMod.spellBonusPercent = EnhancedPrefs.GetPlayerPref(heroMod.modelName + "SpellPercent", 0f);
             heroMod.spawnPoint = heroMod.transform.position;
 
+            heroMod.anim.SetTrigger("unsheath");
+
             if (heroMod.health == 0)
             {
                 heroMod.dead = true;
@@ -576,6 +755,15 @@ public class BattleController : MonoBehaviour
         comboC.BattleReset();
         heroIndex = 0;
         enemyIndex = 0;
+
+        foreach (BattleTrinket battleT in activeTrinkets)
+        {
+            if (battleT.combatPhase == BattleTrinket.BattlePhase.start)
+            {
+                battleT.ActiveBattleTrinket();
+            }
+        }
+
         StartCoroutine(StartIntroPhase());
     }
 
@@ -603,37 +791,40 @@ public class BattleController : MonoBehaviour
         enemyParty[0].IntroAction();
         enemyParty[1].afterAction = enemyParty[2].IntroPlayable;
         enemyParty[1].IntroAction();
-        enemyParty[2].afterAction = HeroZeroSelect;
+        enemyParty[2].afterAction = PreSelectTrinketPhase;
         enemyParty[0].IntroAction();
 
         heroParty[0].IntroPlayable();
     }
 
-    public void StartSelect()
+    public void PreSelectTrinketPhase()
     {
-        StartCoroutine(StartSelectPhase());
+        float totalTime = 0;
+        foreach(BattleTrinket dunT in activeTrinkets)
+        {
+            if (dunT.combatPhase == BattleTrinket.BattlePhase.select)
+            {
+                if (totalTime < dunT.battleDelay)
+                {
+                    totalTime = dunT.battleDelay;
+                }   
+            }
+        }
+        StartCoroutine(PreSelectTrinketTimer(totalTime));
     }
 
-    IEnumerator StartSelectPhase()
+    IEnumerator PreSelectTrinketTimer(float timePause)
     {
-        Debug.Log("Starting Select Phase");
-        if (activeRoom.introPlayable != null)
+        foreach (BattleTrinket dunT in activeTrinkets)
         {
-            float introFloat = (float)activeRoom.introPlayable.duration;
-            yield return new WaitForSeconds(introFloat);
-            heroIndex = 0;
-            HeroZeroSelect();
-   
+            if (dunT.combatPhase == BattleTrinket.BattlePhase.select)
+            {
+                dunT.ActiveBattleTrinket();
+            }
         }
-        if (activeRoom.introPlayable == null)
-        {
-            yield return new WaitForSeconds(.5f);
-            heroIndex = 0;
-            HeroZeroSelect();
-        }
+        yield return new WaitForSeconds(timePause);
+        HeroZeroSelect();
     }
-
-
 
     public void HeroZeroSelect()
     {
@@ -750,8 +941,31 @@ public class BattleController : MonoBehaviour
         Debug.Log("Starting After Hero Phase");
         battleUI.phaseUI.gameObject.SetActive(true);
         phase = BattlePhase.afterHero;
+        PostHeroStatusCheck();
         yield return new WaitForSeconds(1);
         StartCoroutine(PreEnemyTimer());
+    }
+
+    public void PostHeroStatusCheck()
+    {
+        foreach (BattleModel hero in heroParty)
+        {
+            if (!hero.dead)
+            {
+                hero.statusC.PostActionCheck();
+            }
+        }
+    }
+
+    public void PostEnemyStatusCheck()
+    {
+        foreach (BattleModel enemy in enemyParty)
+        {
+            if (!enemy.dead)
+            {
+                enemy.statusC.PostActionCheck();
+            }
+        }
     }
 
     public void StartPreEnemyTimer()
@@ -765,6 +979,24 @@ public class BattleController : MonoBehaviour
         phase = BattlePhase.preEnemy;
         enemyIndex = 0;
         yield return new WaitForSeconds(1);
+        StartCoroutine(PreEnemyTrinketTimer());
+    }
+
+    IEnumerator PreEnemyTrinketTimer()
+    {
+        float totalTime = 0;
+        foreach (BattleTrinket dunT in activeTrinkets)
+        {
+            if (dunT.combatPhase == BattleTrinket.BattlePhase.preEnemy)
+            {
+                if (totalTime < dunT.battleDelay)
+                {
+                    totalTime = dunT.battleDelay;
+                }
+                dunT.ActiveBattleTrinket();
+            }
+        }
+        yield return new WaitForSeconds(totalTime);
         battleUI.phaseUI.gameObject.SetActive(false);
         enemyParty[0].StartAction();
     }
@@ -792,6 +1024,7 @@ public class BattleController : MonoBehaviour
         Debug.Log("Starting After Enemy Phase");
         battleUI.phaseUI.gameObject.SetActive(true);
         phase = BattlePhase.afterEnemy;
+        PostEnemyStatusCheck();
         yield return new WaitForSeconds(2);
         StartCoroutine(EndPhaseTimer());
     }
@@ -944,6 +1177,10 @@ public class BattleController : MonoBehaviour
         comboC.comboState = ComboController.ComboState.none; // reset for next battle
 
         activeRoom.mainCam.m_Priority = -1;
+        foreach (GameObject obj in activeRoom.activeObjects)
+        {
+            obj.SetActive(false);
+        }
         sceneController.playerController.cinPersonCam.m_Priority = 10;
         ClearBattle();
         if (afterBattleAction != null)

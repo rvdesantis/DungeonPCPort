@@ -21,6 +21,29 @@ public class CrystalLampRoomParent : RoomPropParent
     public PlayableDirector chaosPlayable;
     public DunItem cOrb;
 
+    public bool gKnightBattle;
+    public bool scorpBattle;
+
+    public override void AfterBattle()
+    {
+        PlayerController player = FindObjectOfType<PlayerController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
+
+        if (gKnightBattle)
+        {
+            Debug.Log("After Playable for Ghost Knight");
+            activeModel.gameObject.SetActive(false);
+            activeModel = null;
+        }
+        if (scorpBattle)
+        {
+            Debug.Log("After Playable for Scorp");
+            activeModel.gameObject.SetActive(false);
+            activeModel = null;
+        }
+        player.controller.enabled = true;
+        uiController.compassObj.SetActive(true);
+    }
 
     private void Start()
     {
@@ -39,6 +62,7 @@ public class CrystalLampRoomParent : RoomPropParent
         DunUIController uiController = FindObjectOfType<DunUIController>();
         SceneController controller = FindObjectOfType<SceneController>();
         MusicController music = FindObjectOfType<MusicController>();
+        BattleController battleC = controller.battleController;
 
         scorpSummonPlayable.time = scorpSummonPlayable.duration;
         activeModel.gameObject.SetActive(false);
@@ -48,9 +72,10 @@ public class CrystalLampRoomParent : RoomPropParent
         {
             model.gameObject.SetActive(false);
         }
-        player.controller.enabled = true;
-        uiController.compassObj.SetActive(true);
-        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
+        battleC.afterBattleAction = AfterBattle;
+        scorpBattle = true;
+        gKnightBattle = false;
+        battleC.SetBattle(6);
     }
 
     public void SummonGEnd()
@@ -220,27 +245,20 @@ public class CrystalLampRoomParent : RoomPropParent
         MonsterController monster = FindObjectOfType<MonsterController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
         SceneController controller = FindObjectOfType<SceneController>();
+        BattleController battleC = controller.battleController;
 
         knightPlayable.gameObject.SetActive(true);
         party.AssignCamBrain(knightPlayable, 3);
         DunModel knight = null;
-        foreach (DunModel enemy in monster.enemyMasterList)
-        {
-            if (enemy.spawnArea == DunModel.SpawnArea.smallRoom)
-            {
-                if (enemy.spawnPlayableInt == 3)
-                {
-                    knight = Instantiate(enemy, knightPlayable.transform.position, knightPlayable.transform.rotation);
-                    knight.AssignToDirector(knightPlayable, 4);
-                    knight.gameObject.SetActive(true);
-                    knight.transform.parent = knightPlayable.transform;
-                    knight.transform.position = knightPlayable.transform.position;
-                    knight.transform.rotation = knightPlayable.transform.rotation;
-                    activeModel = knight;                 
-                    break;
-                }
-            }
-        }
+
+        knight = Instantiate(monster.enemyMasterList[8], knightPlayable.transform.position, knightPlayable.transform.rotation);
+        knight.AssignToDirector(knightPlayable, 4);
+        knight.gameObject.SetActive(true);
+        knight.transform.parent = knightPlayable.transform;
+        knight.transform.position = knightPlayable.transform.position;
+        knight.transform.rotation = knightPlayable.transform.rotation;
+        activeModel = knight;                 
+                   
         float clipTime = (float)knightPlayable.duration;
         player.controller.enabled = false;
         uiController.compassObj.SetActive(false);
@@ -265,11 +283,10 @@ public class CrystalLampRoomParent : RoomPropParent
         foreach (DunModel model in party.activeParty)
         {
             model.gameObject.SetActive(false);
-        }   
+        }
+        battleC.afterBattleAction = AfterBattle;
+        gKnightBattle = true;
         player.controller.enabled = true;
-        uiController.compassObj.SetActive(true);
-        MusicController music = FindObjectOfType<MusicController>();
-        music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
 
     IEnumerator ChaosOrbTimer()

@@ -231,7 +231,7 @@ public class GelCubeBattleScript : EnemyBattleModel
             int pos = battleC.heroParty.IndexOf(actionTarget);
             Vector3 attackPosition = battleC.activeRoom.enemySpawnPoints[pos].transform.position;
             Vector3 returnPos = transform.position;
-            transform.position = attackPosition + (Vector3.forward * 2);
+            transform.position = attackPosition;
 
             Quaternion camRot = battleC.activeRoom.mainCam.transform.rotation;
 

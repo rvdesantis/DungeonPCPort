@@ -192,29 +192,32 @@ public class DistanceController : MonoBehaviour
         {
             foreach (AudioDistance audioD in audioDistanceControllers)
             {
-                if (Vector3.Distance(playerPosition, audioD.gameObject.transform.position) > 15)
+                if (audioD.gameObject.activeSelf)
                 {
-                    if (audioD.looper)
+                    if (Vector3.Distance(playerPosition, audioD.gameObject.transform.position) > 15)
                     {
-                        audioD.LowerVolume();
-                    }
-                }
-                if (Vector3.Distance(playerPosition, audioD.gameObject.transform.position) <= 12)
-                {
-                    if (audioD.looper)
-                    {         
-                        if (!audioD.audioSource.isPlaying)
+                        if (audioD.looper)
                         {
-                            audioD.RaiseVolume();
+                            audioD.LowerVolume();
                         }
                     }
-                    if (!audioD.looper && !audioD.triggered)
+                    if (Vector3.Distance(playerPosition, audioD.gameObject.transform.position) <= 12)
                     {
-                        audioD.triggered = true;
-                        audioD.audioSource.volume = audioD.maxVol;
-                        audioD.audioSource.Play();
+                        if (audioD.looper)
+                        {
+                            if (!audioD.audioSource.isPlaying)
+                            {
+                                audioD.RaiseVolume();
+                            }
+                        }
+                        if (!audioD.looper && !audioD.triggered)
+                        {
+                            audioD.triggered = true;
+                            audioD.audioSource.volume = audioD.maxVol;
+                            audioD.audioSource.Play();
+                        }
                     }
-                }
+                }             
             }
         }
     }

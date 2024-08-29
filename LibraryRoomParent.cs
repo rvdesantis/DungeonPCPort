@@ -125,22 +125,9 @@ public class LibraryRoomParent : RoomPropParent
     public void SummonTemplarGang()
     {
         MonsterController monsters = FindObjectOfType<MonsterController>();
-        DunModel tempA = null; //x2
-        DunModel tempB = null;
-        foreach (DunModel mon in monsters.enemyMasterList)
-        {
-            if (mon.spawnArea == DunModel.SpawnArea.largeRoom)
-            {
-                if (mon.spawnPlayableInt == 2)
-                {
-                    tempA = mon;
-                }
-                if (mon.spawnPlayableInt == 3)
-                {
-                    tempB = mon;
-                }
-            }
-        }
+        DunModel tempA = monsters.enemyMasterList[11]; //x2
+        DunModel tempB = monsters.enemyMasterList[12];
+      
 
         DunModel templar0 = Instantiate(tempA, templarGangIdle.transform);
         DunModel templar1 = Instantiate(tempA, templarGangIdle.transform);
@@ -153,6 +140,16 @@ public class LibraryRoomParent : RoomPropParent
         templarModels.Add(templar0);
         templarModels.Add(templar1);
         templarModels.Add(templar2);
+
+        TemplarDunModels tempNPC = templar2.GetComponent<TemplarDunModels>();
+        if (distanceController == null)
+        {
+            distanceController = FindObjectOfType<DistanceController>();
+        }
+        distanceController.npcS.Add(tempNPC);
+        tempNPC.attachedLibrary = this;
+        tempNPC.templars.Add(templar0);
+        tempNPC.templars.Add(templar1);        
 
         Debug.Log("Templar Gang Spawned in room(GameObject)", gameObject);
         templarGangIdle.Play();
@@ -253,33 +250,10 @@ public class LibraryRoomParent : RoomPropParent
 
     }
 
-    IEnumerator HostileBattleTimer()
-    {
-        SceneController controller = FindObjectOfType<SceneController>();
-        PlayerController player = controller.playerController;
 
-        player.controller.enabled = false;
-        // add playable for encounter and change waitforSecond to duration       
-        yield return new WaitForSeconds(0);
 
-        StartTemplarBattle();
-      
-    }
 
-    public void StartTemplarBattle()
-    {
-        SceneController controller = FindObjectOfType<SceneController>();
-        BattleController battleC = FindObjectOfType<BattleController>();
-        controller.endAction = null;
-        controller.activePlayable = null;
-
-        Debug.Log("Templar Battle Started");
-        battleC.afterBattleAction = null;
-        battleC.afterBattleAction = TemplarBattleReturn;
-        battleC.SetBattle(11);
-
-        battleTriggered = true;
-    }
+   
 
     public void TemplarBattleReturn()
     {
@@ -288,21 +262,10 @@ public class LibraryRoomParent : RoomPropParent
             temp.gameObject.SetActive(false);
         }
     }
-    public void TriggerTemplarBattle() // triggers battle if vMage is in party automatically
-    {
-        StartCoroutine(HostileBattleTimer());
-    }
+
 
     private void Update()
     {
-        if (roomParent.inRoom && !battleTriggered)
-        {
-            if (hostile)
-            {
-                hostile = false;
-                Debug.Log("Room Hostile, trigging Battle");
-                TriggerTemplarBattle();
-            }
-        }
+        
     }
 }

@@ -132,9 +132,10 @@ public class DemonessBattle : EnemyBattleModel
             }
             battleC.enemyParty[1] = demon1;
             demon1.afterAction = battleC.enemyParty[2].StartAction;
-
             afterAction = null;
-            afterAction = battleC.enemyParty[1].StartAction; // reset Demoness afterAaction
+            afterAction = battleC.enemyParty[1].StartAction;
+
+
 
 
         }
@@ -156,6 +157,7 @@ public class DemonessBattle : EnemyBattleModel
             }
 
             battleC.enemyParty[2] = demon2;
+            battleC.enemyParty[1].afterAction = demon2.StartAction;
             demon2.afterAction = battleC.StartPostEnemyTimer;       
         }
     }
@@ -185,7 +187,6 @@ public class DemonessBattle : EnemyBattleModel
     IEnumerator SummonTimer()
     {
         anim.SetTrigger("taunt");
-        Debug.Log("Starting " + modelName + " Cast, Summoning Demon");
         battleC.enemyIndex++;
 
         yield return new WaitForSeconds(3);

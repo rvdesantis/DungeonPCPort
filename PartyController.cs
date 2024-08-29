@@ -25,18 +25,9 @@ public class PartyController : MonoBehaviour
     {
  
         CinemachineBrain cinemachineBrain = player.cinBrain;
-
-        if (pos == 0) // if no model assignments, set by default
-        {
-            PlayableBinding playableBinding = dir.playableAsset.outputs.First();
-            dir.SetGenericBinding(playableBinding.sourceObject, cinemachineBrain);
-        }
-
-        if (pos == 3)
-        {
-            PlayableBinding playableBinding = dir.playableAsset.outputs.ElementAt(pos);
-            dir.SetGenericBinding(playableBinding.sourceObject, cinemachineBrain);
-        }
+        PlayableBinding playableBinding = dir.playableAsset.outputs.ElementAt(pos);
+        dir.SetGenericBinding(playableBinding.sourceObject, cinemachineBrain);
+       
 
     }
 

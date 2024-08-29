@@ -38,7 +38,6 @@ public class HornRoomParent : RoomPropParent
             demoness.transform.position = demonessPlayable.transform.position;
             demoness.AssignToDirector(demonessPlayable, 4);
 
-
             float clipTime = (float)demonessPlayable.duration;
 
             player.controller.enabled = false;
@@ -47,6 +46,8 @@ public class HornRoomParent : RoomPropParent
             demonessPlayable.Play();
             yield return new WaitForSeconds(clipTime);
             EndEnter();
+            demoness.gameObject.SetActive(false);
+            Destroy(demoness.gameObject);
         }        
 
         if (roomParent.roomType == CubeRoom.RoomType.quest)
@@ -87,21 +88,14 @@ public class HornRoomParent : RoomPropParent
     {
         PartyController party = FindObjectOfType<PartyController>();  
         SceneController controller = FindObjectOfType<SceneController>();
-
-        if (controller.activePlayable == demonessPlayable)
-        {
-            StartDemonessBattle();
-        }
         controller.activePlayable = null;
         controller.endAction = null;
-
         party.activeParty[0].torch.SetActive(false);
         foreach (DunModel model in party.activeParty)
         {
             model.gameObject.SetActive(false);
         }
-
-        
+        StartDemonessBattle();
     }
 
 
