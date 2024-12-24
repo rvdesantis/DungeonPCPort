@@ -143,169 +143,69 @@ public class ShopUI : MonoBehaviour
     public void BuyItem()
     {
         uiController.uiAudioSource.PlayOneShot(shopSounds[0]);
-
-        bool inInventory = false;
-
         bool dunI = false;
         bool keyI = false;
         bool batI = false;
-
         if (!currentItem.trinket)
         {
             if (currentItem.itemType == DunItem.ItemType.keyItem)
             {
-                keyI = true;
-                foreach (DunItem item in inventory.keyItems)
-                {
-                    if (currentItem.itemName == item.itemName)
-                    {
-                        inInventory = true;
-                    }
-                }
+                keyI = true;               
             }
             if (currentItem.itemType == DunItem.ItemType.battle)
             {
-                batI = true;
-                foreach (DunItem item in inventory.battleItems)
-                {
-                    if (currentItem.itemName == item.itemName)
-                    {
-                        inInventory = true;
-                    }
-                }
+                batI = true;              
             }
             if (currentItem.itemType == DunItem.ItemType.dungeon)
             {
-                dunI = true;
-                foreach (DunItem item in inventory.dungeonItems)
-                {
-                    if (currentItem.itemName == item.itemName)
-                    {
-                        inInventory = true;
-                    }
-                }
+                dunI = true;                
             }
-
-            if (!inInventory)
+            if (dunI)
             {
-                Debug.Log(currentItem.itemName + " Not In Inventory");
-                if (dunI)
+                Debug.Log("Adding to Dun Inventory");
+                foreach (DunItem masterItem in inventory.masterDungeonItems)
                 {
-                    Debug.Log("Adding to Dun Inventory");
-                    foreach (DunItem masterItem in inventory.masterDungeonItems)
+                    if (masterItem.itemName == currentItem.itemName)
                     {
-                        if (masterItem.itemName == currentItem.itemName)
-                        {
-                            Debug.Log("Adding " + masterItem.itemName + " to Dungeon Inventory");
-                            inventory.dungeonItems.Add(masterItem);
-                            inventory.ReduceGold(masterItem.itemPrice);
-
-
-                            bool potionCheck = false;
-                            if (masterItem == inventory.masterDungeonItems[0])
-                            {
-                                potionCheck = true;
-                            }
-
-                            if (potionCheck)
-                            {
-                                inventory.battleItems[0].itemCount = inventory.dungeonItems[0].itemCount;
-                            }
-
-                            inventoryUI.OpenInventory();
-                            break;
-                        }
-                    }
-
-                }
-                if (keyI)
-                {
-                    Debug.Log("Adding to Key Inventory");
-                    foreach (DunItem masterItem in inventory.masterKeyItems)
-                    {
-                        if (masterItem.itemName == currentItem.itemName)
-                        {
-                            Debug.Log("Adding " + masterItem.itemName + " to Key Items Inventory");
-                            inventory.keyItems.Add(masterItem);
-                            inventory.ReduceGold(masterItem.itemPrice);
-                            inventoryUI.OpenKeyInventory();
-                            break;
-                        }
+                        Debug.Log("Adding " + masterItem.itemName + " to Dungeon Inventory");
+                        masterItem.PickUp();
+                        inventory.ReduceGold(masterItem.itemPrice);
+                        inventoryUI.OpenInventory();
+                        break;
                     }
                 }
-                if (batI)
-                {
-                    Debug.Log("Adding to Battle Inventory");
-                    foreach (DunItem masterItem in inventory.masterBattleItems)
-                    {
-                        if (masterItem.itemName == currentItem.itemName)
-                        {
-                            Debug.Log("Adding " + masterItem.itemName + " to Battle Inventory");
-                            inventory.battleItems.Add(masterItem);
-                            inventory.ReduceGold(masterItem.itemPrice);
 
-
-                            bool potionCheck = false;
-                            if (masterItem == inventory.masterBattleItems[0])
-                            {
-                                potionCheck = true;
-                            }
-
-                            if (potionCheck)
-                            {
-                                inventory.dungeonItems[0].itemCount = inventory.battleItems[0].itemCount;
-                            }
-
-                            inventoryUI.OpenBattleInventory();
-                            break;
-                        }
-                    }
-                }
             }
-
-            if (inInventory)
+            if (keyI)
             {
-                if (dunI)
+                Debug.Log("Adding to Key Inventory");
+                foreach (DunItem masterItem in inventory.masterKeyItems)
                 {
-                    foreach (DunItem it in inventory.dungeonItems)
+                    if (masterItem.itemName == currentItem.itemName)
                     {
-                        if (it.itemName == currentItem.itemName)
-                        {
-                            it.itemCount++;
-                            break;
-                        }
+                        Debug.Log("Adding " + masterItem.itemName + " to Key Items Inventory");
+                        masterItem.PickUp();
+                        inventory.ReduceGold(masterItem.itemPrice);
+                        inventoryUI.OpenKeyInventory();
+                        break;
                     }
-                    inventory.ReduceGold(currentItem.itemPrice);
-                    inventoryUI.OpenInventory();
-                }
-                if (keyI)
-                {
-                    foreach (DunItem it in inventory.keyItems)
-                    {
-                        if (it.itemName == currentItem.itemName)
-                        {
-                            it.itemCount++;
-                            break;
-                        }
-                    }
-                    inventory.ReduceGold(currentItem.itemPrice);
-                    inventoryUI.OpenInventory();
-                }
-                if (batI)
-                {
-                    foreach (DunItem it in inventory.battleItems)
-                    {
-                        if (it.itemName == currentItem.itemName)
-                        {
-                            it.itemCount++;
-                            break;
-                        }
-                    }
-                    inventory.ReduceGold(currentItem.itemPrice);
-                    inventoryUI.OpenInventory();
                 }
             }
-
+            if (batI)
+            {
+                Debug.Log("Adding to Battle Inventory");
+                foreach (DunItem masterItem in inventory.masterBattleItems)
+                {
+                    if (masterItem.itemName == currentItem.itemName)
+                    {
+                        Debug.Log("Adding " + masterItem.itemName + " to Battle Inventory");
+                        masterItem.PickUp();
+                        inventory.ReduceGold(masterItem.itemPrice);                        
+                        inventoryUI.OpenBattleInventory();
+                        break;
+                    }
+                }
+            }      
             foreach (Button bt in itemButtons)
             {
                 int x = itemButtons.IndexOf(bt);
@@ -314,9 +214,7 @@ public class ShopUI : MonoBehaviour
                     bt.interactable = true;
                 }
             }
-
             itemButtons[0].Select();
-
         }
         if (currentItem.trinket)
         {
@@ -330,7 +228,6 @@ public class ShopUI : MonoBehaviour
             uiController.pickUpUI.gameObject.SetActive(true);
             uiController.pickUpUI.OpenImage(currentItem);
             uiController.pickUpUI.afterAction = currentItem.PickUp;
-
             gameObject.SetActive(false);
         }
 
@@ -342,9 +239,13 @@ public class ShopUI : MonoBehaviour
         PlayerController player = FindObjectOfType<PlayerController>();
         player.controller.enabled = true;
         uiController.isToggling = true;
-        uiController.RemoteToggleTimer();
+        uiController.RemoteToggleTimer(.2f);
         uiController.inventoryUI.CloseUI();
         uiController.uiActive = false;
+        if (uiController.confirmUI.gameObject.activeSelf)
+        {
+            uiController.confirmUI.gameObject.SetActive(false);
+        }
         if (currentShop.faceCam != null)
         {
             currentShop.faceCam.m_Priority = -1;

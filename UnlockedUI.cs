@@ -99,6 +99,7 @@ public class UnlockedUI : MonoBehaviour
     {
         uiController.uiActive = false;
         controller.playerController.enabled = true;
+        photoBooth.ResetBooth();
         gameObject.SetActive(false);
     }
 

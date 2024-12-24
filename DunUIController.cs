@@ -42,14 +42,14 @@ public class DunUIController : MonoBehaviour
     public ShopUI shopUI;
     public ConfirmUI confirmUI;
 
-    IEnumerator ToggleTimer(float toggleTimer)
+    IEnumerator ToggleTimer(float timer)
     {
         isToggling = true;
-        yield return new WaitForSeconds(toggleTimer);
+        yield return new WaitForSeconds(timer);
         isToggling = false;
     }
 
-    public void RemoteToggleTimer(float timer = .25f)
+    public void RemoteToggleTimer(float timer)
     {
         StartCoroutine(ToggleTimer(timer));
     }

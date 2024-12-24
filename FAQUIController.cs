@@ -46,7 +46,7 @@ public class FAQUIController : MonoBehaviour
     public void ExitBT()
     {
         uiController.OpenMenuUI();
-        uiController.RemoteToggleTimer();
+        uiController.RemoteToggleTimer(.1f);
         uiController.controller.playerController.enabled = true;
         gameObject.SetActive(false);
     }

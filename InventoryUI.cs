@@ -135,7 +135,7 @@ public class InventoryUI : MonoBehaviour
             }
         }
         uiController.uiActive = false;
-        uiController.RemoteToggleTimer();
+        uiController.RemoteToggleTimer(.2f);
         gameObject.SetActive(false);
     }
 
@@ -262,7 +262,21 @@ public class InventoryUI : MonoBehaviour
 
         foreach (DunItem item in inventory.battleItems)
         {
-            int x = inventory.battleItems.IndexOf(item);
+            if (item.itemName == "Revive")
+            {
+                int reviveCount = 0;
+                foreach (DunItem dun in inventory.dungeonItems)
+                {
+                    if (dun.itemName == "Revive")
+                    {
+                        reviveCount = dun.itemCount;
+                        break;
+                    }
+                }
+                item.itemCount = reviveCount;
+            }
+            BattleItem battleComponent = item.GetComponent<BattleItem>();
+            int x = inventory.battleItems.IndexOf(battleComponent);
             itemCountTXTs[x].text = item.itemCount.ToString();
             invButtons[x].interactable = true;
             itemCountTXTs[x].gameObject.SetActive(true);

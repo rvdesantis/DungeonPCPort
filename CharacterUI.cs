@@ -36,6 +36,8 @@ public class CharacterUI : MonoBehaviour
 
     public Button rArrowBT;
     public Button lArrowBT;
+    public Button rSelectArrowBT;
+    public Button lSelectArrowBT;
 
     public Image spell0Image;
     public Image spell1Image;
@@ -74,7 +76,7 @@ public class CharacterUI : MonoBehaviour
         photoBooth.ResetBooth();
         yield return new WaitForSeconds(.15f);
         toggling = false;
-        uiController.RemoteToggleTimer();
+        uiController.RemoteToggleTimer(.1f);
         uiController.uiActive = false;
         player.enabled = true;
 
@@ -99,7 +101,9 @@ public class CharacterUI : MonoBehaviour
         if (firstOpen)
         {
             partyIndex = 0;
-            rArrowBT.Select();
+            rSelectArrowBT.gameObject.SetActive(true);
+            lSelectArrowBT.gameObject.SetActive(true);
+            rSelectArrowBT.Select();
             firstOpen = false;
         }
         if (!select)
@@ -112,6 +116,8 @@ public class CharacterUI : MonoBehaviour
             {
                 selectBT.gameObject.SetActive(false);
             }
+            rArrowBT.gameObject.SetActive(true);
+            lArrowBT.gameObject.SetActive(true);
         }
 
         photoBooth.SayCheese(activeHero);
@@ -131,11 +137,10 @@ public class CharacterUI : MonoBehaviour
         nameStats = nameStats + activeHero.modelName + "\n";
         int health = battleMod.health;
         int maxHealth = battleMod.maxH;
-        int mana = battleMod.mana;
-        int maxMana = battleMod.maxM;
 
-        nameStats = nameStats + "HP: " + health + " / " + maxHealth + "\n";
-        nameStats = nameStats + "MP: " + mana + " / " + maxMana;
+
+        nameStats = nameStats + "HP: " + health + " / " + maxHealth;
+    
 
         titleTXT.text = nameStats;
 
@@ -191,6 +196,12 @@ public class CharacterUI : MonoBehaviour
             {
                 uiType = UIType.CSelect;               
             }
+            lArrowBT.gameObject.SetActive(false);
+            rArrowBT.gameObject.SetActive(false);
+
+            rSelectArrowBT.gameObject.SetActive(true);
+            lSelectArrowBT.gameObject.SetActive(true);
+
             infoTab.SetActive(true);
             heroInfoTabTXT.text = activeHero.modelInfo;
             heroLoreTabTXT.text = activeHero.modelLore;
@@ -211,24 +222,25 @@ public class CharacterUI : MonoBehaviour
             {
                 spell0Image.sprite = activeBattle.activeSpells[0].spellIcon;
                 spellTXT0.text = activeBattle.activeSpells[0].spellName;
-                spell1Image.gameObject.SetActive(false);
-                spell2Image.gameObject.SetActive(false);
             }
             if (spellCount > 1)
-            {
-                spell1Image.gameObject.SetActive(true);
+            {  
                 spellTXT1.text = activeBattle.activeSpells[1].spellName;
                 spell1Image.sprite = activeBattle.activeSpells[1].spellIcon;
             }
             if (spellCount > 2)
             {
-                spell2Image.gameObject.SetActive(true);
                 spellTXT2.text = activeBattle.activeSpells[2].spellName;
                 spell2Image.sprite = activeBattle.activeSpells[2].spellIcon;
             }
         }
         if (!select)
         {
+            lArrowBT.gameObject.SetActive(true);
+            rArrowBT.gameObject.SetActive(true);
+
+            rSelectArrowBT.gameObject.SetActive(false);
+            lSelectArrowBT.gameObject.SetActive(false);
             // set Spells
             BattleModel activeBattle = null;
             foreach (BattleModel bModel in party.combatParty)

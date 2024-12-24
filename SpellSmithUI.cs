@@ -66,7 +66,7 @@ public class SpellSmithUI : MonoBehaviour
 
         yield return new WaitForSeconds(.15f);
         toggling = false;
-        uiController.RemoteToggleTimer();
+        uiController.RemoteToggleTimer(.1f);
         gameObject.SetActive(false);
     }
     IEnumerator Toggle()
@@ -102,7 +102,7 @@ public class SpellSmithUI : MonoBehaviour
         Debug.Log("Checking Funds");
         if (currencyIndex == 0)
         {
-
+            activeSpellSmith.currencyIndex = 0;
             int count = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "SpellUpCount", 0);
             int cost = 100 * (count + 1);
             costInt = cost;
@@ -114,7 +114,8 @@ public class SpellSmithUI : MonoBehaviour
             
         }
         if (currencyIndex == 1)
-        {           
+        {
+            activeSpellSmith.currencyIndex = 1;
             int count = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "SpellUpCount", 0);
             int cost = 100 * (count + 1);
             int XP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
@@ -132,6 +133,7 @@ public class SpellSmithUI : MonoBehaviour
         }
         if (currencyIndex == 2)
         {
+            activeSpellSmith.currencyIndex = 2;
             costInt = 1;
             if (inventory.keyItems[0].itemCount < 1)
             {
@@ -142,9 +144,11 @@ public class SpellSmithUI : MonoBehaviour
 
         if (funds)
         {
+            activeSpellSmith.charIndex = partyIndex;
             activeSpellSmith.UpgradeSpellPower(activeModel, upgradeFinalPer, costInt, currencyIndex);      
             if (activeSpellSmith.singleUse)
             {
+                activeSpellSmith.remove = true;
                 DistanceController distance = FindObjectOfType<DistanceController>();
                 distance.npcS.Remove(activeSpellSmith);
 
@@ -167,7 +171,7 @@ public class SpellSmithUI : MonoBehaviour
     }
 
 
-    public void OpenSmithUI(float multiplier = 1, SpellNPC spellSmith = null)
+    public void OpenSmithUI(float multiplier = 1, SpellNPC spellSmith = null, int charIndex = 0, int currencyIndedx = 0)
     {
         if (spellSmith == null)
         {
@@ -182,7 +186,7 @@ public class SpellSmithUI : MonoBehaviour
         controller.playerController.enabled = false;
         controller.playerController.cinPersonCam.m_Priority = -1;
         spellSmith.faceCam.m_Priority = 10;
-        currencyImage.sprite = currencyIcons[0]; // sets to cold by default
+        currencyImage.sprite = currencyIcons[currencyIndedx]; // sets to cold by default
         currencyCost.color = Color.yellow;
 
         topLArrow.gameObject.SetActive(true);
@@ -192,11 +196,11 @@ public class SpellSmithUI : MonoBehaviour
         midRArrow.gameObject.SetActive(false);
 
         index = 0;
-        partyIndex = 0;
-        currencyIndex = 0;
+        partyIndex = charIndex;
+        currencyIndex = currencyIndedx;
         activePlier = multiplier;
 
-        activeModel = party.activeParty[0];
+        activeModel = party.activeParty[charIndex];
         textLineOne.text = "Select Character";
         textLineTwo.text = "(" + activeModel.modelName + ")";
 
@@ -213,6 +217,160 @@ public class SpellSmithUI : MonoBehaviour
     public void CloseUI()
     {
         StartCoroutine(CloseTimer());
+    }
+
+    public void ArrowRTop()
+    {
+        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+        toggling = true;
+        int abc = partyIndex;
+        rButtons[0].Select();
+        if (abc == 2)
+        {
+            activeModel = party.activeParty[0];
+            partyIndex = 0;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+
+
+            StartCoroutine(Toggle());
+            return;
+        }
+        if (abc == 1)
+        {
+            activeModel = party.activeParty[2];
+            partyIndex = 2;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+
+
+            StartCoroutine(Toggle());
+            return;
+        }
+        if (abc == 0)
+        {
+            activeModel = party.activeParty[1];
+            partyIndex = 1;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+
+
+            StartCoroutine(Toggle());
+            return;
+        }
+    }
+
+    public void ArrowRMid()
+    {
+        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+        toggling = true;
+        currencyIndex++;
+        if (currencyIndex == 3)
+        {
+            currencyIndex = 0;
+        }
+        rButtons[1].Select();
+
+        textLineOne.text = "Select Currency";
+        if (currencyIndex == 0)
+        {
+            textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
+        }
+        if (currencyIndex == 1)
+        {
+            int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
+            textLineTwo.text = activeModel.modelName + " XP (" + availXP + ")";
+        }
+        if (currencyIndex == 2)
+        {
+            textLineTwo.text = "Available Gems (" + inventory.keyItems[0].itemCount + ")";
+        }
+        currencyImage.sprite = currencyIcons[currencyIndex];
+        StartCoroutine(Toggle());
+        return;
+    }
+
+    public void ArrowLTop()
+    {
+        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+        toggling = true;
+        lButtons[0].Select();
+        int abc = party.activeParty.IndexOf(activeModel);
+
+        if (abc == 2)
+        {
+            activeModel = party.activeParty[1];
+            partyIndex = 1;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+            photoBooth.SayCheese(activeModel);
+
+
+            StartCoroutine(Toggle());
+            return;
+        }
+        if (abc == 1)
+        {
+            activeModel = party.activeParty[0];
+            partyIndex = 0;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+
+
+            StartCoroutine(Toggle());
+            return;
+        }
+        if (abc == 0)
+        {
+            activeModel = party.activeParty[2];
+            partyIndex = 2;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+
+
+            StartCoroutine(Toggle());
+            return;
+        }
+    }
+
+    public void ArrowLMid()
+    {
+        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+        toggling = true;
+        currencyIndex--;
+        if (currencyIndex == -1)
+        {
+            currencyIndex = 2;
+        }
+        rButtons[1].Select();
+        textLineOne.text = "Select Currency";
+        if (currencyIndex == 0)
+        {
+
+            textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
+        }
+        if (currencyIndex == 1)
+        {
+            int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
+            textLineTwo.text = activeModel.modelName + " XP (" + availXP + ")";
+        }
+        if (currencyIndex == 2)
+        {
+            textLineTwo.text = "Available Gems (" + inventory.keyItems[0].itemCount + ")";
+        }
+        currencyImage.sprite = currencyIcons[currencyIndex];
+        StartCoroutine(Toggle());
+        return;
     }
 
     void UIUp()

@@ -136,7 +136,7 @@ public class BlacksmithUI : MonoBehaviour
 
         yield return new WaitForSeconds(.15f);
         toggling = false;
-        uiController.RemoteToggleTimer();
+        uiController.RemoteToggleTimer(.2f);
         gameObject.SetActive(false);
     }
     IEnumerator Toggle()
@@ -183,8 +183,13 @@ public class BlacksmithUI : MonoBehaviour
         Debug.Log("Checking Funds");
         if (currencyIndex == 0)
         {
+            int indexPos = party.activeParty.IndexOf(activeModel);
+            activeBlackSmith.characterIndex = indexPos;
+            activeBlackSmith.currencyIndex = 0;
+
             if (upgradeIndex == 0)
             {
+
                 int count = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "PowerUpCount", 0);
                 int cost = 100 * (count + 1);
                 costInt = cost;
@@ -208,6 +213,10 @@ public class BlacksmithUI : MonoBehaviour
         }
         if (currencyIndex == 1)
         {
+            int indexPos = party.activeParty.IndexOf(activeModel);
+            activeBlackSmith.characterIndex = indexPos;
+            activeBlackSmith.currencyIndex = 1;
+
             if (upgradeIndex == 0)
             {                
                 int count = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "PowerUpCount", 0); 
@@ -245,6 +254,10 @@ public class BlacksmithUI : MonoBehaviour
         }
         if (currencyIndex == 2)
         {
+            int indexPos = party.activeParty.IndexOf(activeModel);
+            activeBlackSmith.characterIndex = indexPos;
+            activeBlackSmith.currencyIndex = 2;
+
             costInt = 1;
             if (upgradeIndex == 0)
             {
@@ -278,8 +291,7 @@ public class BlacksmithUI : MonoBehaviour
 
             if (activeBlackSmith.singleUse)
             {
-                DistanceController distance = FindObjectOfType<DistanceController>();
-                distance.npcS.Remove(activeBlackSmith);
+                activeBlackSmith.remove = true;
 
                 uiController.interactUI.gameObject.SetActive(false);
                 uiController.interactUI.activeObj = null;
@@ -300,7 +312,7 @@ public class BlacksmithUI : MonoBehaviour
     }
 
 
-    public void OpenSmithUI(bool weapon = true, bool armor = true, float multiplier = 1, BlacksmithNPC blackSmith = null)
+    public void OpenSmithUI(bool weapon = true, bool armor = true, float multiplier = 1, BlacksmithNPC blackSmith = null, int charDex = 0, int currencyDex = 0)
     {
         if (blackSmith == null)
         {
@@ -313,8 +325,13 @@ public class BlacksmithUI : MonoBehaviour
         activeBlackSmith = blackSmith;
         uiController.uiActive = true;
         controller.playerController.enabled = false;
-       
-        currencyImage.sprite = currencyIcons[0]; // sets to cold by default
+
+
+        partyIndex = charDex;
+        currencyIndex = currencyDex;
+
+
+        currencyImage.sprite = currencyIcons[currencyDex]; // sets to cold by default
         currencyCost.color = Color.yellow;
 
         topLArrow.gameObject.SetActive(true);
@@ -324,11 +341,10 @@ public class BlacksmithUI : MonoBehaviour
         midRArrow.gameObject.SetActive(false);
 
         index = 0;
-        partyIndex = 0;
-        currencyIndex = 0;
+       
         activePlier = multiplier;
 
-        activeModel = party.activeParty[0];
+        activeModel = party.activeParty[charDex];
         textLineOne.text = "Select Character";
         textLineTwo.text = activeModel.modelName;
 
@@ -349,11 +365,228 @@ public class BlacksmithUI : MonoBehaviour
 
         gameObject.SetActive(true);
         rButtons[0].Select();
+
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.Confined;
     }
 
     public void CloseUI()
     {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
         StartCoroutine(CloseTimer());
+    }
+
+    public void ArrowRParty()
+    {
+        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+        toggling = true;
+        int abc = partyIndex;
+        rButtons[0].Select();
+        if (abc == 2)
+        {
+            activeModel = party.activeParty[0];
+            partyIndex = 0;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+
+
+            StartCoroutine(Toggle());
+            return;
+        }
+        if (abc == 1)
+        {
+            activeModel = party.activeParty[2];
+            partyIndex = 2;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+
+
+            StartCoroutine(Toggle());
+            return;
+        }
+        if (abc == 0)
+        {
+            activeModel = party.activeParty[1];
+            partyIndex = 1;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+
+
+            StartCoroutine(Toggle());
+            return;
+        }
+    }
+
+    public void ArrowLParty()
+    {
+        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+        toggling = true;
+        lButtons[0].Select();
+        int abc = party.activeParty.IndexOf(activeModel);
+
+        if (abc == 2)
+        {
+            activeModel = party.activeParty[1];
+            partyIndex = 1;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+            StartCoroutine(Toggle());
+            return;
+        }
+        if (abc == 1)
+        {
+            activeModel = party.activeParty[0];
+            partyIndex = 0;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+            StartCoroutine(Toggle());
+            return;
+        }
+        if (abc == 0)
+        {
+            activeModel = party.activeParty[2];
+            partyIndex = 2;
+            textLineOne.text = "Select Character";
+            textLineTwo.text = activeModel.modelName;
+
+            photoBooth.SayCheese(activeModel);
+            StartCoroutine(Toggle());
+            return;
+        }
+    }
+
+    public void ArrowRCurrency()
+    {
+        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+        toggling = true;
+        currencyIndex++;
+        bool armor = false;
+
+        if (EventSystem.current.currentSelectedGameObject == armorBT.gameObject)
+        {
+            armor = true;
+        }
+
+        if (currencyIndex == 3)
+        {
+            currencyIndex = 0;
+        }
+        rButtons[1].Select();
+
+        textLineOne.text = "Select Currency";
+        int x = 0;
+        if (!armor)
+        {
+            x = party.PowerUpCounters[partyIndex];
+        }
+        if (armor)
+        {
+            x = party.DEFUpCounters[partyIndex];
+        }
+
+        if (currencyIndex == 0)
+        {
+            int price = 100 * (x + 1);
+            textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
+            currencyCost.text = "";
+
+        }
+        if (currencyIndex == 1)
+        {
+            int price = 100 * (x + 1);
+            int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
+            currencyCost.text = "";
+
+            textLineTwo.text = activeModel.modelName + " XP (" + availXP + ")";
+        }
+        if (currencyIndex == 2)
+        {
+            currencyCost.text = "";
+            textLineTwo.text = "Available Gems (" + inventory.keyItems[0].itemCount + ")";
+        }
+        currencyImage.sprite = currencyIcons[currencyIndex];
+        StartCoroutine(Toggle());
+        return;
+    }
+
+    public void ArrowLCurrency()
+    {
+        uiController.uiAudioSource.PlayOneShot(uiController.uiSounds[0]);
+        toggling = true;
+        currencyIndex--;
+        bool armor = false;
+
+        if (EventSystem.current.currentSelectedGameObject == armorBT.gameObject)
+        {
+            armor = true;
+        }
+
+        if (currencyIndex == -1)
+        {
+            currencyIndex = 2;
+        }
+        lButtons[1].Select();
+
+        textLineOne.text = "Select Currency";
+        if (currencyIndex == 0)
+        {
+            int x = 0;
+            if (!armor)
+            {
+                x = party.PowerUpCounters[partyIndex];
+            }
+            if (armor)
+            {
+                x = party.DEFUpCounters[partyIndex];
+            }
+            int price = 100 * (x + 1);
+            currencyCost.text = "";
+            textLineTwo.text = "Available Gold (" + inventory.GetAvailableGold() + ")";
+        }
+        if (currencyIndex == 1)
+        {
+            int x = 0;
+            if (!armor)
+            {
+                x = party.PowerUpCounters[partyIndex];
+            }
+            if (armor)
+            {
+                x = party.DEFUpCounters[partyIndex];
+            }
+            int price = 100 * (x + 1);
+            currencyCost.text = "";
+            int availXP = EnhancedPrefs.GetPlayerPref(activeModel.modelName + "XP", 0);
+            textLineTwo.text = activeModel.modelName + " XP (" + availXP + ")";
+        }
+        if (currencyIndex == 2)
+        {
+            int x = 0;
+            if (!armor)
+            {
+                x = party.PowerUpCounters[partyIndex];
+            }
+            if (armor)
+            {
+                x = party.DEFUpCounters[partyIndex];
+            }
+            currencyCost.text = "";
+            textLineTwo.text = "Available Gems (" + inventory.keyItems[0].itemCount + ")";
+        }
+        currencyImage.sprite = currencyIcons[currencyIndex];
+        StartCoroutine(Toggle());
+        return;
     }
 
      void UIUp()
@@ -785,7 +1018,7 @@ public class BlacksmithUI : MonoBehaviour
             {
                 UIDown();
             }
-
+       
             if (Input.GetKey(KeyCode.D) || joystickHorizontalInput > 0.1f)
             {
                 UIRight();
@@ -795,6 +1028,7 @@ public class BlacksmithUI : MonoBehaviour
             {
                 UILeft();
             }
+        
         }
 
         if (Input.GetKey(KeyCode.Escape) || Input.GetKey(KeyCode.Joystick1Button1))

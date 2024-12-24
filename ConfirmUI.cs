@@ -25,6 +25,7 @@ public class ConfirmUI : MonoBehaviour
     public CinemachineVirtualCamera activeCAM;
     public PlayerController player;
     public Action targetAction;
+    public Action noAction;
 
     private void Start()
     {
@@ -110,6 +111,14 @@ public class ConfirmUI : MonoBehaviour
         }
     }
 
+    public void ConfirmItem(string mss, DunItem item)
+    {
+        Debug.Log("Starting Item ConfirmUI");
+        message.text = mss;
+        targetAction = item.ConfirmItem;
+        yesBT.Select();
+    }
+
 
 
     public void YesButton()
@@ -130,7 +139,7 @@ public class ConfirmUI : MonoBehaviour
             campFireUI.exitBT.Select();
         }
         uiController.isToggling = true;
-        uiController.RemoteToggleTimer();
+        uiController.RemoteToggleTimer(.1f);
         player.enabled = true;
         gameObject.SetActive(false);
     }
@@ -173,8 +182,14 @@ public class ConfirmUI : MonoBehaviour
             inventoryUI.BackUseItem();
         }
         player.enabled = true;
+        player.controller.enabled = true;
         uiController.isToggling = true;
-        uiController.RemoteToggleTimer();
+        if (noAction != null)
+        {
+            noAction.Invoke();
+            noAction = null;
+        }
+        uiController.RemoteToggleTimer(.1f);
         gameObject.SetActive(false);
 
     }

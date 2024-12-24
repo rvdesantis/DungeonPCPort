@@ -11,7 +11,7 @@ public class DefeatUI : MonoBehaviour
     public Button restartButton;
     public Button exitButton;
     public DunUIController dunUI;
-
+    public StatsTracker stats;
 
     public void OpenDefeat(int goldLoss)
     {
@@ -25,11 +25,12 @@ public class DefeatUI : MonoBehaviour
         {
             lineZero = "No Gold Dropped (Golden Chest)";
         }  
-        string lineOne = "Experience Gained: (xxxx)";
-        string lineTwo = "Total Battles: (xxxx)";
-        string lineThree = "Bosses Defeated: (x)";
-        string lineFour = "Total Chests Opened: (xxxx)";
-        string lineFive = "False Walls Opened: (xx)";
+        string lineOne = "Experience Gained: (" + stats.totalXP + ")";
+        string lineTwo = "Total Battles: (" + stats.battles + ")";
+        string lineThree = "Bosses Defeated: (" + stats.bosses + ")";
+        string lineFour = "Total Chests Opened: (" + stats.openedChests + ")";
+        string lineFive = "False Walls Opened: (" + stats.openedWalls + ")";
+        string lineSix = "Traps Triggered: (" + stats.trapsTotal + ")";
 
         body.text = lineZero + "\n" + lineOne + "\n" + lineTwo + "\n" + lineThree + "\n" + lineFour + "\n" + lineFive;
     }

@@ -53,7 +53,7 @@ public class CampfireUI : MonoBehaviour
 
     public void ExitButton()
     {
-        uiController.RemoteToggleTimer();
+        uiController.RemoteToggleTimer(.2f);
         ToggleCampFireUI(false);
     }
 
