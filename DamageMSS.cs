@@ -13,6 +13,7 @@ public class DamageMSS : MonoBehaviour
     public TextMeshProUGUI damTXT;
     public CinemachineVirtualCamera activeCam;
     public Animator canvasAnim;
+    public BattleCamController bCamController;
 
     public float floatHeight = 5f; // Desired height to float to
     public float floatDuration = 2f; // Time taken to float
@@ -26,6 +27,7 @@ public class DamageMSS : MonoBehaviour
         startTime = Time.time;
         startPos = transform.position;
         targetPos = startPos + (Vector3.up * floatHeight);
+        bCamController = FindObjectOfType<BattleCamController>();
     }
 
     public void ShowDamage(int damage, bool crit = false)
@@ -64,6 +66,7 @@ public class DamageMSS : MonoBehaviour
         float distCovered = (Time.time - startTime) * journeyLength / floatDuration;
         float fracJourney = distCovered / journeyLength;
         transform.position = Vector3.Lerp(startPos, targetPos, fracJourney);
+        transform.LookAt(bCamController.activeCam.transform);
     }
 
 }

@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-using JetBrains.Annotations;
+
 
 public class CubeRoom : TurnCube
 {
     public List<GameObject> wallCovers;
     public List<GameObject> wallSpawnPoints;
-    public BoxCollider roomCollider;
+
     public enum RoomType { quest, battle, chest, shop, NPC, health, portal }
     public RoomType roomType;
     public GameObject roofParent;
@@ -22,34 +22,6 @@ public class CubeRoom : TurnCube
 
 
 
-
-
-    public bool RoomChecker()
-    {
-        bool collision = false;
-        Collider[] colliders = Physics.OverlapBox(roomCollider.bounds.center, roomCollider.bounds.extents);
-        // Exclude child colliders
-        foreach (Transform child in transform)
-        {
-            Collider childCollider = child.GetComponent<Collider>();
-            if (childCollider != null)
-            {
-                colliders = Array.FindAll(colliders, c => c.transform.parent != transform);
-            }
-        }
-        if (colliders.Length > 1)
-        {
-            collision = true;
-        }
-        if (collision)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
 
     public void FillRoom()
     {

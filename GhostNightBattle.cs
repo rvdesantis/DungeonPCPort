@@ -62,7 +62,17 @@ public class GhostNightBattle : EnemyBattleModel
             {
                 actionType = ActionType.melee;
                 RandomAssign();
-                StartCoroutine(CastCombo());
+                if (activeTargets.Count > 0)
+                {
+                    StartCoroutine(CastCombo());
+                }
+                if (activeTargets.Count == 0)
+                {
+                    anim.SetTrigger("spell0");
+                    battleC.heroIndex++;
+                    afterAction.Invoke();
+                    afterAction = null;
+                }
             }
         }
     }
@@ -120,6 +130,7 @@ public class GhostNightBattle : EnemyBattleModel
 
     public void RandomAssign()
     {
+        activeTargets.Clear();
 
         int x = Random.Range(0, 2);
         int y = Random.Range(0, 2);
@@ -158,6 +169,12 @@ public class GhostNightBattle : EnemyBattleModel
             damCan.activeCam = battleC.bCamController.activeCam;
             damCan.damTXT.text = "MISS";
             damCan.damTXT.color = Color.white;
+            IEnumerator TXTTimer()
+            {
+                yield return new WaitForSeconds(3);
+                damCan.gameObject.SetActive(false);
+                Destroy(damCan.gameObject);
+            } StartCoroutine(TXTTimer());
         }
         if (y == 1 || battleC.heroParty[1].dead)
         {
@@ -167,6 +184,13 @@ public class GhostNightBattle : EnemyBattleModel
             damCan.activeCam = battleC.bCamController.activeCam;
             damCan.damTXT.text = "MISS";
             damCan.damTXT.color = Color.white;
+            IEnumerator TXTTimer()
+            {
+                yield return new WaitForSeconds(3);
+                damCan.gameObject.SetActive(false);
+                Destroy(damCan.gameObject);
+            }
+            StartCoroutine(TXTTimer());
         }
         if (z == 1 || battleC.heroParty[2].dead)
         {
@@ -176,6 +200,13 @@ public class GhostNightBattle : EnemyBattleModel
             damCan.activeCam = battleC.bCamController.activeCam;
             damCan.damTXT.text = "MISS";
             damCan.damTXT.color = Color.white;
+            IEnumerator TXTTimer()
+            {
+                yield return new WaitForSeconds(3);
+                damCan.gameObject.SetActive(false);
+                Destroy(damCan.gameObject);
+            }
+            StartCoroutine(TXTTimer());
         }
 
         battleC.party.AssignCamBrain(spellPlayable, 3);

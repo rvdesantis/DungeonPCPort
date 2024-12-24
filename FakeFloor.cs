@@ -29,6 +29,8 @@ public class FakeFloor : MonoBehaviour
 
     public void StartBreak(bool back)
     {
+        StatsTracker stats = FindObjectOfType<StatsTracker>();
+        stats.trapsTotal++;
         if (back)
         {
             fallRoom.returnPortal.transportPosition = front;

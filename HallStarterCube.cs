@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HallStarterCube : Cube
@@ -16,8 +17,9 @@ public class HallStarterCube : Cube
     public BoxCollider largeSecretCollider;
     public List<BoxCollider> massiveSecretColliders;
 
+
     public bool hallBuildFin;
-    public bool buildMirrorFin;
+    public bool secret;
     public List<Cube> generatedHallway;
 
     public bool testColliders;
@@ -28,7 +30,10 @@ public class HallStarterCube : Cube
 
     public enum HallType { deadEnd, small, med, large, boss}
     public HallType hallType;
-
+    public TurnCube endTurn;
+    public CubeRoom endRoom;
+    public TurnCube attachedTurn;
+    public int hallwayNumber;
     public DeadEndCube deadEnd;
 
     private void Start()
@@ -45,51 +50,35 @@ public class HallStarterCube : Cube
         foreach (Cube hallbox in generatedHallway)
         {
             hallbox.positioner.SetActive(false);
-            hallbox.collisionChecker.gameObject.SetActive(true);
+            hallbox.collisionChecker.enabled = true;       
             if (hallbox.BoxChecker())
             {
-                hallbox.collisionChecker.gameObject.SetActive(false);
+                hallbox.collisionChecker.enabled = false;
                 hallbox.positioner.SetActive(true);
                 blocked = true;
               
             }
             if (!hallbox.BoxChecker())
             {
-                hallbox.collisionChecker.gameObject.SetActive(false);
+                hallbox.collisionChecker.enabled = false;
                 hallbox.positioner.SetActive(true);
-
-                
             }
         }
 
         if (blocked)
         {
+            Debug.Log("Hallway Check Returning as Blocked");
             return true;
+
         }
         else
         {
+            Debug.Log("Hallway Check Returning as Not Blocked");
             return false;
         }
     }
 
-    public bool ForwardChecker()
-    {
-        Vector3 direction = transform.forward;
-
-        // Perform the sphere cast
-        RaycastHit hit;
-        bool hasHit = Physics.SphereCast(transform.position, 2, direction, out hit, 100);
-
-
-        if (hasHit)
-        {
-            GameObject hitObject = hit.collider.gameObject;
-        }
-
-        return hasHit;
-    }
-
-    public bool MassiveSecretChecker() // listed small to large
+    public bool MassiveSecretChecker() 
     {
         bool blocked = false;
     
@@ -97,20 +86,24 @@ public class HallStarterCube : Cube
         {
             if (!blocked)
             {
-                boxC.gameObject.SetActive(true);
-                boxC.enabled = true;
+                IEnumerator CheckTimer()
+                {
+                    boxC.gameObject.SetActive(true);
+                    boxC.enabled = true;
+                    yield return new WaitForNextFrameUnit();
 
-                blocked = Physics.CheckBox(boxC.bounds.center, boxC.bounds.extents/2, quaternion.identity, 0);
-
-                boxC.enabled = false;
-                boxC.gameObject.SetActive(false);
+                    Collider[] colliders = Physics.OverlapBox(boxC.bounds.center, boxC.bounds.extents);
+                    if (colliders.Length > 1)
+                    {
+                        blocked = true;
+                    }                    
+                    yield return new WaitForNextFrameUnit();
+                    boxC.enabled = false;
+                    boxC.gameObject.SetActive(false);
+                } 
+                StartCoroutine(CheckTimer());
             }
-        }       
-
-        if (!blocked)
-        {
-            blocked = ForwardChecker();
-        }
+        }  
         return blocked;
     }
 
@@ -125,25 +118,12 @@ public class HallStarterCube : Cube
             blocked = true;
         }
         smallHallwayCollider.gameObject.SetActive(false);
-
+        Debug.Log("HallStarter Cube Checked for Secret End (" + blocked + ")", gameObject);
         return blocked;
     }
 
     private void Update()
     {
-        if (buildMirrorFin != hallBuildFin && hallBuildFin == true)
-        {
-            int x = builder.createdStarters.IndexOf(this);      
-            buildMirrorFin = true;
-        }
 
-        if (testMassiveCollider)
-        {
-            testMassiveCollider = false;
-            if (MassiveSecretChecker())
-            {
-                Debug.Log("Massive Checker Collision");
-            }
-        }
     }
 }

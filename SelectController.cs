@@ -34,7 +34,6 @@ public class SelectController : MonoBehaviour
         foreach (BattleModel battle in party.combatMaster)
         {
             battle.health = battle.maxH;
-            battle.mana = battle.maxM;
         }
 
         FinalizeCams();
@@ -80,7 +79,6 @@ public class SelectController : MonoBehaviour
         yield return new WaitForSeconds((float)startPlayable.duration);
         characterUI.gameObject.SetActive(true);
         characterUI.LoadStats(partyModels[0], true);
-        builder.StartBuild();
     }
 
     public void AddToParty()
@@ -141,6 +139,7 @@ public class SelectController : MonoBehaviour
     {
         yield return new WaitForSeconds(.25f);
         toggle = false;
+        characterUI.rSelectArrowBT.Select();
     }
 
     int IndexChecker(bool left)
@@ -332,33 +331,17 @@ public class SelectController : MonoBehaviour
 
     public void LeftArrowAdd()
     {
-        int last = selectIndex;
-
         selectIndex = IndexChecker(true);
-
         characterUI.toggling = true;
-        characterUI.LoadStats(partyModels[selectIndex], true);
-
-        int oldCam = camIndexList[last];
-        int newCam = camIndexList[selectIndex];
-
-        vCams[oldCam].m_Priority = -1;
-        vCams[newCam].m_Priority = 10;
+        characterUI.LoadStats(partyModels[selectIndex], true);       
+        characterUI.lSelectArrowBT.Select();
     }
 
     public void RightArrowAdd()
     {
-        int last = selectIndex;
         selectIndex = IndexChecker(false);
-
         characterUI.toggling = true;
         characterUI.LoadStats(partyModels[selectIndex], true);
-
-        int oldCam = camIndexList[last];
-        int newCam = camIndexList[selectIndex];
-
-        vCams[oldCam].m_Priority = -1;
-        vCams[newCam].m_Priority = 10;
-        
+        characterUI.rSelectArrowBT.Select();        
     }
 }

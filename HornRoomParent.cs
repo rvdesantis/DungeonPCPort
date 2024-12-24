@@ -10,6 +10,7 @@ public class HornRoomParent : RoomPropParent
     public bool enterTrigger;
     public bool skippedTrigger;
     public GameObject afterPlaySpawnPoint;
+    public DunModel demonessMod;
    
     IEnumerator FirstEnterENV()
     {
@@ -34,10 +35,11 @@ public class HornRoomParent : RoomPropParent
                 model.transform.parent = demonessPlayable.transform;
             }
             party.activeParty[0].torch.SetActive(true);
+
             DunModel demoness = Instantiate(monsters.enemyMasterList[0], demonessPlayable.transform, false);
             demoness.transform.position = demonessPlayable.transform.position;
             demoness.AssignToDirector(demonessPlayable, 4);
-
+            demonessMod = demoness;
             float clipTime = (float)demonessPlayable.duration;
 
             player.controller.enabled = false;
@@ -45,7 +47,10 @@ public class HornRoomParent : RoomPropParent
 
             demonessPlayable.Play();
             yield return new WaitForSeconds(clipTime);
-            EndEnter();
+            if (controller.activePlayable == demonessPlayable)
+            {
+                EndEnter();
+            }
             demoness.gameObject.SetActive(false);
             Destroy(demoness.gameObject);
         }        
@@ -110,7 +115,10 @@ public class HornRoomParent : RoomPropParent
     {
         PlayerController player = FindObjectOfType<PlayerController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
-
+        if (demonessMod != null)
+        {
+            demonessMod.gameObject.SetActive(false);
+        }
         player.transform.position = afterPlaySpawnPoint.transform.position;
         player.transform.rotation = afterPlaySpawnPoint.transform.rotation;
         player.controller.enabled = true;

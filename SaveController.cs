@@ -21,7 +21,6 @@ public class SaveController : MonoBehaviour
     {
         string name = battleModel.modelName;
         EnhancedPrefs.SetPlayerPref(name + "HP", battleModel.health);
-        EnhancedPrefs.SetPlayerPref(name + "Mana", battleModel.mana);
         EnhancedPrefs.SetPlayerPref(name + "XP", battleModel.XP);
 
         EnhancedPrefs.SavePlayerPrefs();
@@ -33,8 +32,6 @@ public class SaveController : MonoBehaviour
 
         EnhancedPrefs.SetPlayerPref(name + "HP", battleModel.health);
         EnhancedPrefs.SetPlayerPref(name + "MaxHP", battleModel.maxH);
-        EnhancedPrefs.SetPlayerPref(name + "Mana", battleModel.mana);
-        EnhancedPrefs.SetPlayerPref(name + "MaxMana", battleModel.maxM);
         EnhancedPrefs.SetPlayerPref(name + "XP", battleModel.XP);
 
         EnhancedPrefs.SetPlayerPref(name + "PowPercent", battleModel.powerBonusPercent);
@@ -50,9 +47,6 @@ public class SaveController : MonoBehaviour
 
         battleModel.health = EnhancedPrefs.GetPlayerPref(name + "HP", 0);
         battleModel.maxH = EnhancedPrefs.GetPlayerPref(name + "MaxHP", 0);
-        battleModel.mana = EnhancedPrefs.GetPlayerPref(name + "Mana", 0);
-        battleModel.maxM = EnhancedPrefs.GetPlayerPref(name + "MaxMana", 0);
-
         battleModel.powerBonusPercent = EnhancedPrefs.GetPlayerPref(name + "PowPercent", 0);
         battleModel.defBonusPercent = EnhancedPrefs.GetPlayerPref(name + "DefPercent", 0);
         battleModel.spellBonusPercent = EnhancedPrefs.GetPlayerPref(name + "SpellPercent", 0);

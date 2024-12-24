@@ -7,6 +7,8 @@ using UnityEngine;
 public class SpellNPC : DunNPC
 {
     public float multiplier;
+    public int charIndex;
+    public int currencyIndex;
 
     public void UpgradeSpellPower(DunModel character = null, float newPercent = 0, int cost = 0, int currencyIndex = 0) // currency checked in confirm UI
     {
@@ -77,7 +79,7 @@ public class SpellNPC : DunNPC
 
             if (spellSmithUI != null)
             {          
-                spellSmithUI.OpenSmithUI(multiplier, this);
+                spellSmithUI.OpenSmithUI(multiplier, this, charIndex, currencyIndex);
             }
             if (spellSmithUI == null)
             {

@@ -27,7 +27,7 @@ public class PartyController : MonoBehaviour
         CinemachineBrain cinemachineBrain = player.cinBrain;
         PlayableBinding playableBinding = dir.playableAsset.outputs.ElementAt(pos);
         dir.SetGenericBinding(playableBinding.sourceObject, cinemachineBrain);
-       
+        Debug.Log("CamBrain assigned to slot " + pos);
 
     }
 
@@ -93,8 +93,11 @@ public class PartyController : MonoBehaviour
         foreach (DunModel partyMod in activeParty)
         {
             int x = EnhancedPrefs.GetPlayerPref(partyMod.modelName + "PowerUpCount", 0);
+            Debug.Log(partyMod.modelName + " PowerUpCount = " + x);
             int y = EnhancedPrefs.GetPlayerPref(partyMod.modelName + "DEFUpCount", 0);
+            Debug.Log(partyMod.modelName + " DEFUpCount = " + y);
             int z = EnhancedPrefs.GetPlayerPref(partyMod.modelName + "SpellUpCount", 0);
+            Debug.Log(partyMod.modelName + " SpellUpCount = " + z);
 
             PowerUpCounters.Add(x);
             DEFUpCounters.Add(y);

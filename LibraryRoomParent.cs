@@ -14,6 +14,7 @@ public class LibraryRoomParent : RoomPropParent
     public PlayableDirector templarIdlePlayable;
     public PlayableDirector vMageUnlockPlayable;
     public PlayableDirector templarGangIdle;
+    public PlayableDirector vMageBattleStart;
     public bool hostile;
     public List<DunModel> templarModels;
 
@@ -137,6 +138,10 @@ public class LibraryRoomParent : RoomPropParent
         templar1.AssignToDirector(templarGangIdle, 4);
         templar2.AssignToDirector(templarGangIdle, 5);
 
+        templar0.AssignToDirector(vMageBattleStart, 4);
+        templar1.AssignToDirector(vMageBattleStart, 5);
+        templar2.AssignToDirector(vMageBattleStart, 6);
+
         templarModels.Add(templar0);
         templarModels.Add(templar1);
         templarModels.Add(templar2);
@@ -154,6 +159,16 @@ public class LibraryRoomParent : RoomPropParent
         Debug.Log("Templar Gang Spawned in room(GameObject)", gameObject);
         templarGangIdle.Play();
         
+    }
+
+    public override void AfterBattle()
+    {
+        base.AfterBattle();
+        PartyController party = FindObjectOfType<PartyController>();
+        foreach (DunModel mod in party.activeParty)
+        {
+            mod.gameObject.SetActive(false);
+        }
     }
 
     public void UnlockTemplarEnemies()
@@ -249,11 +264,7 @@ public class LibraryRoomParent : RoomPropParent
         music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
 
     }
-
-
-
-
-   
+       
 
     public void TemplarBattleReturn()
     {

@@ -5,6 +5,9 @@ using UnityEngine;
 public class SpiderEggsBattle : EnemyBattleModel
 {
     public SpiderGruntBattle spiderGrunt;
+    public ParticleSystem eggBurstFX;
+    public GameObject meshObject;
+    public GameObject larvMeshObject;
 
 
     public override void StartAction()
@@ -59,7 +62,12 @@ public class SpiderEggsBattle : EnemyBattleModel
     }
     IEnumerator DieTimer()
     {
-        yield return new WaitForSeconds(2);
+        audioSource.PlayOneShot(actionSounds[0]);
+        meshObject.SetActive(false);
+        larvMeshObject.SetActive(false);
+        eggBurstFX.gameObject.SetActive(true);
+        eggBurstFX.Play();
+        yield return new WaitForSeconds(4);
         gameObject.SetActive(false);
     }
 

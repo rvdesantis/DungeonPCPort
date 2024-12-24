@@ -6,6 +6,9 @@ public class JailSwitch : DunSwitch
 {
     public JailRoomParent jailParent;
     public bool hidden;
+    public FakeWall stallWall;
+
+
     public override void FlipSwitch()
     {
         if (!locked && !flipping)
@@ -17,24 +20,21 @@ public class JailSwitch : DunSwitch
 
             if (!switchOn)
             {
+                DistanceController distanceController = FindObjectOfType<DistanceController>();
                 if (animType == AnimType.animator)
-                {
-                    switchOn = true;
-                    flipping = true;
-                    switchAnim.SetTrigger("switchOn");
-                    if (audioSource != null && switchSounds.Count > 0)
-                    {
-                        audioSource.PlayOneShot(switchSounds[0]);
-                    }
-                    StartCoroutine(FlipTimer());
-
-
-                    DistanceController distanceController = FindObjectOfType<DistanceController>();
+                {                  
                     if (!hidden)
                     {
+                        switchOn = true;
+                        flipping = true;
+                        switchAnim.SetTrigger("switchOn");
+                        if (audioSource != null && switchSounds.Count > 0)
+                        {
+                            audioSource.PlayOneShot(switchSounds[0]);
+                        }
+                        StartCoroutine(FlipTimer());                       
                         Debug.Log("flipping left gate");
-                        jailParent.lGate = true;
-                       
+                        jailParent.lGate = true;                       
                         distanceController.switches.Remove(this);
                         distanceController.switches.Add(jailParent.hiddenSwitch);
                         jailParent.leftGate.Play();
@@ -48,10 +48,19 @@ public class JailSwitch : DunSwitch
                         distanceController.chests.Add(jailParent.cellChest);
                         jailParent.rightGate.Play();
                         jailParent.JailerReturn();
+                        switchOn = true;
+                        switchAnim.SetTrigger("switchOn");
+                        if (audioSource != null && switchSounds.Count > 0)
+                        {
+                            audioSource.PlayOneShot(switchSounds[0]);
+                        }
+                        StartCoroutine(FlipTimer());                     
+                        distanceController.switches.Remove(this);
+
                     }
 
                 }
             }            
         }
-    }
+    }    
 }

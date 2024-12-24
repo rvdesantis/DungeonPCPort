@@ -12,6 +12,7 @@ public class MusicController : MonoBehaviour
     public List<AudioClip> battleMusicClips;
 
     public float fadeDuration;
+    public bool testing;
 
     private void Start()
     {
@@ -53,10 +54,12 @@ public class MusicController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (controller.activePlayable != null)
+        if (controller != null)
         {
-            audioSource.Stop();
+            if (controller.activePlayable != null)
+            {
+                audioSource.Stop();
+            }
         }
     }
-
 }

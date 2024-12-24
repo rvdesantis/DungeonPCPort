@@ -12,8 +12,6 @@ public class BattleModel : DunModel
     public BattleController battleC;
     public int health;
     public int maxH;
-    public int mana;
-    public int maxM;
 
     public int def;
     public int power;
@@ -163,7 +161,10 @@ public class BattleModel : DunModel
     }
     public virtual void GetHit(BattleModel modelSource)
     {
-        anim.SetTrigger("hit");
+        if (!dead)
+        {
+            anim.SetTrigger("hit");
+        }
     }
     public virtual void TriggerTargetHit() // set on attack animation, or triggered in spell script
     {
@@ -386,7 +387,7 @@ public class BattleModel : DunModel
         usedItem.UseItem(null, target);
 
         yield return new WaitForSeconds(2);
-
+        item.itemCount--;
         battleC.heroIndex++;
         afterAction.Invoke();
         afterAction = null;

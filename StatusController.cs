@@ -155,11 +155,17 @@ public class StatusController : MonoBehaviour
         poisonModel = null;
         darkCount = 0;
         
-        foreach (ParticleSystem particle in statusCircleFX)
+        IEnumerator ResetTimer()
         {
-            particle.Stop();
-            particle.gameObject.SetActive(false);
+            yield return new WaitForSeconds(3);
+            foreach (ParticleSystem particle in statusCircleFX)
+            {
+                particle.Stop();
+                particle.gameObject.SetActive(false);
+            }
         }
+        StartCoroutine(ResetTimer());
+       
     }
 
 

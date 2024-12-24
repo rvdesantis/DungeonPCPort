@@ -9,6 +9,7 @@ public class Cube : MonoBehaviour
     public CubeType cubeType;
     public MeshRenderer lengthMesh;
     public DeadEndCube cap;
+    public DeadEndCube flippedCap;
     public bool filled;
     public GameObject positioner;
     public BoxCollider collisionChecker;
@@ -25,14 +26,15 @@ public class Cube : MonoBehaviour
     public List<GameObject> randomProps;
     public bool BoxChecker()
     {
-        bool collision = false;
+        bool bossCollision = false;
         Collider[] colliders = Physics.OverlapBox(collisionChecker.bounds.center, collisionChecker.bounds.extents);
         if (colliders.Length > 1)
         {
-            collision = true;
+            bossCollision = true;
+            Debug.Log("BoxChecker Collision with (GameObject) " + colliders[0].gameObject.name, gameObject);
         }
 
-        if (collision)
+        if (bossCollision)
         {
             return true;
         }

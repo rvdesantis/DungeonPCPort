@@ -81,8 +81,10 @@ public class InventoryController : MonoBehaviour
     public void AddGold(int goldAdd)
     {
         gold = gold + goldAdd;
-        EnhancedPrefs.SetPlayerPref("goldBank", gold);
-        EnhancedPrefs.SavePlayerPrefs();
+        StatsTracker stats = FindObjectOfType<StatsTracker>();
+        stats.totalGold = stats.totalGold + goldAdd;
+
+        EnhancedPrefs.SetPlayerPref("goldBank", gold); EnhancedPrefs.SavePlayerPrefs();
     }
 
     public void ReduceGold(int goldCost)
@@ -90,6 +92,7 @@ public class InventoryController : MonoBehaviour
         if (gold >= goldCost)
         {
             gold = gold - goldCost;
+            EnhancedPrefs.SetPlayerPref("goldBank", gold);  EnhancedPrefs.SavePlayerPrefs();
         }
 
         if (gold < goldCost)
@@ -98,4 +101,8 @@ public class InventoryController : MonoBehaviour
         }
     }
 
+    public void LoadBattleInventory()
+    {
+
+    }
 }

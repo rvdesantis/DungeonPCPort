@@ -85,7 +85,7 @@ public class BossCube : Cube
 
     private void Update()
     {
-        if (!rangeTrigger)
+        if (!rangeTrigger && positioner.activeSelf)
         {
             if (controller == null)
             {
@@ -97,7 +97,7 @@ public class BossCube : Cube
             }
             Vector3 playerPosition = controller.playerController.transform.position;
        
-            if (Vector3.Distance(playerPosition, bossHallStarter.generatedHallway[2].transform.position) < 5)
+            if (Vector3.Distance(playerPosition, bossHallStarter.generatedHallway[2].transform.position) < 5 && controller.playerController.controller.enabled)
             {
                 rangeTrigger = true;
                 StartCoroutine(RangeTimer());

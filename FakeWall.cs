@@ -41,7 +41,9 @@ public class FakeWall : MonoBehaviour
 
     public void WallBreak()
     {
-        StartCoroutine(Break());        
+        StartCoroutine(Break());
+        StatsTracker stats = controller.statsTimer;
+        stats.openedWalls++;
     }
 
     // Update is called once per frame

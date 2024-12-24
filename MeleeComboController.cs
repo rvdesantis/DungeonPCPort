@@ -41,7 +41,9 @@ public class MeleeComboController : MonoBehaviour
             }
             if (enMod == comboTarget)
             {
+                Vector3 backwardMovement = -battleC.activeRoom.enemySpawnPoints[0].transform.forward * enMod.strikeDistance;
                 enMod.transform.position = battleC.activeRoom.enemySpawnPoints[0].transform.position;
+                enMod.transform.position += backwardMovement;
             }
         }
 

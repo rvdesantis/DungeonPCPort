@@ -197,7 +197,15 @@ public class GelCubeBattleScript : EnemyBattleModel
             hero.AssignBattleDirector(battleStartPlayable, 0, false, true);
         }
         actionTarget = battleC.heroParty[0];
-        StartCoroutine(BattleIntroTimer());
+        if (!actionTarget.dead)
+        {
+            StartCoroutine(BattleIntroTimer());
+        }
+        if (actionTarget.dead)
+        {
+            afterAction.Invoke();
+            afterAction = null;
+        }
     }
 
     IEnumerator BattleIntroTimer()
@@ -206,6 +214,7 @@ public class GelCubeBattleScript : EnemyBattleModel
         yield return new WaitForSeconds((float)battleStartPlayable.duration);
         afterAction.Invoke();
         afterAction = null;
+        actionTarget.skip = true;
         Gulp(actionTarget);
     }
 
@@ -233,9 +242,7 @@ public class GelCubeBattleScript : EnemyBattleModel
             Vector3 returnPos = transform.position;
             transform.position = attackPosition;
 
-            Quaternion camRot = battleC.activeRoom.mainCam.transform.rotation;
-
-            battleC.activeRoom.mainCam.LookAt = transform;
+           
 
             
             anim.SetTrigger("attack1");
@@ -245,14 +252,17 @@ public class GelCubeBattleScript : EnemyBattleModel
 
             if (trappedPlayer!=null)
             {
-                trappedPlayer.transform.position = actionTarget.spawnPoint;                
-                trappedPlayer.transform.parent = battleC.activeRoom.playerSpawnPoints[pos].transform;
-                trappedPlayer.transform.rotation = battleC.activeRoom.playerSpawnPoints[pos].transform.rotation;
-                TriggerTargetHit();
+                BattleModel spitModel = trappedPlayer;
                 trappedPlayer = null;
+
+                spitModel.transform.position = actionTarget.spawnPoint;
+                spitModel.transform.parent = battleC.activeRoom.playerSpawnPoints[pos].transform;
+                spitModel.transform.rotation = battleC.activeRoom.playerSpawnPoints[pos].transform.rotation;
+                spitModel.skip = false;
+                TriggerTargetHit();
+
             }
-            battleC.activeRoom.mainCam.LookAt = null;
-            battleC.activeRoom.mainCam.transform.rotation = camRot;
+
 
             yield return new WaitForSeconds(strikeTimer / 2);
 
@@ -288,7 +298,11 @@ public class GelCubeBattleScript : EnemyBattleModel
     {
         if (trappedPlayer != null)
         {
-            trappedPlayer.transform.position = gulpTransform.transform.position;       
+            trappedPlayer.transform.position = gulpTransform.transform.position;    
+            if (!trappedPlayer.skip)
+            {
+                trappedPlayer.skip = true;
+            }
         }
     }
 }

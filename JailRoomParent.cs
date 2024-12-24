@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Playables;
 using DTT.PlayerPrefsEnhanced;
+using UnityEngine.InputSystem.XR;
 
 public class JailRoomParent : RoomPropParent
 {
@@ -173,16 +174,26 @@ public class JailRoomParent : RoomPropParent
     public void JailerReturnEnd()
     {
         PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
         SceneController controller = FindObjectOfType<SceneController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+
+        controller.activePlayable = null;
+        controller.endAction = null;
 
         foreach (DunModel model in party.activeParty)
         {
             model.gameObject.SetActive(false);
         }
         activeJailer.gameObject.SetActive(false);
+        battleC.SetBattle(9);
+        battleC.afterBattleAction = AfterJailerBattle;
+    }
 
+    public void AfterJailerBattle()
+    {
+        PlayerController player = FindObjectOfType<PlayerController>();
+        SceneController controller = FindObjectOfType<SceneController>();
+        DunUIController uiController = FindObjectOfType<DunUIController>();
         if (prisoner != null)
         {
             UnlockController unlockables = FindObjectOfType<UnlockController>();

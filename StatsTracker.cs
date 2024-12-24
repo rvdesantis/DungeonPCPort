@@ -12,6 +12,12 @@ public class StatsTracker : MonoBehaviour
     public int openedWalls;
     public int battles;
     public int bosses;
+    public int trapsTotal;
+
+    public int battleCombos;
+    public int battleGold;
+    public int battleXP;
+
     public int totalCombos;
     public int totalGold;
     public int totalXP;

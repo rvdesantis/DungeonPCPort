@@ -70,14 +70,12 @@ public class DemonessBattle : EnemyBattleModel
                 actionType = ActionType.spell;
                 if (battleC.enemyParty[1].dead)
                 {
-                    SummonDemon(1);
-                    StartCoroutine(SummonTimer());
+                    StartCoroutine(SummonOneTimer());
                     return;
                 }
                 if (battleC.enemyParty[2].dead)
                 {
-                    SummonDemon(2);
-                    StartCoroutine(SummonTimer());
+                    StartCoroutine(SummonTwoTimer());
                     return;
                 }
             }
@@ -162,12 +160,12 @@ public class DemonessBattle : EnemyBattleModel
         }
     }
 
-    public void SpawnOne() // used in Anim for Timeline Intro
+    public void SpawnOne() 
     {
         SummonDemon(1);
     }
 
-    public void SpawnTwo() // used in Anim for Timeline Intro
+    public void SpawnTwo() 
     {
         SummonDemon(2);
     }
@@ -184,12 +182,27 @@ public class DemonessBattle : EnemyBattleModel
         return living;
     }
 
-    IEnumerator SummonTimer()
+    IEnumerator SummonOneTimer()
     {
         anim.SetTrigger("taunt");
         battleC.enemyIndex++;
 
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1.5f);
+        SpawnOne();
+        yield return new WaitForSeconds(1.5f);
+
+        afterAction.Invoke();
+        afterAction = null;
+    }
+
+    IEnumerator SummonTwoTimer()
+    {
+        anim.SetTrigger("taunt");
+        battleC.enemyIndex++;
+
+        yield return new WaitForSeconds(1.5f);
+        SpawnTwo();
+        yield return new WaitForSeconds(1.5f);
 
         afterAction.Invoke();
         afterAction = null;

@@ -26,6 +26,12 @@ public class LesserRedDragonBoss : EnemyBattleModel
         }
     }
 
+    public void LandShake()
+    {
+        Debug.Log("Shaking Cam ", battleC.bCamController.activeCam.gameObject);
+        battleC.bCamController.TriggerShake(.25f, 2, 2);
+        audioSource.PlayOneShot(actionSounds[5]);
+    }
     public override void StartAction()
     {
         if (battleC == null)

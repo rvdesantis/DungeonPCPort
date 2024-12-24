@@ -24,6 +24,12 @@ public class WolfBattleModel : EnemyBattleModel
         
     }
 
+    public override void GetHit(BattleModel modelSource)
+    {
+        audioSource.PlayOneShot(actionSounds[1]);
+        base.GetHit(modelSource);
+    }
+
 
     public override void StartAction()
     {
@@ -143,11 +149,9 @@ public class WolfBattleModel : EnemyBattleModel
         eatPlayable.Play();
         yield return new WaitForSeconds(eatTimer);
         Heal(maxH / 2);
-        afterAction.Invoke();
-        afterAction = null;
-        actionCams[0].m_Priority = -1;
         actionCams[0].gameObject.SetActive(false);
-        anim.SetBool("aggressive", false);
+        actionCams[0].m_Priority = -10;
+        StartAction();  // loops action after heal
     }
 
     public bool LivingCheck()
@@ -175,6 +179,7 @@ public class WolfBattleModel : EnemyBattleModel
     public override void TakeDamage(int damage, BattleModel damSource, bool crit = false)
     {
         base.TakeDamage(damage, damSource, crit);
+
         if (health <= maxH / 4)
         {
             if (anim.GetBool("aggressive") == false)
@@ -182,8 +187,9 @@ public class WolfBattleModel : EnemyBattleModel
                 anim.SetBool("aggressive", true);
                 statusC.boostAmount = statusC.boostAmount + 10;
                 statusC.ActivateBoost(true);
+                return;
             }
-        }
+        }       
     }
 
 }

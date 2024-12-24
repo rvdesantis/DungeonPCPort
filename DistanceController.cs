@@ -22,6 +22,13 @@ public class DistanceController : MonoBehaviour
     public List<DunItem> dunItems;
     public List<AudioDistance> audioDistanceControllers;
 
+    public bool npcPause = false;
+    public bool portalPause = false;
+    public bool chestPause = false;
+    public bool fakeFloorPause = false;
+    public bool switchPause = false;
+    public bool itemPause = false;
+
     public void MapDistance(Vector3 playerPosition)
     {
         foreach (Cube starter in builder.createdStarters)
@@ -282,10 +289,17 @@ public class DistanceController : MonoBehaviour
     }
     public void NPCDistance(Vector3 playerPosition)
     {
+        List<DunNPC> removeList = new List<DunNPC>();
+
         foreach (DunNPC npc in npcS)
         {
+            
             if (npc.gameObject.activeSelf)
             {
+                if (npc.remove)
+                {
+                    removeList.Add(npc);
+                }
                 if (npc.idlePlayableLoop != null)
                 {
                     if (Vector3.Distance(playerPosition, npc.transform.position) < 15)
@@ -342,6 +356,17 @@ public class DistanceController : MonoBehaviour
                 }
             }
 
+        }
+
+        foreach (DunNPC removingNPC in removeList)
+        {
+            npcS.Remove(removingNPC);
+            Debug.Log("Removing " + removingNPC.name + " from NPC List on DistanceController()", gameObject);
+            uiController.interactUI.gameObject.SetActive(false);
+            uiController.interactUI.activeObj = null;
+
+            uiController.rangeImage.gameObject.SetActive(false);
+            uiController.customImage.gameObject.SetActive(false);
         }
     }
     public void FakeFloorDistance(Vector3 playerPosition)
@@ -424,7 +449,14 @@ public class DistanceController : MonoBehaviour
                             side.TriggerEnemy();
                         }
                     }
-                }
+                    if (side.sideType == SideExtenderCube.SideType.trap)
+                    {
+                        if (Vector3.Distance(playerPosition, side.triggerSpot.transform.position) < 4)
+                        {
+                            side.TriggerTrap();
+                        }
+                    }
+                }                
             }
         }
     }
@@ -517,7 +549,10 @@ public class DistanceController : MonoBehaviour
                 FakeFloorDistance(playerPosition);
                 AudioDistance(playerPosition);
                 ChestDistance(playerPosition);
-                NPCDistance(playerPosition);
+                if (!npcPause)
+                {
+                    NPCDistance(playerPosition);
+                }
                 RoomDistance(playerPosition);
                 EnemyTriggerDistance(playerPosition);
                 SwitchDistance(playerPosition);

@@ -73,6 +73,8 @@ public class ComboController : MonoBehaviour
                                     }
                                 }
                                 meleeComboC.StartMeleeCombo(0);
+                                battleC.statsTimer.battleCombos++;
+                                battleC.statsTimer.totalCombos++;
                                 return;
                             }
                         }

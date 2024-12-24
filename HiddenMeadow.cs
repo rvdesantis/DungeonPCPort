@@ -1,3 +1,4 @@
+using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,7 @@ public class HiddenMeadow : HiddenEndCube
     public float battleDistance;
 
     public PlayerController player;
+    public CinemachineVirtualCamera throwCam;
 
     public void FirstEnter()
     {

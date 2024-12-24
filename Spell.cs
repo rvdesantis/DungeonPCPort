@@ -60,6 +60,15 @@ public class Spell : MonoBehaviour
         }
     }
 
+    public IEnumerator ProjTimer()
+    {
+        yield return new WaitForSeconds(2);
+        foreach (ParticleSystem part in spellFX)
+        {
+            part.gameObject.SetActive(false);
+        }
+    }
+
     IEnumerator AOETimer()
     {
 

@@ -9,6 +9,7 @@ public class DunPortal : MonoBehaviour
     public bool inRange;
     public int jumpCount;
     public bool closeOnJump;
+    public bool swapOnJump;
     public bool assigned;
     public FakeWall destoryWall;
     public MeshRenderer portalViewMeshRenderer;
@@ -46,6 +47,10 @@ public class DunPortal : MonoBehaviour
             {
                 gameObject.SetActive(false);
             }
+            if (swapOnJump)
+            {
+                SwapOnJump();
+            }
         }
        
     }
@@ -70,5 +75,19 @@ public class DunPortal : MonoBehaviour
         Material[] materials = portalViewMeshRenderer.materials;
         materials[0] = connectorPortal.returnViewMaterial;
         portalViewMeshRenderer.materials = materials;
+    }
+
+    public void SwapOnJump()
+    {
+        if (sceneController == null)
+        {
+            sceneController = FindObjectOfType<SceneController>();
+        }
+        connectedPortal.gameObject.SetActive(true);
+        connectedPortal.ConnectPortals(this);
+        sceneController.distance.portals.Remove(this);
+        sceneController.distance.portals.Add(connectedPortal);
+        connectedPortal.swapOnJump = true;
+       
     }
 }

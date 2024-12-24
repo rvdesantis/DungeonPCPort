@@ -78,6 +78,8 @@ public class DunChest : MonoBehaviour
         uiController.pickUpUI.gameObject.SetActive(true);
         uiController.pickUpUI.OpenImage(chestItem);
         uiController.pickUpUI.afterAction = chestItem.PickUp;
+        StatsTracker stats = uiController.controller.statsTimer;
+        stats.openedChests++;
     }
 
     public virtual void OpenChest()

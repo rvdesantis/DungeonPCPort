@@ -8,22 +8,30 @@ public class TemplarBattleScript : EnemyBattleModel
 {
     public enum Templar { Warrior, Holy, MiniBoss}
     public Templar templarType;
+    public DunModel afterTarget;
     public PlayableDirector introPlayable;
     public CinemachineVirtualCamera introVCam;
+    public ParticleSystem healVFX; // used for Holy Templar
+    public ParticleSystem lightStrikeVFX;
 
     private void Start()
     {
-        introPlayable.Play();
-        introVCam.gameObject.SetActive(true);
-        introVCam.m_Priority = 20;
+        if (templarType == Templar.MiniBoss)
+        {
+            introPlayable.Play();
+            introVCam.gameObject.SetActive(true);
+     
+            IEnumerator CamTimer()
+            {
+                introVCam.m_Priority = 20;
+                yield return new WaitForSeconds(3);
+                introVCam.m_Priority = -5;
+            }
+
+            StartCoroutine(CamTimer());
+        }
     }
 
-    IEnumerator CamTimer()
-    {
-        yield return new WaitForSeconds(4);
-        introVCam.m_Priority = -20;
-        introVCam.gameObject.SetActive(false);
-    }
     public override void StartAction()
     {
         if (battleC == null)
@@ -34,14 +42,17 @@ public class TemplarBattleScript : EnemyBattleModel
         if (battleC.enemyIndex == 0) // works for Enemy side
         {
             afterAction = battleC.enemyParty[1].StartAction;
+            afterTarget = battleC.enemyParty[1];            
         }
         if (battleC.enemyIndex == 1)
         {
             afterAction = battleC.enemyParty[2].StartAction;
+            afterTarget = battleC.enemyParty[2];
         }
         if (battleC.enemyIndex == 2)
         {
             afterAction = battleC.StartPostEnemyTimer;
+            afterTarget = battleC.heroParty[0];
         }
 
         if (skip || dead || DeadEnemiesCheck())
@@ -61,47 +72,46 @@ public class TemplarBattleScript : EnemyBattleModel
             if (templarType == Templar.Warrior)
             {
                 SelectRandomTarget();
-
-
-                if (actionType == ActionType.melee)
-                {
-                    Attack(actionTarget);
-                }
-
-                if (actionType == ActionType.spell)
-                {
-                    selectedSpell = masterSpells[0]; // for testing
-                    Cast(actionTarget, selectedSpell);
-                }
+                Attack(actionTarget);
             }
             if (templarType == Templar.Holy)
             {
-                SelectRandomTarget();
-                if (actionType == ActionType.melee)
+                bool healthCheck = false;
+                foreach (BattleModel enemy in battleC.enemyParty)
                 {
-                    Attack(actionTarget);
+                    if (enemy.health < enemy.maxH/2 && !enemy.dead)
+                    {
+                        Debug.Log("Heal Needed, Cleric Healing Party", gameObject);
+                        healthCheck = true;
+                    }
                 }
-                if (actionType == ActionType.spell)
+                if (healthCheck)
                 {
-                    selectedSpell = masterSpells[0]; // for testing
-                    Cast(actionTarget, selectedSpell);
+                    CastHeal();
                 }
+                if (!healthCheck)
+                {
+                    SelectRandomTarget();
+                    CastAttack();
+                }                
             }
-
         }
     }
 
-    public void CastShield() // attached to anim
+    public void CastShield() // attached to anim on Templar MiniBoss
     {
         statusC.DEFboost = 20;
         statusC.ActivateDEF(true);
-        anim.SetBool("block", true);
+        if (statusC.DEFboost == 0 && templarType != Templar.Holy)
+        {
+            anim.SetBool("block", true);
+        }            
     }
 
     public override void TakeDamage(int damage, BattleModel damSource, bool crit = false)
     {
         base.TakeDamage(damage, damSource, crit);
-        if (statusC.DEFboost == 0)
+        if (statusC.DEFboost == 0 && templarType != Templar.Holy)
         {
             anim.SetBool("block", false);
         }
@@ -117,6 +127,93 @@ public class TemplarBattleScript : EnemyBattleModel
     {
         base.Die(damSource);
         audioSource.PlayOneShot(actionSounds[2]);
+    }
+
+    public void CastHeal()
+    {
+        StartCoroutine(HealTimer());
+        anim.SetTrigger("spell0");
+    }
+
+    public void CastAttack()
+    {        
+        StartCoroutine(HolySpellTimer());
+        anim.SetTrigger("attack0");
+    }
+
+    IEnumerator HolySpellTimer()
+    {
+        Debug.Log("Casting Spell Attack Timer");
+        ParticleSystem lightPillar = Instantiate(lightStrikeVFX, actionTarget.transform);
+        audioSource.PlayOneShot(actionSounds[4]);
+        yield return new WaitForSeconds(2);
+        float sDamage = 30;
+        if (spellBonusPercent != 0)
+        {
+            sDamage = sDamage * (1 + (spellBonusPercent / 100));
+        }
+        int dam = ((int)sDamage);
+
+        bool voidMageCheck = false;
+        VoidBattleModel voidMage = null; 
+
+        if (actionTarget.GetComponent<VoidBattleModel>() != null)
+        {
+            voidMageCheck = true;
+            voidMage = actionTarget.GetComponent<VoidBattleModel>();
+        }     
+        if (!voidMageCheck)
+        {
+            actionTarget.TakeDamage(dam, this);
+        }
+        if (voidMageCheck)
+        {
+            dam = maxH * 2;
+            actionTarget.TakeDamage(dam, this, true);
+        }
+        battleC.enemyIndex++;
+        afterAction.Invoke();
+        afterAction = null;
+
+    }
+
+    IEnumerator HealTimer()
+    {
+        Debug.Log("Casting Heal Timer");
+        ParticleSystem healFX = null;
+        DamageMSS healTXT = null;
+        List<DamageMSS> usedCanvas = new List<DamageMSS>();
+
+        audioSource.PlayOneShot(actionSounds[3]);
+        foreach (BattleModel enemy in battleC.enemyParty)
+        {
+            if (!enemy.dead)
+            {
+                healFX = Instantiate(healVFX, enemy.transform);
+                healFX.gameObject.SetActive(true);
+                healFX.Play();
+
+                enemy.Heal(25);
+                healTXT = Instantiate(battleC.damageCanvas, enemy.transform);
+                healTXT.gameObject.SetActive(true);
+                healTXT.damTXT.color = Color.green;
+                healTXT.damTXT.text = "25";
+                usedCanvas.Add(healTXT);
+            }
+        }
+        yield return new WaitForSeconds(2.5f);
+
+
+        foreach (DamageMSS can in usedCanvas)
+        {
+            can.gameObject.SetActive(false);
+            Destroy(can.gameObject);
+        }
+        healFX.gameObject.SetActive(false);
+        Destroy(healFX.gameObject);
+        battleC.enemyIndex++;
+        afterAction.Invoke();
+        afterAction = null;
     }
 
     IEnumerator MiniBossTurnTimer()

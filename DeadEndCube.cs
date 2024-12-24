@@ -9,6 +9,8 @@ public class DeadEndCube : Cube
     public EndType endType;
     public Transform spawnPoint;
     public FakeWall fakeWall;
+    public DunPortal connectorPortal;
+
 
 
     private void Start()

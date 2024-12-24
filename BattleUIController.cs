@@ -8,6 +8,7 @@ using Unity.VisualScripting;
 using TMPro;
 using CryptUI.Scripts;
 using UnityEngine.EventSystems;
+using DTT.Utils.Extensions;
 
 public class BattleUIController : MonoBehaviour
 {
@@ -39,6 +40,8 @@ public class BattleUIController : MonoBehaviour
     public Image rSpellIcon;
     public TextMeshProUGUI lSpellTXT;
     public TextMeshProUGUI rSpellTXT;
+    public TextMeshProUGUI lSpellTypeTXT;
+    public TextMeshProUGUI rSpellTypeTXT;
 
     public GameObject lItemFrame;
     public GameObject rItemFrame;
@@ -59,8 +62,6 @@ public class BattleUIController : MonoBehaviour
     public GameObject lInfoFrame;
     public TextMeshProUGUI lInfoTXT;
 
-
-
     public GameObject rInfoFrame;
     public TextMeshProUGUI rInfoTXT;
 
@@ -68,7 +69,9 @@ public class BattleUIController : MonoBehaviour
     public int spellIndex;  
 
     public List<Button> enemySelectButtons;
+    public List<TargetButtonFrameUI> enemyButtonFrames;
     public List<Button> partySelectButtons;
+    public List<TargetButtonFrameUI> partyButtonFrames;
 
     public List<Slider> enemySelectSliders;
     public List<Slider> partySelectSliders;
@@ -112,6 +115,9 @@ public class BattleUIController : MonoBehaviour
                 lInfoFrame.SetActive(true);
                 lInfoTXT.text = battleC.heroParty[1].modelName;
                 Debug.Log("Setting Buttons for Hero 1");
+                battleC.activeRoom.targetingCams[0].m_Priority = 0;
+                battleC.activeRoom.targetingCams[1].m_Priority = 10;
+                battleC.activeRoom.targetingCams[2].m_Priority = 0;
             }
             if (!left)
             {
@@ -130,6 +136,9 @@ public class BattleUIController : MonoBehaviour
                     rHealthSlider.maxValue = battleC.heroParty[0].maxH;
                     rHealthSlider.value = battleC.heroParty[0].health;                    
                     rInfoTXT.text = battleC.heroParty[0].modelName;
+                    battleC.activeRoom.targetingCams[0].m_Priority = 10;
+                    battleC.activeRoom.targetingCams[1].m_Priority = 0;
+                    battleC.activeRoom.targetingCams[2].m_Priority = 0;
                 }
                 if (index == 2)
                 {
@@ -137,6 +146,9 @@ public class BattleUIController : MonoBehaviour
                     rHealthSlider.maxValue = battleC.heroParty[2].maxH;
                     rHealthSlider.value = battleC.heroParty[2].health;
                     rInfoTXT.text = battleC.heroParty[2].modelName;
+                    battleC.activeRoom.targetingCams[0].m_Priority = 0;
+                    battleC.activeRoom.targetingCams[1].m_Priority = 0;
+                    battleC.activeRoom.targetingCams[2].m_Priority = 10;
                 }
                 lHealthSlider.gameObject.SetActive(false);
                 foreach (Button bt in rActionButtons)
@@ -161,6 +173,64 @@ public class BattleUIController : MonoBehaviour
                     }
                 }
 
+            }
+        }
+    }
+
+    public void ColorSpellType(bool left, Spell targetSpell)
+    {        
+        if (!left)
+        {
+            if (targetSpell.spellType == Spell.SpellType.fire)
+            {
+                rSpellTypeTXT.color = Color.red;
+            }
+            if (targetSpell.spellType == Spell.SpellType.voidMag)
+            {
+                rSpellTypeTXT.color = Color.magenta;
+            }
+            if (targetSpell.spellType == Spell.SpellType.defense)
+            {
+                rSpellTypeTXT.color = Color.gray;
+            }
+            if (targetSpell.spellType == Spell.SpellType.offense)
+            {
+                rSpellTypeTXT.color = Color.white;
+            }
+            if (targetSpell.spellType == Spell.SpellType.ice)
+            {
+                rSpellTypeTXT.color = Color.cyan;
+            }
+            if (targetSpell.spellType == Spell.SpellType.thunder)
+            {
+                rSpellTypeTXT.color = Color.yellow;
+            }
+        }
+        if (left)
+        {
+            if (targetSpell.spellType == Spell.SpellType.fire)
+            {
+                lSpellTypeTXT.color = Color.red;
+            }
+            if (targetSpell.spellType == Spell.SpellType.voidMag)
+            {
+                lSpellTypeTXT.color = Color.magenta;
+            }
+            if (targetSpell.spellType == Spell.SpellType.defense)
+            {
+                lSpellTypeTXT.color = Color.gray;
+            }
+            if (targetSpell.spellType == Spell.SpellType.offense)
+            {
+                lSpellTypeTXT.color = Color.white;
+            }
+            if (targetSpell.spellType == Spell.SpellType.ice)
+            {
+                lSpellTypeTXT.color = Color.cyan;
+            }
+            if (targetSpell.spellType == Spell.SpellType.thunder)
+            {
+                lSpellTypeTXT.color = Color.yellow;
             }
         }
     }
@@ -307,6 +377,8 @@ public class BattleUIController : MonoBehaviour
             {
                 lSpellObj.SetActive(true);
                 lSpellTXT.text = activeBModel.activeSpells[0].spellInfo;
+                lSpellTypeTXT.text = activeBModel.activeSpells[0].spellType.ToString();
+                ColorSpellType(true, activeBModel.activeSpells[0]);
                 lSpellIcon.sprite = activeBModel.activeSpells[0].spellIcon;
                 lSpellText[0].text = activeBModel.activeSpells[0].spellName;
                 lSpellButtons[0].gameObject.SetActive(true);
@@ -316,6 +388,8 @@ public class BattleUIController : MonoBehaviour
             {
                 rSpellObj.SetActive(true);
                 rSpellTXT.text = activeBModel.activeSpells[0].spellInfo;
+                rSpellTypeTXT.text = activeBModel.activeSpells[0].spellType.ToString();
+                ColorSpellType(false, activeBModel.activeSpells[0]);
                 rSpellIcon.sprite = activeBModel.activeSpells[0].spellIcon;
                 rSpellButtons[0].gameObject.SetActive(true);
                 rSpellText[0].text = activeBModel.activeSpells[0].spellName;
@@ -1004,12 +1078,16 @@ public class BattleUIController : MonoBehaviour
             if (leftPanel)
             {
                 lSpellTXT.text = activeBModel.activeSpells[spellIndex].spellInfo;
+                lSpellTypeTXT.text = activeBModel.activeSpells[0].spellType.ToString();
+                ColorSpellType(true, activeBModel.activeSpells[0]);
                 lSpellIcon.sprite = activeBModel.activeSpells[spellIndex].spellIcon;
                 lSpellText[0].text = activeBModel.activeSpells[spellIndex].spellName;
             }
             if (!leftPanel)
             {
                 rSpellTXT.text = activeBModel.activeSpells[spellIndex].spellInfo;
+                rSpellTypeTXT.text = activeBModel.activeSpells[0].spellType.ToString();
+                ColorSpellType(false, activeBModel.activeSpells[0]);
                 rSpellIcon.sprite = activeBModel.activeSpells[spellIndex].spellIcon;
                 rSpellText[0].text = activeBModel.activeSpells[spellIndex].spellName;
             }
@@ -1040,12 +1118,16 @@ public class BattleUIController : MonoBehaviour
             if (leftPanel)
             {
                 lSpellTXT.text = activeBModel.activeSpells[spellIndex].spellInfo;
+                lSpellTypeTXT.text = activeBModel.activeSpells[0].spellType.ToString();
+                ColorSpellType(true, activeBModel.activeSpells[0]);
                 lSpellIcon.sprite = activeBModel.activeSpells[spellIndex].spellIcon;
                 lSpellText[0].text = activeBModel.activeSpells[spellIndex].spellName;
             }
             if (!leftPanel)
             {
                 rSpellTXT.text = activeBModel.activeSpells[spellIndex].spellInfo;
+                rSpellTypeTXT.text = activeBModel.activeSpells[0].spellType.ToString();
+                ColorSpellType(false, activeBModel.activeSpells[0]);
                 rSpellIcon.sprite = activeBModel.activeSpells[spellIndex].spellIcon;
                 rSpellText[0].text = activeBModel.activeSpells[spellIndex].spellName;
             }
@@ -1163,10 +1245,20 @@ public class BattleUIController : MonoBehaviour
         }
         if (index == 2)
         {
-            battleC.heroIndex = 1;
-            battleC.HeroOneSelect();
-            rBackBT.gameObject.SetActive(false);
-            return;
+            if (!battleC.heroParty[1].dead)
+            {
+                battleC.heroIndex = 1;
+                battleC.HeroOneSelect();
+                rBackBT.gameObject.SetActive(false);
+                return;
+            }
+            if (battleC.heroParty[1].dead)
+            {
+                battleC.heroIndex = 0;
+                battleC.HeroZeroSelect();
+                rBackBT.gameObject.SetActive(false);
+                return;
+            }
         }
 
 

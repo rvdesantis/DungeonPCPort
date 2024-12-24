@@ -21,6 +21,7 @@ public class DunNPC : MonoBehaviour
     public GameObject uiObject;
     public CinemachineVirtualCamera faceCam;
     public bool singleUse;
+    public bool remove;
 
 
     public virtual void NPCTrigger()
