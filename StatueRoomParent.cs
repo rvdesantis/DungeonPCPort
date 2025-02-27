@@ -1,14 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 using UnityEngine.Playables;
 
 
 public class StatueRoomParent : RoomPropParent
 {
+    public PlayerController player;
     public Transform crystalParent;
     public Transform floorGrate;
     public Transform roofGrate;
+    public Transform returnPosition;
+
+    public Transform crystalParent2;
+    public Transform floorGrate2;
+    public Transform roofGrate2;
 
     public float rotationSpeed = 10f;
 
@@ -16,18 +23,23 @@ public class StatueRoomParent : RoomPropParent
     public List<DunSwitch> wallSwitches;
     public DunSwitch swapSwitchN;
     public DunSwitch swapSwitchS;
+    public List<GameObject> gavityObjects;
 
     public DunItem chaosOrb;
     public List<GameObject> wallCovers;
 
     public PlayableDirector crystalSwitchPlayable;
     public PlayableDirector fallChaosPlayable;
+    public PlayableDirector swapPlayableOne;
+    public PlayableDirector swapPlayableTwo;
+
     public bool gravityOff;
     public bool skippedTrigger;
 
     public GameObject rotationRoomParent;
     public bool leftRotation;
     public Transform startPoint;
+    public Transform swapPointTwo;
 
     private void Start()
     {
@@ -42,18 +54,7 @@ public class StatueRoomParent : RoomPropParent
         SceneController controller = FindObjectOfType<SceneController>();
         PlayerController player = FindObjectOfType<PlayerController>();
         PartyController party = FindObjectOfType<PartyController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        
-
-        foreach (DunSwitch sw in wallSwitches)
-        {
-            sw.locked = true;
-            sw.switchAnim.SetTrigger("switchOn");
-        }
-        swapSwitchN.locked = true;
-        swapSwitchN.switchAnim.SetTrigger("switchOn");
-        swapSwitchS.locked = true;
-        swapSwitchS.switchAnim.SetTrigger("switchOn");
+        DunUIController uiController = FindObjectOfType<DunUIController>();       
         controller.activePlayable = null;
         controller.endAction = null;
         foreach (DunModel model in party.activeParty)
@@ -61,7 +62,8 @@ public class StatueRoomParent : RoomPropParent
             model.gameObject.SetActive(false);
         }
         player.transform.position = startPoint.position;
-        player.controller.enabled = true;
+        player.controller.enabled = true; 
+
         uiController.compassObj.SetActive(true);
         uiController.rangeImage.gameObject.SetActive(false);
         if (uiController.interactUI.activeObj == startSwitch.gameObject)
@@ -70,6 +72,19 @@ public class StatueRoomParent : RoomPropParent
         }
         MusicController music = FindObjectOfType<MusicController>();
         music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
+
+        foreach (DunSwitch sw in wallSwitches)
+        {
+            controller.distance.switches.Add(sw);
+        }
+        controller.distance.switches.Add(swapSwitchN);
+        controller.distance.switches.Add(swapSwitchS);
+
+        foreach (GameObject obj in gavityObjects)
+        {
+            obj.transform.parent = null;
+        }
+
     }
     IEnumerator StartSwitch()
     {
@@ -83,6 +98,7 @@ public class StatueRoomParent : RoomPropParent
         controller.activePlayable = crystalSwitchPlayable;
         controller.endAction = EndStart;
         party.AssignCamBrain(crystalSwitchPlayable, 3);
+        party.AssignCamBrain(fallChaosPlayable, 3);
         foreach (DunModel model in party.activeParty)
         {
             model.AssignToDirector(crystalSwitchPlayable);
@@ -130,6 +146,8 @@ public class StatueRoomParent : RoomPropParent
         }
         DistanceController distance = FindObjectOfType<DistanceController>();
         distance.switches.Add(startSwitch);
+
+        player = FindObjectOfType<PlayerController>();
     }
 
     private IEnumerator RotateObjects()
@@ -139,8 +157,60 @@ public class StatueRoomParent : RoomPropParent
             crystalParent.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
             floorGrate.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
             roofGrate.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+            if (rotationRoomParent.activeSelf)
+            {
+                crystalParent2.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+                floorGrate2.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+                roofGrate2.Rotate(Vector3.up, rotationSpeed * Time.deltaTime);
+            }
             yield return null;
         }
+    }
+
+    public void TriggerSwapSwitchOne()
+    {
+        Debug.Log("Starting Swap 1 Playable");
+        swapPlayableOne.Play();
+    }
+
+    public void TriggerSwapSwitchTwo()
+    {
+        Debug.Log("Starting Swap 2 Playable");
+        swapPlayableTwo.Play();
+    }
+
+    public void SwitchStatusCheck()
+    {
+        int switchCount = wallSwitches.Count;
+        int switchCounter = 0;
+
+        foreach (DunSwitch dunSwitch in wallSwitches)
+        {
+            if (dunSwitch.switchOn && dunSwitch.locked)
+            {
+                switchCounter++;
+            }
+        }
+
+        if (switchCounter == switchCount)
+        {
+            Debug.Log("Switches Complete");
+            StartCoroutine(EndPuzzle());
+        }
+    }
+    IEnumerator EndPuzzle()
+    {
+        SceneController controller = FindObjectOfType<SceneController>();
+
+        player.controller.enabled = false;
+        yield return new WaitForSeconds(2);
+        player.transform.position = returnPosition.position;
+        fallChaosPlayable.Play();
+        yield return new WaitForSeconds(.5f);
+        rotationRoomParent.SetActive(false);
+        controller.distance.dunItems.Add(chaosOrb);
+        yield return new WaitForSeconds((float)fallChaosPlayable.duration);
+        player.controller.enabled = true;  
     }
 
     private void Update()
@@ -150,6 +220,10 @@ public class StatueRoomParent : RoomPropParent
             gravityOff = true;
             startSwitch.locked = true;
             CrystalSwitch();
+        }
+        if (rotationRoomParent.activeSelf)
+        {
+            SwitchStatusCheck();
         }
     }
 }

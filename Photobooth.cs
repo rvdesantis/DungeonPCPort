@@ -22,6 +22,10 @@ public class Photobooth : MonoBehaviour
         {
             photoLight.gameObject.SetActive(true);
         }
+        if (!photoCam.gameObject.activeSelf)
+        {
+            photoCam.gameObject.SetActive(true);
+        }
         if (currentHero != null && currentHero != partyHero)
         {
             currentHero.gameObject.SetActive(false);   
@@ -50,6 +54,7 @@ public class Photobooth : MonoBehaviour
             currentHero.gameObject.SetActive(false);
         }
         photoLight.gameObject.SetActive(false);
+        photoCam.gameObject.SetActive(false);
         wallCollider.enabled = true;
     }
 

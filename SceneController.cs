@@ -43,6 +43,18 @@ public class SceneController : MonoBehaviour
         {
             uiController.loadingBar.skullSlider.value = .5f;
             uiController.loadingBar.text.text = "PAUSED: Party Select...";
+            if (!sanctuary.fogWalls[0].gameObject.activeSelf)
+            {
+                sanctuary.fogWalls[0].gameObject.SetActive(true);
+            }
+            if (!sanctuary.fogWalls[1].gameObject.activeSelf)
+            {
+                sanctuary.fogWalls[1].gameObject.SetActive(true);
+            }
+            if (!sanctuary.fogWalls[2].gameObject.activeSelf)
+            {
+                sanctuary.fogWalls[2].gameObject.SetActive(true);
+            }           
         }
         if (party.activeParty.Count == 3)
         {
@@ -98,6 +110,19 @@ public class SceneController : MonoBehaviour
     {
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = false;
+
+        if (!sanctuary.fogWalls[0].gameObject.activeSelf)
+        {
+            sanctuary.fogWalls[0].gameObject.SetActive(true);
+        }
+        if (!sanctuary.fogWalls[1].gameObject.activeSelf)
+        {
+            sanctuary.fogWalls[1].gameObject.SetActive(true);
+        }
+        if (!sanctuary.fogWalls[2].gameObject.activeSelf)
+        {
+            sanctuary.fogWalls[2].gameObject.SetActive(true);
+        }
 
         playerController.firstPersonCam.depth = 1;
         playerController.cinPersonCam.m_Priority = 5;
@@ -179,6 +204,7 @@ public class SceneController : MonoBehaviour
         }
 
     }
+
 
     private IEnumerator SwapTrapCubes() // lowers fog walls at end
     {
@@ -309,7 +335,7 @@ public class SceneController : MonoBehaviour
             HallStarterCube comp = starterC.GetComponent<HallStarterCube>();
             if (comp.generatedHallway.Count > 0)
             {
-                if (comp.hallType != HallStarterCube.HallType.boss)
+                if (comp.hallType != HallStarterCube.HallType.boss && !comp.hallSecret)
                 {
                     openHalls.Add(comp);
                 }
@@ -355,6 +381,7 @@ public class SceneController : MonoBehaviour
 
                 starter.generatedHallway.RemoveAt(hallIndex);
                 starter.generatedHallway.Insert(hallIndex, sideExtender);
+                starter.hallSecret = true;
 
                 sideExtender.filled = true;
                 targetHall.filled = true;
@@ -369,7 +396,7 @@ public class SceneController : MonoBehaviour
 
                 if (!left && !right)
                 {
-                    int dice = UnityEngine.Random.Range(0, 2);
+                    int dice = UnityEngine.Random.Range(0, 3);
                     if (dice == 0)
                     {
                         sideExtender.SetWalls();
@@ -377,6 +404,10 @@ public class SceneController : MonoBehaviour
                     if (dice == 1)
                     {
                         sideExtender.SetWalls(false);
+                    }
+                    if (dice == 2)
+                    {
+                        sideExtender.SetTrap();
                     }
                 }
                 if (!left && right)

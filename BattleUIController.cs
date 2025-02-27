@@ -61,9 +61,18 @@ public class BattleUIController : MonoBehaviour
 
     public GameObject lInfoFrame;
     public TextMeshProUGUI lInfoTXT;
+    public TextMeshProUGUI lInfoHPTXT;
+    public TextMeshProUGUI lInfoATTTXT;
+    public TextMeshProUGUI lInfoDEFTXT;
+    public List<Image> lInfoIcons;
 
     public GameObject rInfoFrame;
     public TextMeshProUGUI rInfoTXT;
+    public TextMeshProUGUI rInfoHPTXT;
+    public TextMeshProUGUI rInfoATTTXT;
+    public TextMeshProUGUI rInfoDEFTXT;
+    public List<Image> rInfoIcons;
+
 
     public int itemIndex;
     public int spellIndex;  
@@ -114,6 +123,44 @@ public class BattleUIController : MonoBehaviour
 
                 lInfoFrame.SetActive(true);
                 lInfoTXT.text = battleC.heroParty[1].modelName;
+                lInfoHPTXT.text = "HP " + battleC.heroParty[1].health.ToString();
+                lInfoATTTXT.text = "ATT " + (battleC.heroParty[1].power + battleC.heroParty[1].statusC.boostAmount).ToString();
+                if (battleC.heroParty[1].statusC.boostAmount > 0)
+                {
+                    lInfoATTTXT.color = Color.green;
+                }
+                if (battleC.heroParty[1].statusC.boostAmount <= 0)
+                {
+                    lInfoATTTXT.color = Color.white;
+                }
+                lInfoDEFTXT.text = "DEF " + (battleC.heroParty[1].def + battleC.heroParty[1].statusC.DEFboost).ToString();
+                if (battleC.heroParty[1].statusC.DEFboost > 0)
+                {
+                    lInfoDEFTXT.color = Color.green;
+                }
+                if (battleC.heroParty[1].statusC.DEFboost <= 0)
+                {
+                    lInfoDEFTXT.color = Color.white;
+                }
+
+
+                if (battleC.heroParty[1].statusC.boostAmount > 0)
+                {
+                    lInfoIcons[0].gameObject.SetActive(true);
+                }
+                if (battleC.heroParty[1].statusC.boostAmount <= 0)
+                {
+                    lInfoIcons[0].gameObject.SetActive(false);
+                }
+                if (battleC.heroParty[1].statusC.DEFboost > 0)
+                {
+                    lInfoIcons[1].gameObject.SetActive(true);
+                }
+                if (battleC.heroParty[1].statusC.DEFboost <= 0)
+                {
+                    lInfoIcons[1].gameObject.SetActive(false);
+                }
+
                 Debug.Log("Setting Buttons for Hero 1");
                 battleC.activeRoom.targetingCams[0].m_Priority = 0;
                 battleC.activeRoom.targetingCams[1].m_Priority = 10;
@@ -135,7 +182,45 @@ public class BattleUIController : MonoBehaviour
                     Debug.Log("Setting Buttons for Hero 0");
                     rHealthSlider.maxValue = battleC.heroParty[0].maxH;
                     rHealthSlider.value = battleC.heroParty[0].health;                    
+                    
                     rInfoTXT.text = battleC.heroParty[0].modelName;
+                    rInfoHPTXT.text = "HP " + battleC.heroParty[0].health.ToString();
+                    rInfoATTTXT.text = "ATT " + (battleC.heroParty[0].power + battleC.heroParty[0].statusC.boostAmount).ToString();
+                    if (battleC.heroParty[0].statusC.boostAmount > 0)
+                    {
+                        rInfoATTTXT.color = Color.green;
+                    }
+                    if (battleC.heroParty[0].statusC.boostAmount <= 0)
+                    {
+                        rInfoATTTXT.color = Color.white;
+                    }
+                    rInfoDEFTXT.text = "DEF " + (battleC.heroParty[0].def + battleC.heroParty[0].statusC.DEFboost).ToString();
+                    if (battleC.heroParty[0].statusC.DEFboost > 0)
+                    {
+                        rInfoDEFTXT.color = Color.green;
+                    }
+                    if (battleC.heroParty[0].statusC.DEFboost <= 0)
+                    {
+                        rInfoDEFTXT.color = Color.white;
+                    }
+
+                    if (battleC.heroParty[0].statusC.boostAmount > 0)
+                    {
+                        rInfoIcons[0].gameObject.SetActive(true);
+                    }
+                    if (battleC.heroParty[0].statusC.boostAmount <= 0)
+                    {
+                        rInfoIcons[0].gameObject.SetActive(false);
+                    }
+                    if (battleC.heroParty[0].statusC.DEFboost > 0)
+                    {
+                        rInfoIcons[1].gameObject.SetActive(true);
+                    }
+                    if (battleC.heroParty[0].statusC.DEFboost <= 0)
+                    {
+                        rInfoIcons[1].gameObject.SetActive(false);
+                    }
+
                     battleC.activeRoom.targetingCams[0].m_Priority = 10;
                     battleC.activeRoom.targetingCams[1].m_Priority = 0;
                     battleC.activeRoom.targetingCams[2].m_Priority = 0;
@@ -146,6 +231,43 @@ public class BattleUIController : MonoBehaviour
                     rHealthSlider.maxValue = battleC.heroParty[2].maxH;
                     rHealthSlider.value = battleC.heroParty[2].health;
                     rInfoTXT.text = battleC.heroParty[2].modelName;
+                    rInfoHPTXT.text = "HP " + battleC.heroParty[2].health.ToString();
+                    rInfoATTTXT.text = "ATT " + (battleC.heroParty[2].power + battleC.heroParty[2].statusC.boostAmount).ToString();
+                    if (battleC.heroParty[2].statusC.boostAmount > 0)
+                    {
+                        rInfoATTTXT.color = Color.green;
+                    }
+                    if (battleC.heroParty[2].statusC.boostAmount <= 0)
+                    {
+                        rInfoATTTXT.color = Color.white;
+                    }
+                    rInfoDEFTXT.text = "DEF " + (battleC.heroParty[2].def + battleC.heroParty[2].statusC.DEFboost).ToString();
+                    if (battleC.heroParty[2].statusC.DEFboost > 0)
+                    {
+                        rInfoDEFTXT.color = Color.green;
+                    }
+                    if (battleC.heroParty[2].statusC.DEFboost <= 0)
+                    {
+                        rInfoDEFTXT.color = Color.white;
+                    }
+
+                    if (battleC.heroParty[2].statusC.boostAmount > 0)
+                    {
+                        rInfoIcons[0].gameObject.SetActive(true);
+                    }
+                    if (battleC.heroParty[2].statusC.boostAmount <= 0)
+                    {
+                        rInfoIcons[0].gameObject.SetActive(false);
+                    }
+                    if (battleC.heroParty[2].statusC.DEFboost > 0)
+                    {
+                        rInfoIcons[1].gameObject.SetActive(true);
+                    }
+                    if (battleC.heroParty[2].statusC.DEFboost <= 0)
+                    {
+                        rInfoIcons[1].gameObject.SetActive(false);
+                    }
+
                     battleC.activeRoom.targetingCams[0].m_Priority = 0;
                     battleC.activeRoom.targetingCams[1].m_Priority = 0;
                     battleC.activeRoom.targetingCams[2].m_Priority = 10;
@@ -376,7 +498,16 @@ public class BattleUIController : MonoBehaviour
             if (x == 1)
             {
                 lSpellObj.SetActive(true);
-                lSpellTXT.text = activeBModel.activeSpells[0].spellInfo;
+                int chargeNum = activeBModel.activeSpells[0].remainingCharges;
+                if (chargeNum != 100)
+                {
+                    lSpellTXT.text = activeBModel.activeSpells[0].spellInfo + "\nCHARGES: " + chargeNum;
+                }
+                if (chargeNum == 100)
+                {
+                    lSpellTXT.text = activeBModel.activeSpells[0].spellInfo + "\nCHARGES: Unlimited" ;
+                }
+               
                 lSpellTypeTXT.text = activeBModel.activeSpells[0].spellType.ToString();
                 ColorSpellType(true, activeBModel.activeSpells[0]);
                 lSpellIcon.sprite = activeBModel.activeSpells[0].spellIcon;
@@ -387,7 +518,15 @@ public class BattleUIController : MonoBehaviour
             if (x != 1)
             {
                 rSpellObj.SetActive(true);
-                rSpellTXT.text = activeBModel.activeSpells[0].spellInfo;
+                int chargeNum = activeBModel.activeSpells[0].remainingCharges;
+                if (chargeNum != 100)
+                {
+                    rSpellTXT.text = activeBModel.activeSpells[0].spellInfo + "\nCHARGES: " + chargeNum;
+                }
+                if (chargeNum == 100)
+                {
+                    rSpellTXT.text = activeBModel.activeSpells[0].spellInfo + "\nCHARGES: Unlimited";
+                }
                 rSpellTypeTXT.text = activeBModel.activeSpells[0].spellType.ToString();
                 ColorSpellType(false, activeBModel.activeSpells[0]);
                 rSpellIcon.sprite = activeBModel.activeSpells[0].spellIcon;

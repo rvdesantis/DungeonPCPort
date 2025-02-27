@@ -402,6 +402,7 @@ public class DistanceController : MonoBehaviour
                         back = true;
                     }
                     Debug.Log("Trap Door: Front Distance - " + frontDis + "/ Back Distance - " + backDis, floor.gameObject);
+                    playerController.controller.enabled = false;
                     floor.StartBreak(back);                   
                 }
             }
@@ -446,6 +447,7 @@ public class DistanceController : MonoBehaviour
                     {
                         if (Vector3.Distance(playerPosition, side.triggerSpot.transform.position) < 4)
                         {
+                            playerController.controller.enabled = false;
                             side.TriggerEnemy();
                         }
                     }
@@ -453,6 +455,7 @@ public class DistanceController : MonoBehaviour
                     {
                         if (Vector3.Distance(playerPosition, side.triggerSpot.transform.position) < 4)
                         {
+                            playerController.controller.enabled = false;
                             side.TriggerTrap();
                         }
                     }
@@ -539,7 +542,7 @@ public class DistanceController : MonoBehaviour
     private void Update()
     {
         Vector3 playerPosition = playerController.transform.position;
-        if (playerController.active && playerController.enabled && sceneController.active)
+        if (playerController.active && playerController.controller.enabled && sceneController.active)
         {
             if (!sceneController.uiController.uiActive && !sceneController.uiController.isToggling)
             {

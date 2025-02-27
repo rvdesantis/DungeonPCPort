@@ -18,6 +18,8 @@ public class Spell : MonoBehaviour
     private Vector3 spawnPoint;
     private Vector3 impactPos;
     public Sprite spellIcon;
+    public int charges;
+    public int remainingCharges;
 
     private Vector3 spellDirection;
     public enum CastType { projectile, AOE, }

@@ -63,20 +63,18 @@ public class WolfBattleModel : EnemyBattleModel
 
             if (!pup)
             {
-                if (health <= (maxH/ 4))
-                {
-                    Eat();
-                }
                 if (health > (maxH / 4))
                 {
                     SelectRandomTarget();
-
-
                     if (actionType == ActionType.melee)
                     {
                         Attack(actionTarget);
                     }
-                }   
+                }
+                if (health <= (maxH/ 4))
+                {
+                    Eat();
+                }
             }
             if (pup)
             {

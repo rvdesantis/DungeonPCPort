@@ -81,6 +81,7 @@ public class FakeFloor : MonoBehaviour
     }
     public void EndFall()
     {
+        Debug.Log("ending fall");
         SceneController controller = FindObjectOfType<SceneController>();
         DunUIController uiController = FindObjectOfType<DunUIController>();
         PartyController party = FindObjectOfType<PartyController>();
@@ -128,6 +129,7 @@ public class FakeFloor : MonoBehaviour
         player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
         player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
         player.controller.enabled = true;
+        player.enabled = true;
         player.gravity = 15;
         player.playerLight.enabled = true;
         player.cinPersonCam.m_Priority = 5;

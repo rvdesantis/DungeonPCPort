@@ -363,6 +363,10 @@ public class BattleModel : DunModel
         Debug.Log(modelName + " casting " + spell.spellName + " at " + target.modelName + " for " + roundedDamage + " damage");
         target.TakeDamage(roundedDamage, this);
 
+        if (spell.charges != 100)
+        {
+            spell.remainingCharges--;
+        }
         battleC.heroIndex++;
         afterAction.Invoke();
         afterAction = null;

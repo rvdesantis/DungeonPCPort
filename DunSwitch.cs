@@ -9,11 +9,11 @@ public class DunSwitch : MonoBehaviour
     public bool inRange;
     public bool locked;
     public bool flipping;
+    public bool lockOnFlip;
     public enum AnimType { animator, playable}
     public AnimType animType;
     public Animator switchAnim;
     public PlayableDirector switchPlayable;
-
     public AudioSource audioSource;
     public List<AudioClip> switchSounds;
 
@@ -52,6 +52,10 @@ public class DunSwitch : MonoBehaviour
                 if (animType == AnimType.playable)
                 {
 
+                }
+                if (lockOnFlip)
+                {
+                    locked = true;
                 }
                 return;
             }

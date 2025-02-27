@@ -25,6 +25,10 @@ public class WarriorBattleModel : BattleModel
             actionTarget.statusC.DEFboost = actionTarget.statusC.boostAmount + totalBase;
             yield return new WaitForSeconds(spell.castTime - spell.impactTime);
             battleC.heroIndex++;
+            if (spell.charges != 100)
+            {
+                spell.remainingCharges--;
+            }
             afterAction.Invoke();
             afterAction = null;
         }

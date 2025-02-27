@@ -20,6 +20,7 @@ public class HallStarterCube : Cube
 
     public bool hallBuildFin;
     public bool secret;
+    public bool hallSecret;
     public List<Cube> generatedHallway;
 
     public bool testColliders;

@@ -56,7 +56,10 @@ public class MeleeComboController : MonoBehaviour
         {
             int x = battleC.enemyParty.IndexOf(enMod);
             enMod.transform.position = battleC.activeRoom.enemySpawnPoints[x].transform.position;
-            enMod.gameObject.SetActive(true);
+            if (!enMod.dead)
+            {
+                enMod.gameObject.SetActive(true);
+            }   
         }
         float powerAdjusted0 = (float)hero0.powerBonusPercent / 100f + 1f;
         float powerX0 = (powerAdjusted0 * hero0.power) + hero0.statusC.boostAmount;

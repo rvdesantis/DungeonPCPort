@@ -87,7 +87,6 @@ public class DunPortal : MonoBehaviour
         connectedPortal.ConnectPortals(this);
         sceneController.distance.portals.Remove(this);
         sceneController.distance.portals.Add(connectedPortal);
-        connectedPortal.swapOnJump = true;
-       
+        connectedPortal.swapOnJump = true;       
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -7,11 +8,25 @@ public class GlowingMushBattleModel : EnemyBattleModel
 {
     public PlayableDirector poisonHop;
     public GameObject poisonDart;
+    public FireMageBattleModel fireMage;
 
     private void Start()
     {
         anim.SetTrigger("goMonster");
         spawnPoint = transform.position;
+        if (fireMage != null )
+        {
+            fireMage.afterAction = null;
+            StartCoroutine(MageBattleStart());
+        }
+    }
+
+    public IEnumerator MageBattleStart()
+    {
+        yield return new WaitForSeconds(2);
+        fireMage.actionTarget = this;
+        fireMage.selectedSpell = fireMage.activeSpells[0];
+        StartCoroutine(fireMage.CastTimer(this, fireMage.activeSpells[0]));
     }
 
     public override void Attack(BattleModel target)

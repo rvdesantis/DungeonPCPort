@@ -34,7 +34,7 @@ public class ComboController : MonoBehaviour
             int meleeCount = 0;
             foreach (BattleModel hero in battleC.heroParty)
             {
-                if (hero.actionType == BattleModel.ActionType.melee)
+                if (hero.actionType == BattleModel.ActionType.melee && !hero.skip)
                 {
                     meleeCount++;
                 }

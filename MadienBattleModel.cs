@@ -28,6 +28,10 @@ public class MadienBattleModel : BattleModel
             actionTarget.statusC.boostAmount = actionTarget.statusC.boostAmount + totalBase;
             actionTarget.statusC.ActivateBoost(true);
             battleC.heroIndex++;
+            if (spell.charges != 100)
+            {
+                spell.remainingCharges--;
+            }
             afterAction.Invoke();
             afterAction = null;         
         }

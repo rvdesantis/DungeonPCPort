@@ -8,6 +8,7 @@ public class HiddenEndCube : DeadEndCube
     public List<DunChest> chests;
     public DunPortal secretPortal;
     public List<DunNPC> npcs;
+    public List<DunItem> items;
     public enum SecretSize { end, room, massive}
     public SecretSize secretSize;
     public List<BoxCollider> customSecretColliders;
@@ -40,6 +41,13 @@ public class HiddenEndCube : DeadEndCube
                 distanceC.npcS.Add(npc);
             }
         }
+        if (items.Count > 0)
+        {
+            foreach (DunItem item in items)
+            {
+                distanceC.dunItems.Add(item);
+            }
+        }
     }
 
 
@@ -66,6 +74,11 @@ public class HiddenEndCube : DeadEndCube
             }
         }
         return blocked;
+    }
+
+    public virtual void SecretSetUp()
+    {
+
     }
 
 }

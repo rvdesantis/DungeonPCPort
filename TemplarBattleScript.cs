@@ -27,7 +27,6 @@ public class TemplarBattleScript : EnemyBattleModel
                 yield return new WaitForSeconds(3);
                 introVCam.m_Priority = -5;
             }
-
             StartCoroutine(CamTimer());
         }
     }
