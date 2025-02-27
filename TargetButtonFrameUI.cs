@@ -30,7 +30,7 @@ public class TargetButtonFrameUI : MonoBehaviour
         {
             HPtxt.color = Color.green;
         }
-        if (targetModel.health <= targetModel.maxH / 2 && targetModel.health < targetModel.maxH + 1)
+        if (targetModel.health <= targetModel.maxH && targetModel.health > targetModel.maxH / 2)
         {
             HPtxt.color = Color.white;
         }
@@ -116,6 +116,20 @@ public class TargetButtonFrameUI : MonoBehaviour
             {
                 frameObj.SetActive(false);
                 open = false;
+            }
+            if (EventSystem.current.currentSelectedGameObject == attachedButton.gameObject && !frameObj.activeSelf)
+            {
+                frameObj.SetActive(true);
+                if (!enemySide)
+                {
+                    frameObj.SetActive(true);
+                    SetInfo(battleC.heroParty[buttonIndex]);
+                }
+                if (enemySide)
+                {
+                    frameObj.SetActive(true);
+                    SetInfo(battleC.enemyParty[buttonIndex]);
+                }
             }
         }
     }
