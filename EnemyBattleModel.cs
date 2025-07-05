@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class EnemyBattleModel : BattleModel
 {
+
+    public int rewardTier;
+
     private void OnEnable()
     {
         if (!pHolder)
@@ -195,6 +198,7 @@ public class EnemyBattleModel : BattleModel
             actionTarget.TakeDamage(damageAmount, this);
 
             transform.position = returnPos;
+            statusC.ActivateBoost(false);
         }
         afterAction.Invoke();
         afterAction = null;

@@ -4,8 +4,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Playables;
+using static Unity.VisualScripting.Member;
 
 public class BattleModel : DunModel
 {
@@ -51,8 +53,13 @@ public class BattleModel : DunModel
 
     public List<AudioClip> actionSounds;
     public List<GameObject> weaponAuras;
+    public BattleModel frozenSelf;
+    public BattleModel stoneSelf;
 
-    
+    public void FreezeTime()
+    {
+        Time.timeScale = 0;
+    }
 
     public virtual void IntroPlayable()
     {
@@ -148,11 +155,19 @@ public class BattleModel : DunModel
         }
         if (skip || dead || DeadEnemiesCheck())
         {
-            skip = false;
-            anim.SetBool("injured", false);
+            if (statusC.freeze && skip)
+            {
+                statusC.freezeCount--;
+                if (statusC.freezeCount == 0)
+                {
+                    FrozenPlayerSwap();
+                    skip = false;
+                }
+                
+            }             
             battleC.heroIndex++;
             afterAction.Invoke();
-            afterAction = null;
+            afterAction = null;           
         }
     }
     public void TimelineHit()
@@ -270,7 +285,10 @@ public class BattleModel : DunModel
 
         if (attCam != null)
         {
-            attCam.m_Priority = 20;
+            if (actionTarget == battleC.enemyParty[0])
+            {
+                attCam.m_Priority = 20;
+            }            
         }
 
         yield return new WaitForSeconds(.75f);
@@ -491,5 +509,77 @@ public class BattleModel : DunModel
     {
         actionTarget.GetHit(this);
         actionTarget.impactFX.ElementalImpact(0);
+    }
+
+    public virtual void FrozenPlayerSwap()
+    {
+        BattleModel frozen = Instantiate(frozenSelf, spawnPoint, transform.rotation);
+        frozen.modelName = modelName;
+        frozen.battleC = battleC;
+        frozen.health = health;
+        frozen.maxH = maxH;
+        frozen.def = def;
+        frozen.power = power;
+        frozen.XP = XP;
+        frozen.powerBonusPercent = powerBonusPercent;
+        frozen.defBonusPercent = defBonusPercent;
+        frozen.spellBonusPercent = spellBonusPercent;
+        frozen.selectedSpell = selectedSpell;
+        frozen.activeSpells = activeSpells;
+        frozen.masterSpells = masterSpells;
+        frozen.strikeDistance = strikeDistance;
+        frozen.strikeTimer = strikeTimer;
+        frozen.hitbuffer = hitbuffer;
+        frozen.frozenSelf = this;
+        frozen.skip = true;
+        frozen.spawnPoint = spawnPoint;
+
+        int indexX = 0;
+        foreach (BattleModel hero in battleC.heroParty)
+        {
+            if (hero == this)
+            {
+                indexX = battleC.heroParty.IndexOf(hero);
+            }
+        }
+        battleC.heroParty[indexX] = frozen;      
+        gameObject.SetActive(false);
+       
+
+    }
+
+    public virtual void StonePlayerSwap()
+    {
+        BattleModel stone = Instantiate(stoneSelf, spawnPoint, transform.rotation);
+        stone.modelName = modelName;
+        stone.battleC = battleC;
+        stone.health = health;
+        stone.maxH = maxH;
+        stone.def = def;
+        stone.power = power;
+        stone.XP = XP;
+        stone.powerBonusPercent = powerBonusPercent;
+        stone.defBonusPercent = defBonusPercent;
+        stone.spellBonusPercent = spellBonusPercent;
+        stone.selectedSpell = selectedSpell;
+        stone.activeSpells = activeSpells;
+        stone.masterSpells = masterSpells;
+        stone.strikeDistance = strikeDistance;
+        stone.strikeTimer = strikeTimer;
+        stone.hitbuffer = hitbuffer;
+        stone.frozenSelf = this;
+        stone.skip = true;
+        stone.spawnPoint = spawnPoint;
+
+        int indexX = 0;
+        foreach (BattleModel hero in battleC.heroParty)
+        {
+            if (hero == this)
+            {
+                indexX = battleC.heroParty.IndexOf(hero);
+            }
+        }
+        battleC.heroParty[indexX] = stone;
+        gameObject.SetActive(false);
     }
 }

@@ -631,6 +631,197 @@ public class BattleTester : BattleController
             enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
             enemyParty.Add(enemy2);
         }
+        if (enemyNum == 20)
+        {
+            activeRoom = battleRooms[0];
+            activeRoom.gameObject.SetActive(true);
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[0])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+            enemy0 = Instantiate(monsters.battleMasterList[19], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+
+            GlowingMushBattleModel mush = enemy0.GetComponent<GlowingMushBattleModel>();
+            FireMageBattleModel fireMage = null;
+            if (hero0.GetComponent<FireMageBattleModel>() != null)
+            {
+                fireMage = hero0.GetComponent<FireMageBattleModel>();
+            }
+            if (hero1.GetComponent<FireMageBattleModel>() != null)
+            {
+                fireMage = hero1.GetComponent<FireMageBattleModel>();
+            }
+            if (hero2.GetComponent<FireMageBattleModel>() != null)
+            {
+                fireMage = hero2.GetComponent<FireMageBattleModel>();
+            }
+
+            mush.fireMage = fireMage;
+        }
+        if (enemyNum == 21)
+        {
+            activeRoom = battleRooms[3];
+            activeRoom.gameObject.SetActive(true);
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[3])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+            enemy0 = Instantiate(monsters.battleMasterList[22], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(monsters.battleMasterList[21], activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(monsters.battleMasterList[21], activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+        }
+        if (enemyNum == 23)
+        {
+            activeRoom = battleRooms[0];
+            activeRoom.gameObject.SetActive(true);
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[0])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+            enemy0 = Instantiate(monsters.battleMasterList[23], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+        }
+        if (enemyNum == 24)
+        {
+            activeRoom = battleRooms[0];
+            activeRoom.gameObject.SetActive(true);
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[0])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+            enemy0 = Instantiate(monsters.battleMasterList[24], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(monsters.battleMasterList[24], activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(monsters.battleMasterList[24], activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+        }
+        if (enemyNum == 25)
+        {
+            activeRoom = battleRooms[2];
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[2])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+            activeRoom.gameObject.SetActive(true);
+            activeRoom.SetProps(0);
+            activeRoom.introPlayable = null;
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+
+
+            enemy0 = Instantiate(monsters.battleMasterList[25], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(placeHolder, activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+        }
 
         bCamController.activeCam = activeRoom.mainCam;
         bCamController.roomCams = activeRoom.targetingCams;

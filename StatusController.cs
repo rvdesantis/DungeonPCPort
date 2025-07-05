@@ -12,6 +12,7 @@ public class StatusController : MonoBehaviour
     public int DEFboost;
     public bool burn;
     public bool freeze;
+    public int freezeCount;
     public bool poison;
     public int poisonAmount;
     public BattleModel poisonModel;
