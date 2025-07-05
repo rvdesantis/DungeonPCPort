@@ -90,29 +90,34 @@ public class BoneDragonBattleModel : EnemyBattleModel
         freezeAllPlayable.Play();
 
         yield return new WaitForSeconds(4);
-        if (bool0) // right her set first
+        if (bool0 && !battleC.heroParty[2].statusC.freeze) // right her set first
         {
             battleC.heroParty[2].GetHit(this);
-            battleC.heroParty[2].impactFX.ElementalImpact(3);
-            battleC.heroParty[2].statusC.freeze = true;
+            battleC.heroParty[2].impactFX.ElementalImpact(3);  
             battleC.heroParty[2].skip = true;
-            battleC.heroParty[2].anim.SetBool("injured", true);
+            actionTarget.frozenSelf.statusC.freezeCount = 2;
+            battleC.heroParty[2].anim.SetBool("freezeOnHit", true);
+            battleC.heroParty[2].anim.SetTrigger("hit");
         }
-        if (bool1) // middle her set 2nd
+        yield return new WaitForSeconds(.15f);
+        if (bool1 && !battleC.heroParty[0].statusC.freeze) // middle her set 2nd
         {
             battleC.heroParty[0].GetHit(this);
             battleC.heroParty[0].impactFX.ElementalImpact(3);
-            battleC.heroParty[0].statusC.freeze = true;
             battleC.heroParty[0].skip = true;
-            battleC.heroParty[0].anim.SetBool("injured", true);
+            actionTarget.frozenSelf.statusC.freezeCount = 2;
+            battleC.heroParty[0].anim.SetBool("freezeOnHit", true);
+            battleC.heroParty[0].anim.SetTrigger("hit");
         }
-        if (bool2)
+        yield return new WaitForSeconds(.15f);
+        if (bool2 && !battleC.heroParty[1].statusC.freeze)
         {
             battleC.heroParty[1].GetHit(this);
             battleC.heroParty[1].impactFX.ElementalImpact(3);
-            battleC.heroParty[1].statusC.freeze = true;
             battleC.heroParty[1].skip = true;
-            battleC.heroParty[1].anim.SetBool("injured", true);
+            actionTarget.frozenSelf.statusC.freezeCount = 2;
+            battleC.heroParty[1].anim.SetBool("freezeOnHit", true);
+            battleC.heroParty[1].anim.SetTrigger("hit");
         }
 
         float time = (float)freezeAllPlayable.duration;

@@ -149,7 +149,9 @@ public class WolfBattleModel : EnemyBattleModel
         Heal(maxH / 2);
         actionCams[0].gameObject.SetActive(false);
         actionCams[0].m_Priority = -10;
-        StartAction();  // loops action after heal
+        battleC.enemyIndex++;
+        afterAction.Invoke();
+        afterAction = null;
     }
 
     public bool LivingCheck()
