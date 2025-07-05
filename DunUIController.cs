@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -15,6 +17,7 @@ public class DunUIController : MonoBehaviour
     public GameObject compassObj;
     public GameObject titleObj;
     public GameObject lowerUIobj;
+    public GameHintsUI gameHintsUI;
 
     public bool joystick;
     public LoadingBarUI loadingBar;
@@ -42,6 +45,69 @@ public class DunUIController : MonoBehaviour
     public ShopUI shopUI;
     public ConfirmUI confirmUI;
 
+    // Resolution
+
+    public TMP_Dropdown resolutionDropdown;
+    public Toggle fullscreenToggle;
+
+    private Resolution[] resolutions;
+    private int currentResolutionIndex = 0;
+
+    private void Start()
+    {
+        DefineResolution();
+        LoadResolutionSettings();
+    }
+
+    public void DefineResolution()
+    {
+        resolutions = Screen.resolutions
+            .Where(r => r.refreshRate == Screen.currentResolution.refreshRate)
+            .Distinct()
+            .ToArray();
+
+        resolutionDropdown.ClearOptions();
+
+        var options = resolutions
+            .Select(res => $"{res.width} x {res.height}")
+            .ToList();
+
+        for (int i = 0; i < resolutions.Length; i++)
+        {
+            if (resolutions[i].width == Screen.currentResolution.width &&
+                resolutions[i].height == Screen.currentResolution.height)
+            {
+                currentResolutionIndex = i;
+            }
+        }
+
+        resolutionDropdown.AddOptions(options);
+    }
+
+    public void ApplyResolutionSettings()
+    {
+        Resolution selectedResolution = resolutions[resolutionDropdown.value];
+        bool isFullscreen = fullscreenToggle.isOn;
+
+        Screen.SetResolution(selectedResolution.width, selectedResolution.height, isFullscreen);
+
+        // Save settings
+        PlayerPrefs.SetInt("ResolutionIndex", resolutionDropdown.value);
+        PlayerPrefs.SetInt("Fullscreen", isFullscreen ? 1 : 0);
+        PlayerPrefs.Save();    
+    }
+
+    public void LoadResolutionSettings()
+    {
+        int savedResolutionIndex = PlayerPrefs.GetInt("ResolutionIndex", currentResolutionIndex);
+        bool savedFullscreen = PlayerPrefs.GetInt("Fullscreen", Screen.fullScreen ? 1 : 0) == 1;
+
+        resolutionDropdown.value = savedResolutionIndex;
+        fullscreenToggle.isOn = savedFullscreen;
+        resolutionDropdown.RefreshShownValue();
+        ApplyResolutionSettings(); 
+    }
+
     IEnumerator ToggleTimer(float timer)
     {
         isToggling = true;
@@ -67,6 +133,7 @@ public class DunUIController : MonoBehaviour
         startButtons[5].gameObject.SetActive(false);
         startButtons[6].gameObject.SetActive(false);
         buttonFrameUI.SetActive(false);
+        gameHintsUI.gameObject.SetActive(false);
         uiActive = false;
 
         compassObj.SetActive(true);
@@ -93,6 +160,7 @@ public class DunUIController : MonoBehaviour
         startButtons[6].gameObject.SetActive(true);
         uiActive = true;
         buttonFrameUI.SetActive(true);
+        gameHintsUI.gameObject.SetActive(true);
         uiAudioSource.PlayOneShot(uiSounds[0]);
         StartCoroutine(ToggleTimer(.25f));
     }

@@ -31,32 +31,49 @@ public class ShopUI : MonoBehaviour
 
     public List<AudioClip> shopSounds; // 0 coins, 
 
+    // Display Info Tab
+    public GameObject infoTab;
+    public TextMeshProUGUI itemTitle;
+    public TextMeshProUGUI itemInfo;
+    public Image itemImage;
+
+    // Current Inventory UI
+    public GameObject currentInvTab;
+    public TextMeshProUGUI invTabTitleTXT;
+    public List<Image> InvIMGList;
+    public List<TextMeshProUGUI> InvCountTXT;
+    public bool dungeonUI;
+    public bool battleUI;
+    public bool keyUI;
+
     public void OpenShopUI(ShopNPC activeShop)
     {
         gameObject.SetActive(true);
         uiController.uiActive = true;
 
         currentShop = activeShop;
-        int count = activeShop.itemsForSale.Count;
-        List<DunItem> activeList = activeShop.itemsForSale;
-
         if (currentShop.shopType == ShopNPC.ShopType.dungeonItems)
         {
-            inventoryUI.OpenInventory();
+            dungeonUI = true;
+            battleUI = false;
+            keyUI = false;
         }
+
 
         if (currentShop.shopType == ShopNPC.ShopType.battleItems)
         {
-            inventoryUI.OpenInventory();
-            inventoryUI.OpenBattleInventory();
+            dungeonUI = false;
+            battleUI = true;
+            keyUI = false;
         }
-
         if (currentShop.shopType == ShopNPC.ShopType.keyItems)
         {
-            inventoryUI.OpenInventory();
-            inventoryUI.OpenKeyInventory();
+            dungeonUI = false;
+            battleUI = false;
+            keyUI = true;
         }
-
+        int count = activeShop.itemsForSale.Count;
+        List<DunItem> activeList = activeShop.itemsForSale;
 
         foreach (GameObject ob in inactives)
         {
@@ -88,10 +105,109 @@ public class ShopUI : MonoBehaviour
             }
         }
 
-        titleTXT.text = activeList[0].itemName + "( " + activeList[0].itemPrice + " Gold)";
+        titleTXT.text = null;
+        inventoryUI.infoText.text = null;
         itemButtons[0].Select();
 
+        infoTab.SetActive(true);
+        itemTitle.text = titleTXT.text;
+        itemInfo.text = activeList[0].itemInfo + "\nPRICE: " + activeList[0].itemPrice + "G";
+        itemImage.sprite = activeList[0].icon;
+        RefreshCurrentInventory();
         
+    }
+
+    public void RefreshCurrentInventory() // set to DunItems
+    {
+        currentInvTab.SetActive(false);
+        if (dungeonUI)
+        {
+            int InvCount = inventory.dungeonItems.Count;
+            foreach (Image img in InvIMGList)
+            {
+                int imIndex = InvIMGList.IndexOf(img);
+                if (imIndex > InvCount - 1)
+                {
+                    img.gameObject.SetActive(false);
+                    InvCountTXT[imIndex].text = 0.ToString();
+                    InvCountTXT[imIndex].gameObject.SetActive(false);
+                }
+                if (imIndex <= InvCount - 1)
+                {
+                    img.gameObject.SetActive(true);
+                    InvIMGList[imIndex].sprite = inventory.dungeonItems[imIndex].icon;
+                    InvCountTXT[imIndex].gameObject.SetActive(true);
+                    InvCountTXT[imIndex].text = inventory.dungeonItems[imIndex].itemCount.ToString();
+
+                    if (inventory.dungeonItems[imIndex].itemName == "Gold")
+                    {
+                        InvCountTXT[imIndex].text = inventory.GetAvailableGold().ToString();
+                    }
+                }
+            }
+        }
+        if (battleUI)
+        {
+            int InvCount = inventory.battleItems.Count;
+            foreach (Image img in InvIMGList)
+            {
+                int imIndex = InvIMGList.IndexOf(img);
+                if (imIndex > InvCount - 1)
+                {
+                    img.gameObject.SetActive(false);
+                    InvCountTXT[imIndex].text = 0.ToString();
+                    InvCountTXT[imIndex].gameObject.SetActive(false);
+                }
+                if (imIndex <= InvCount - 1)
+                {
+                    img.gameObject.SetActive(true);
+                    InvIMGList[imIndex].sprite = inventory.battleItems[imIndex].icon;
+                    InvCountTXT[imIndex].gameObject.SetActive(true);
+                    InvCountTXT[imIndex].text = inventory.battleItems[imIndex].itemCount.ToString();     
+                    
+                    if (imIndex == 0)
+                    {
+                        InvCountTXT[imIndex].text = inventory.dungeonItems[0].itemCount.ToString(); // set potion count
+                    }
+                }
+            }
+        }
+
+        if (keyUI)
+        {
+            int InvCount = inventory.keyItems.Count;
+            foreach (Image img in InvIMGList)
+            {
+                int imIndex = InvIMGList.IndexOf(img);
+                if (imIndex > InvCount - 1)
+                {
+                    img.gameObject.SetActive(false);
+                    InvCountTXT[imIndex].text = 0.ToString();
+                    InvCountTXT[imIndex].gameObject.SetActive(false);
+                }
+                if (imIndex <= InvCount - 1)
+                {
+                    img.gameObject.SetActive(true);
+                    InvIMGList[imIndex].sprite = inventory.keyItems[imIndex].icon;
+                    InvCountTXT[imIndex].gameObject.SetActive(true);
+                    InvCountTXT[imIndex].text = inventory.keyItems[imIndex].itemCount.ToString();
+
+                    if (imIndex == 0)
+                    {
+                        InvCountTXT[imIndex].text = inventory.dungeonItems[0].itemCount.ToString(); // set potion count
+                    }
+                }
+                if (imIndex == 0) // brings up Chaos Orbs even if 0 are in Inventory
+                {
+                    img.gameObject.SetActive(true);
+                    InvIMGList[0].sprite = inventory.keyItems[0].icon;
+                    InvCountTXT[0].gameObject.SetActive(true);
+                    InvCountTXT[0].text = inventory.keyItems[0].itemCount.ToString();
+                }
+            }
+        }
+       
+        currentInvTab.SetActive(true);
     }
 
     public void ConfirmPurchase() // attached to buttons
@@ -168,9 +284,10 @@ public class ShopUI : MonoBehaviour
                     if (masterItem.itemName == currentItem.itemName)
                     {
                         Debug.Log("Adding " + masterItem.itemName + " to Dungeon Inventory");
+                        masterItem.pickUpMessage = false;
                         masterItem.PickUp();
                         inventory.ReduceGold(masterItem.itemPrice);
-                        inventoryUI.OpenInventory();
+                        RefreshCurrentInventory();
                         break;
                     }
                 }
@@ -184,9 +301,10 @@ public class ShopUI : MonoBehaviour
                     if (masterItem.itemName == currentItem.itemName)
                     {
                         Debug.Log("Adding " + masterItem.itemName + " to Key Items Inventory");
+                        masterItem.pickUpMessage = false;
                         masterItem.PickUp();
                         inventory.ReduceGold(masterItem.itemPrice);
-                        inventoryUI.OpenKeyInventory();
+                        RefreshCurrentInventory();
                         break;
                     }
                 }
@@ -199,19 +317,32 @@ public class ShopUI : MonoBehaviour
                     if (masterItem.itemName == currentItem.itemName)
                     {
                         Debug.Log("Adding " + masterItem.itemName + " to Battle Inventory");
+                        masterItem.pickUpMessage = false;
                         masterItem.PickUp();
-                        inventory.ReduceGold(masterItem.itemPrice);                        
-                        inventoryUI.OpenBattleInventory();
+                        inventory.ReduceGold(masterItem.itemPrice);
+                        RefreshCurrentInventory();
                         break;
                     }
                 }
-            }      
+            }
+            int count = currentShop.itemsForSale.Count;
             foreach (Button bt in itemButtons)
             {
                 int x = itemButtons.IndexOf(bt);
-                if (x < currentShop.itemsForSale.Count)
+
+                if (x < count)
                 {
                     bt.interactable = true;
+                    itemStockTXTs[x].gameObject.SetActive(false);
+                    itemIMGs[x].gameObject.SetActive(true);
+                    itemIMGs[x].sprite = currentShop.itemsForSale[x].icon;
+                }
+
+                if (x >= count)
+                {
+                    bt.interactable = false;
+                    itemStockTXTs[x].gameObject.SetActive(true);
+                    itemIMGs[x].gameObject.SetActive(false);
                 }
             }
             itemButtons[0].Select();
@@ -251,10 +382,12 @@ public class ShopUI : MonoBehaviour
             currentShop.faceCam.m_Priority = -1;
             currentShop.faceCam.gameObject.SetActive(false);
         }
+        infoTab.SetActive(false);
+        currentInvTab.SetActive(false);
         gameObject.SetActive(false);
     }
 
-    public void TextUpdater()
+    public void ItemUpdater()
     {
         foreach (Button bt in itemButtons)
         {            
@@ -263,9 +396,12 @@ public class ShopUI : MonoBehaviour
                 int x = itemButtons.IndexOf(bt);
                 itemIndex = x;
                 currentItem = currentShop.itemsForSale[x];
-                titleTXT.text = null;
-                titleTXT.text = currentItem.itemName + " (" + currentItem.itemPrice + " Gold)";
-                inventoryUI.infoText.text = currentItem.itemInfo;
+                titleTXT.text = null;      
+                inventoryUI.infoText.text = null;
+
+                itemTitle.text = currentItem.itemName;
+                itemInfo.text = currentItem.itemInfo + "\nPRICE: " + currentItem.itemPrice + "G";
+                itemImage.sprite = currentItem.icon;
             }
         }
     }
@@ -273,7 +409,7 @@ public class ShopUI : MonoBehaviour
 
     private void Update()
     {
-        TextUpdater();
+        ItemUpdater();
     }
 
 }

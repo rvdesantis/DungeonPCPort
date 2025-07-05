@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -10,22 +9,34 @@ public class VictoryUI : MonoBehaviour
 {
     public BattleController battleC;
     public SceneController controller;
+    public InventoryController inventory;
     public StatsTracker statsTimer;
     public TextMeshProUGUI titleTXT;
     public TextMeshProUGUI bodyTXT;
-    public List<GameObject> itemParents;
-    public List<Image> itemImages;
     public Button exitBT;
     public Action afterAction;
 
-    public void OpenVictory(int gold, int totalXP, int totalCombos, List<DunItem> foundItems = null)
+    public List<GameObject> itemParentObjs;
+    public List<Image> rewardImages;
+
+    public bool tier1;
+    public bool tier2;
+    public bool tier3;
+
+    public List<DunItem> rewardItems;
+
+    private void Start()
+    {
+        if (inventory == null)
+        {
+            inventory = controller.inventory;
+        }
+    }
+
+    public void OpenVictory(int gold, int totalXP, int totalCombos)
     {
         gameObject.SetActive(true);
         controller.uiController.uiActive = true;
-        foreach (GameObject obj in itemParents)
-        {
-            obj.SetActive(false);
-        }
         string goldString = "";
         string XPString = "";
         string comboString = "";
@@ -33,27 +44,58 @@ public class VictoryUI : MonoBehaviour
         goldString = "Gold Looted: " + gold;
         XPString = "XP Gained Per Hero: " + totalXP;
         comboString = "Combinations Landed: " + totalCombos;
-
-
-
         bodyTXT.text = goldString + "\n" + XPString + "\n" + comboString + "\n";
-        bodyTXT.text = bodyTXT.text + "Found Items:";
-        if (foundItems != null)
-        {            
-            int count = foundItems.Count;
-            foreach (GameObject obj in itemParents)
+        bodyTXT.text = bodyTXT.text + "Found Items:";        
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = true;
+
+        if (tier1)
+        {
+            int rewardNum = UnityEngine.Random.Range(0, inventory.tier1RewardItems.Count);
+            DunItem rewardItem0 = inventory.tier1RewardItems[rewardNum];
+            rewardItems.Add(rewardItem0);
+        }
+        if (tier2)
+        {
+            int rewardNum = UnityEngine.Random.Range(0, inventory.tier2RewardItems.Count);
+            DunItem rewardItem1 = inventory.tier1RewardItems[rewardNum];
+            rewardItems.Add(rewardItem1);
+        }
+        if (tier3)
+        {
+            int rewardNum = UnityEngine.Random.Range(0, inventory.tier3RewardItems.Count);
+            DunItem rewardItem2 = inventory.tier3RewardItems[rewardNum];
+            rewardItems.Add(rewardItem2);
+        }
+
+        if (rewardItems.Count > 0)
+        {
+            if (rewardItems.Count >= 1)
             {
-                int index = itemParents.IndexOf(obj);
-                if (index < count)
-                {
-                    obj.SetActive(true);
-                }
-                itemImages[index].sprite = foundItems[index].icon;
+                itemParentObjs[0].SetActive(true);
+                rewardImages[0].sprite = rewardItems[0].icon;
+                itemParentObjs[1].SetActive(false);
+                itemParentObjs[2].SetActive(false);
+            }
+            if (rewardItems.Count >= 2)
+            {
+                itemParentObjs[1].SetActive(true);
+                rewardImages[1].sprite = rewardItems[1].icon;
+                itemParentObjs[2].SetActive(false);
+            }
+            if (rewardItems.Count == 3)
+            {
+                itemParentObjs[2].SetActive(true);
+                rewardImages[2].sprite = rewardItems[2].icon;
             }
         }
 
-        Cursor.lockState = CursorLockMode.Confined;
-        Cursor.visible = true;
+        foreach (DunItem rewardItem in rewardItems)
+        {
+            rewardItem.pickUpMessage = false;
+            rewardItem.PickUp();
+        }
+
         exitBT.Select();
     }
 
@@ -85,6 +127,7 @@ public class VictoryUI : MonoBehaviour
         {
             controller = FindObjectOfType<SceneController>();
         }
+        rewardItems.Clear();
         controller.playerController.controller.enabled = true;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
@@ -97,25 +140,7 @@ public class VictoryUI : MonoBehaviour
             afterAction = null;
         }
         gameObject.SetActive(false);
-    }
-
-    private bool IsMouseOverButton()
-    {
-        bool isOver = false;
-        PointerEventData pointerEventData = new PointerEventData(EventSystem.current);
-        pointerEventData.position = Input.mousePosition;
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(pointerEventData, results);
-
-        foreach (RaycastResult result in results)
-        {
-            if (result.gameObject == exitBT.gameObject)
-            {
-                isOver = true;
-            }
-        }
-        return isOver;
-    }
+    }  
 
     private void Update()
     {
@@ -124,10 +149,6 @@ public class VictoryUI : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 CloseUI();
-            }
-            if (IsMouseOverButton())
-            {
-                exitBT.Select();
             }
         }
         
