@@ -383,6 +383,7 @@ public class SceneController : MonoBehaviour
                 starter.generatedHallway.Insert(hallIndex, sideExtender);
                 starter.hallSecret = true;
 
+                sideExtender.starter = starter;
                 sideExtender.filled = true;
                 targetHall.filled = true;
                 int zz = builder.createdHallSideCubes.Count;

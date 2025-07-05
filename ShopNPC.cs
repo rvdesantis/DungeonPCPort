@@ -45,6 +45,11 @@ public class ShopNPC : DunNPC
                     faceCam.gameObject.SetActive(true);
                     faceCam.m_Priority = 20;
                 }
+                shopUI.dungeonUI = true; // opens current DunInventory by default
+                shopUI.battleUI = false;
+                shopUI.keyUI = false;
+
+
                 shopUI.OpenShopUI(this);
             }
             if (shopUI == null)

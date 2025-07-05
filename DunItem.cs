@@ -11,6 +11,8 @@ public class DunItem : MonoBehaviour
     public int itemCount;
     public bool inRange;
     public Sprite icon;
+    public bool pickUpMessage;
+
     public int itemPrice;
     public string itemInfo;
     public bool trinket;
@@ -153,13 +155,15 @@ public class DunItem : MonoBehaviour
             }
         }
         Debug.Log(itemCount + " " + itemName + " picked up");
-
         DunUIController uiController = FindObjectOfType<DunUIController>();
-        uiController.rangeImage.gameObject.SetActive(false);
-        uiController.customImage.gameObject.SetActive(false);
-        uiController.ToggleKeyUI(gameObject, false);
-        uiController.pickUpUI.gameObject.SetActive(true);
-        uiController.pickUpUI.OpenImage(this);
+        if (pickUpMessage)
+        {
+            uiController.rangeImage.gameObject.SetActive(false);
+            uiController.customImage.gameObject.SetActive(false);
+            uiController.ToggleKeyUI(gameObject, false);
+            uiController.pickUpUI.gameObject.SetActive(true);
+            uiController.pickUpUI.OpenImage(this);
+        }
     }
 
     private void Update()

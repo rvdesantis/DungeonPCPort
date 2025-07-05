@@ -24,6 +24,11 @@ public class InventoryController : MonoBehaviour
     public RandomTrinketItem randomDunTrinket;
     public RandomTrinketItem randomBattleTrinket;
     public RandomItemALL randomALLItem;
+
+    public List<DunItem> tier1RewardItems;
+    public List<DunItem> tier2RewardItems;
+    public List<DunItem> tier3RewardItems;
+
     public void StartReset()
     {
         foreach (DunItem item in dungeonItems)

@@ -1,20 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
 
 
 public class SideExtenderCube : Cube
 {
-    public enum SideType { enemy, chest, NPC, portal}
+    public enum SideType { enemy, chest, NPC, portal, trap}
     public SideType sideType;
+    public HallStarterCube starter;
     public GameObject triggerSpot;
     public bool triggered;
     public FakeWall lFakeWall;
     public FakeWall rFakeWall;
     public GameObject lSmall;
     public GameObject rSmall;
-
+    
     public DunPortal lPortal;
     public DunPortal rPortal;
     public DunChest lChest;
@@ -25,6 +27,9 @@ public class SideExtenderCube : Cube
     public List<PlayableDirector> monsterPlayables;
     public DunModel activeEnemy;
     public int monsterNum;
+    public int trapNum;
+    public List<DunTrap> traps;
+    public DunTrap activeTrap;
 
 
 
@@ -235,10 +240,10 @@ public class SideExtenderCube : Cube
     public void TriggerEnemy()
     {
         MonsterController monsters = FindObjectOfType<MonsterController>();
-
+        StatsTracker stats = FindObjectOfType<StatsTracker>();
         bool left = lSmall.gameObject.activeSelf;
         triggered = true;
-
+        stats.trapsTotal++;
         if (left)
         {
             if (lMonster == null)
@@ -269,6 +274,21 @@ public class SideExtenderCube : Cube
                 StartCoroutine(MonsterEventTimer(rMonster, monsterDir, true));
             }
         }
+    }
+
+    public void SetTrap()
+    {
+        if (traps.Count > 0)
+        {
+            trapNum = Random.Range(0, traps.Count);
+            traps[trapNum].gameObject.SetActive(true);
+            traps[trapNum].SetSideTrap(this);
+        }
+    }
+
+    public void TriggerTrap()
+    {
+
     }
 
     IEnumerator MonsterEventTimer(DunModel monster, PlayableDirector monsterDir, bool torch = false)
@@ -340,7 +360,7 @@ public class SideExtenderCube : Cube
         DunUIController uiController = FindObjectOfType<DunUIController>();
         SceneController controller = FindObjectOfType<SceneController>();        
         BattleController battleController = FindObjectOfType<BattleController>();
-
+        battleController.SetBattle(monsterNum);
         foreach (PlayableDirector monPlayable in monsterPlayables)
         {
             if (monPlayable.state == PlayState.Playing)
@@ -366,11 +386,6 @@ public class SideExtenderCube : Cube
             }
         }
         activeEnemy.gameObject.SetActive(false);
- 
-        // launch battle       
-
-        battleController.SetBattle(monsterNum);
-
         player.controller.enabled = false;
         player.playerLight.enabled = true;
         player.cinPersonCam.m_Priority = -1;

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem.XR;
 
 public class WallMapNPC : DunNPC
 {
@@ -22,25 +23,20 @@ public class WallMapNPC : DunNPC
     {
         if (inRange && !opened)
         {
-            if (fakeWall == null)
-            {
-                opened = true;
-                if (audioSource != null)
-                {
-                    if (audioClips.Count > 0)
-                    {
-                        audioSource.PlayOneShot(audioClips[0]);
-                        mapItem.PickUp();
-                    }
-                }
-            }           
+            DunUIController uiController = FindObjectOfType<DunUIController>();
+            opened = true;
+            audioSource.PlayOneShot(audioClips[0]);   ;
+            uiController.ToggleKeyUI(gameObject, false);
+            uiController.pickUpUI.gameObject.SetActive(true);
+            uiController.pickUpUI.OpenImage(mapItem);
+            uiController.pickUpUI.afterAction = mapItem.PickUp;
         }
     } // triggered from DistanceController
 
 
     private void FixedUpdate()
     {
-        if (inventoryC.mapstatus == InventoryController.MapInventoryStatus.secret)
+        if (inventoryC.mapstatus == InventoryController.MapInventoryStatus.secret && !remove)
         {
             remove = true;
             opened = true;

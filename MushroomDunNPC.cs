@@ -52,7 +52,7 @@ public class MushroomDunNPC : DunNPC
         uiObject.gameObject.SetActive(false);
         uiController.interactParent.SetActive(false);
         remove = true;
-        battleC.SetBattle(19);
+        battleC.SetBattle(20);
         gameObject.SetActive(false);
     }
 

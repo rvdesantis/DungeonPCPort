@@ -8,6 +8,12 @@ public class PlayerController : MonoBehaviour
     public Camera firstPersonCam;
     public CinemachineBrain cinBrain;
     public CinemachineVirtualCamera cinPersonCam;
+    public float shakeDuration = 0f;
+    public float shakeAmplitude = 2f; // Higher values for stronger shake
+    public float shakeFrequency = 2f; // Higher values for faster shake
+    public bool camShake;
+    public CinemachineBasicMultiChannelPerlin camNoise;
+
     public CharacterController controller;
     public SceneController sceneController;
     public PlayerSoundController playerSound;
@@ -45,6 +51,7 @@ public class PlayerController : MonoBehaviour
     {
         targetRotation = transform.rotation;
         lastPosition = transform.position;
+        camNoise = cinPersonCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
     }
 
     public void CheckMove()
@@ -93,6 +100,14 @@ public class PlayerController : MonoBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 
+    public void TriggerShake(float duration, float amplitude, float frequency)
+    {
+        shakeDuration = duration;
+        shakeAmplitude = amplitude;
+        shakeFrequency = frequency;
+        camShake = true;
+    }
+
     private void Update()
     {
         float horizontalInput = Input.GetAxis("Horizontal");
@@ -103,6 +118,26 @@ public class PlayerController : MonoBehaviour
         float joystickVerticalInput = Input.GetAxis("Joystick Vertical");
         float joystickRightHorizontalInput = Input.GetAxis("Joystick Right Horizontal");
         float joystickRightVerticalInput = Input.GetAxis("Joystick Right Vertical");
+
+        if (camNoise != null && camShake)
+        {
+            if (shakeDuration > 0)
+            {
+                // Continue shaking
+                camNoise.m_AmplitudeGain = shakeAmplitude;
+                camNoise.m_FrequencyGain = shakeFrequency;
+
+                // Decrease shake over time
+                shakeDuration -= Time.deltaTime;
+            }
+            else
+            {
+                // Stop shaking
+                camShake = false;
+                camNoise.m_AmplitudeGain = 0f;
+                shakeDuration = 0f;
+            }
+        }
 
         if (active && !sceneController.uiController.uiActive)
         {

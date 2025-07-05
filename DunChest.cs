@@ -74,6 +74,8 @@ public class DunChest : MonoBehaviour
                 audioSource.PlayOneShot(audioClips[2]);
             }
         }
+
+        chestItem.pickUpMessage = true;
         uiController.ToggleKeyUI(gameObject, false);
         uiController.pickUpUI.gameObject.SetActive(true);
         uiController.pickUpUI.OpenImage(chestItem);

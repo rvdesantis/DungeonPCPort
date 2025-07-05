@@ -5,7 +5,7 @@ using UnityEngine;
 public class RootChest : DunChest
 {
     public GameObject rootBlocker;
-
+    public RootsRoomParent rootsParent;
 
 
     private void Start()
@@ -15,6 +15,13 @@ public class RootChest : DunChest
             rootBlocker.SetActive(true);
             locked = true;
         }
+    }
+
+    IEnumerator TriggerBattleTimer()
+    {
+
+        yield return new WaitForSeconds(2);
+        rootsParent.StartTreantAttack();
     }
 
     public override void OpenChest()
@@ -40,6 +47,12 @@ public class RootChest : DunChest
         if (inRange && !opened && locked)
         {
             audioSource.PlayOneShot(audioClips[1]);
+            if (!rootsParent.battleTriggered)
+            {
+                rootsParent.battleTriggered = true;
+                StartCoroutine(TriggerBattleTimer());
+            }
+            
         }
     }
 }
