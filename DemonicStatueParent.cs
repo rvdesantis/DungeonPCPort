@@ -16,7 +16,7 @@ public class DemonicStatueParent : RoomPropParent
     {
         if (distanceController == null)
         {
-            distanceController = FindObjectOfType<DistanceController>();
+            distanceController = FindAnyObjectByType<DistanceController>();
         }
         distanceController.switches.Add(doorSwitch);
     }

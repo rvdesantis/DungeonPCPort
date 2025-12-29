@@ -17,7 +17,7 @@ public class DunMimic : DunChest
             {
                 if (fakeWall.wallBroken)
                 {
-                    DunUIController uiController = FindObjectOfType<DunUIController>();              
+                    DunUIController uiController = FindAnyObjectByType<DunUIController>();              
                     uiController.ToggleKeyUI(gameObject, false);
                     StartCoroutine(JumpTimer());
                 }
@@ -51,7 +51,7 @@ public class DunMimic : DunChest
 
     public void LaunchBattle()
     {
-        SceneController controller = FindObjectOfType<SceneController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
         BattleController battleC = controller.battleController;
 
         controller.playerController.controller.enabled = false;

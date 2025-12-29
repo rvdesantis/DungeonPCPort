@@ -62,7 +62,7 @@ public class GobMapVendorNPC : DunNPC
     {
         if (soldOut)
         {
-            DistanceController distance = FindObjectOfType<DistanceController>();        
+            DistanceController distance = FindAnyObjectByType<DistanceController>();        
         }
         toggling = true;
         messageUI.OpenMessage(mss);

@@ -10,7 +10,7 @@ public class MushWallDunTrap : DunTrap
     public override void SetSideTrap(SideExtenderCube sideCube)
     {
         base.SetSideTrap(sideCube);
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         mushNPC.gameObject.SetActive(true);
         distance.npcS.Add(mushNPC); // trap triggers from NPC, not DunTrap script
     }

@@ -29,8 +29,9 @@ public class MushroomDunNPC : DunNPC
 
     public override void Confirm() // launch mush battle
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         BattleController battleC = uiController.controller.battleController;
+        StatsTracker statsT = FindAnyObjectByType<StatsTracker>();
 
         uiController.uiActive = false;
         uiController.controller.playerController.controller.enabled = true;
@@ -40,12 +41,15 @@ public class MushroomDunNPC : DunNPC
         remove = true;
         battleC.SetBattle(19);
         gameObject.SetActive(false);
+
+        statsT.trapsTotal++;
     }
 
     public void FireConfirm() // launch mush battle
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         BattleController battleC = uiController.controller.battleController;
+        StatsTracker statsT = FindAnyObjectByType<StatsTracker>();
 
         uiController.uiActive = false;
         uiController.controller.playerController.controller.enabled = true;
@@ -54,12 +58,14 @@ public class MushroomDunNPC : DunNPC
         remove = true;
         battleC.SetBattle(20);
         gameObject.SetActive(false);
+
+        statsT.trapsTotal++;
     }
 
     public bool FMageChecker()
     {
         bool inParty = false;
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         foreach (DunModel hero in party.activeParty)
         {
             if (hero.modelName == party.masterParty[0].modelName)
@@ -74,7 +80,7 @@ public class MushroomDunNPC : DunNPC
 
     public override void OpenUI()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         engaged = true;
         uiController.interactParent.SetActive(false);
         uiController.uiActive = true;
@@ -98,7 +104,7 @@ public class MushroomDunNPC : DunNPC
 
     public void ExitBTAction()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         uiController.controller.playerController.controller.enabled = true;
         uiController.uiActive = false;
         uiController.interactParent.SetActive(false);

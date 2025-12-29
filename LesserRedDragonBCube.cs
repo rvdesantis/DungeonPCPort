@@ -20,7 +20,7 @@ public class LesserRedDragonBCube : BossCube
         Debug.Log("Starting Boss Battle");
 
 
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         party.AssignCamBrain(bossStartPlayable, 3);
         foreach (DunModel model in party.activeParty)
         {
@@ -52,7 +52,7 @@ public class LesserRedDragonBCube : BossCube
 
     public override void StartBossBattle()
     {
-        BattleController battleC = FindObjectOfType<BattleController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
         battleC.afterBattleAction = BossBattleClear;
         battleC.SetBossBattle(0, activeRoom);
     }

@@ -16,7 +16,7 @@ public class PortalAssigner : MonoBehaviour
 
     public void AssignPortal()
     {
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         if (sideExtender.sideType == SideExtenderCube.SideType.portal)
         {
             bool left = false;

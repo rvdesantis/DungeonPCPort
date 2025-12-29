@@ -8,7 +8,7 @@ public class CrysLampSwitch : DunSwitch
     {
         if (!locked && !flipping)
         {
-            DunUIController uiController = FindObjectOfType<DunUIController>();
+            DunUIController uiController = FindAnyObjectByType<DunUIController>();
             uiController.rangeImage.gameObject.SetActive(false);
             uiController.customImage.gameObject.SetActive(false);
             uiController.ToggleKeyUI(gameObject, false);

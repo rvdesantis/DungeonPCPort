@@ -19,7 +19,7 @@ public class DunPortal : MonoBehaviour
 
     public IEnumerator Transport()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         if (!uiController.uiActive)
         {
             jumpCount++;
@@ -81,7 +81,7 @@ public class DunPortal : MonoBehaviour
     {
         if (sceneController == null)
         {
-            sceneController = FindObjectOfType<SceneController>();
+            sceneController = FindAnyObjectByType<SceneController>();
         }
         connectedPortal.gameObject.SetActive(true);
         connectedPortal.ConnectPortals(this);

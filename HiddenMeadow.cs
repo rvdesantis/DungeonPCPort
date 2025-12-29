@@ -24,9 +24,9 @@ public class HiddenMeadow : HiddenEndCube
 
     public void FirstEnter()
     {
-        PartyController party = FindObjectOfType<PartyController>();    
+        PartyController party = FindAnyObjectByType<PartyController>();    
         MonsterController monsters = FindAnyObjectByType<MonsterController>();
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
 
         if (player == null)
         {
@@ -46,7 +46,7 @@ public class HiddenMeadow : HiddenEndCube
 
         activeTreant = Treant;
 
-        battleRoom.battleC = FindObjectOfType<BattleController>();
+        battleRoom.battleC = FindAnyObjectByType<BattleController>();
     }
 
     private void Update()

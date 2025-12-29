@@ -9,7 +9,7 @@ public class TreasureRoomChest : DunChest
 
     public void FillTreasureChest()
     {
-        InventoryController inventory = FindObjectOfType<InventoryController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
         List<DunItem> rareRewards = new List<DunItem>();
 
         foreach (DunItem item in inventory.treasurePool)

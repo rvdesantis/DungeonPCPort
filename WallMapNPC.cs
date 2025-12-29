@@ -13,7 +13,7 @@ public class WallMapNPC : DunNPC
     {
         if (inventoryC == null)
         {
-            SceneController controller = FindObjectOfType<SceneController>();
+            SceneController controller = FindAnyObjectByType<SceneController>();
             inventoryC = controller.inventory;
         }
     }
@@ -23,7 +23,7 @@ public class WallMapNPC : DunNPC
     {
         if (inRange && !opened)
         {
-            DunUIController uiController = FindObjectOfType<DunUIController>();
+            DunUIController uiController = FindAnyObjectByType<DunUIController>();
             opened = true;
             audioSource.PlayOneShot(audioClips[0]);   ;
             uiController.ToggleKeyUI(gameObject, false);

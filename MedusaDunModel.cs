@@ -23,7 +23,7 @@ public class MedusaDunModel : DunNPC
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
     }
 
@@ -48,13 +48,16 @@ public class MedusaDunModel : DunNPC
     IEnumerator LaunchBattle()
     {
         PlayerController player = battleC.sceneController.playerController;
+        StatsTracker statsT = FindAnyObjectByType<StatsTracker>();
+
         breakNTurnA.Stop();
         breakNTurnB.Stop();
-        player.controller.enabled = false;
         transform.LookAt(player.transform);
         anim.SetTrigger("taunt");
         yield return new WaitForSeconds(3);
         battleC.SetBattle(23);
+
+        statsT.trapsTotal++;
         yield return new WaitForSeconds(3);
         gameObject.SetActive(false);
     }

@@ -15,10 +15,10 @@ public class SmallBoneRoomParent : RoomPropParent
 
     public void AfterEnter()
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         Debug.Log("Starting Battle Launch");
         controller.activePlayable = null;
@@ -58,11 +58,11 @@ public class SmallBoneRoomParent : RoomPropParent
     IEnumerator FirstEnterENV()
     {
         Debug.Log("Room ENV Enter Trigger");
-        SceneController controller = FindObjectOfType<SceneController>();
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        MonsterController monsters = FindObjectOfType<MonsterController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         int hopper = Random.Range(0, 10);
         if (hopper == 0)
@@ -173,8 +173,8 @@ public class SmallBoneRoomParent : RoomPropParent
 
     public override void AfterBattle()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
     }

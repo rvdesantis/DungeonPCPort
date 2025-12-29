@@ -17,7 +17,7 @@ public class TemplarMonkNPC : DunNPC
             isToggling = true;
             if (messagePanel == null)
             {
-                messagePanel = FindObjectOfType<DunUIController>().messagePanelUI;
+                messagePanel = FindAnyObjectByType<DunUIController>().messagePanelUI;
             }
             StartCoroutine(MessageTimer());
         }

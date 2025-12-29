@@ -20,7 +20,7 @@ public class TemplarDunModels : DunNPC
     {
         if (party == null)
         {
-            party = FindObjectOfType<PartyController>();
+            party = FindAnyObjectByType<PartyController>();
         }
         foreach (DunModel hero in party.activeParty)
         {
@@ -49,9 +49,9 @@ public class TemplarDunModels : DunNPC
             }
             if (party == null)
             {
-                party = FindObjectOfType<PartyController>();
+                party = FindAnyObjectByType<PartyController>();
             }
-            MonsterController monster = FindObjectOfType<MonsterController>();
+            MonsterController monster = FindAnyObjectByType<MonsterController>();
             if (!vMagic)
             {
                 Debug.Log("vMage not in party, attack not triggered.  Opening UI");
@@ -87,10 +87,10 @@ public class TemplarDunModels : DunNPC
                 }
                 if (party == null)
                 {
-                    party = FindObjectOfType<PartyController>();
+                    party = FindAnyObjectByType<PartyController>();
                 }
                 party.AssignCamBrain(attachedLibrary.vMageBattleStart, 3);          
-                PlayerController pController = FindObjectOfType<PlayerController>();
+                PlayerController pController = FindAnyObjectByType<PlayerController>();
                 pController.controller.enabled = false;                
                 StartCoroutine(vMageLaunchTimer());
             }
@@ -102,7 +102,7 @@ public class TemplarDunModels : DunNPC
     {        
         if (uiController == null)
         {
-            uiController = FindObjectOfType<DunUIController>();
+            uiController = FindAnyObjectByType<DunUIController>();
         }
         if (uiController != null)
         {
@@ -131,7 +131,7 @@ public class TemplarDunModels : DunNPC
         yield return new WaitForSeconds(.5f);
         if (bController == null)
         {
-            bController = FindObjectOfType<BattleController>();
+            bController = FindAnyObjectByType<BattleController>();
         }
         bController.afterBattleAction = attachedLibrary.AfterBattle;
         bController.SetBattle(11);        
@@ -145,7 +145,7 @@ public class TemplarDunModels : DunNPC
     {
         if (bController == null)
         {
-            bController = FindObjectOfType<BattleController>();
+            bController = FindAnyObjectByType<BattleController>();
         }
 
 

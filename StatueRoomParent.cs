@@ -51,10 +51,10 @@ public class StatueRoomParent : RoomPropParent
     {
         rotationRoomParent.gameObject.SetActive(true);
 
-        SceneController controller = FindObjectOfType<SceneController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        PartyController party = FindObjectOfType<PartyController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();       
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();       
         controller.activePlayable = null;
         controller.endAction = null;
         foreach (DunModel model in party.activeParty)
@@ -70,7 +70,7 @@ public class StatueRoomParent : RoomPropParent
         {
             uiController.ToggleKeyUI(startSwitch.gameObject, false);
         }
-        MusicController music = FindObjectOfType<MusicController>();
+        MusicController music = FindAnyObjectByType<MusicController>();
         music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
 
         foreach (DunSwitch sw in wallSwitches)
@@ -89,11 +89,11 @@ public class StatueRoomParent : RoomPropParent
     IEnumerator StartSwitch()
     {
         Debug.Log("Room ENV Enter Trigger");
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        MonsterController monsters = FindObjectOfType<MonsterController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         controller.activePlayable = crystalSwitchPlayable;
         controller.endAction = EndStart;
@@ -144,10 +144,10 @@ public class StatueRoomParent : RoomPropParent
                 wallCovers[x].SetActive(true);
             }
         }
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         distance.switches.Add(startSwitch);
 
-        player = FindObjectOfType<PlayerController>();
+        player = FindAnyObjectByType<PlayerController>();
     }
 
     private IEnumerator RotateObjects()
@@ -200,7 +200,7 @@ public class StatueRoomParent : RoomPropParent
     }
     IEnumerator EndPuzzle()
     {
-        SceneController controller = FindObjectOfType<SceneController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
 
         player.controller.enabled = false;
         yield return new WaitForSeconds(2);

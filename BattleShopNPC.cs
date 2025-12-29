@@ -10,11 +10,11 @@ public class BattleShopNPC : ShopNPC
 
     private void Start()
     {
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         Instantiate(shopPrefab, transform.position, transform.rotation);
         distance.npcS.Add(this);
         Debug.Log("Battle Shop Spawned", thisModel.gameObject);
-        uIController = FindObjectOfType<DunUIController>();
+        uIController = FindAnyObjectByType<DunUIController>();
     }
     
 }

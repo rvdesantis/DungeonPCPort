@@ -28,9 +28,9 @@ public class EyeHiddenEndCube : HiddenEndCube
     {
         if (distanceC == null)
         {
-            distanceC = FindObjectOfType<DistanceController>();
+            distanceC = FindAnyObjectByType<DistanceController>();
         }
-        controller = FindObjectOfType<SceneController>();
+        controller = FindAnyObjectByType<SceneController>();
 
         base.SecretSetUp();
 
@@ -71,7 +71,7 @@ public class EyeHiddenEndCube : HiddenEndCube
     IEnumerator UpTimer()
     {
    
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
         player.controller.enabled = false;
         eyeElevatorOnboard.Play();
         yield return new WaitForSeconds((float)eyeElevatorOnboard.duration);

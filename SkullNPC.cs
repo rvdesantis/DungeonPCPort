@@ -23,7 +23,7 @@ public class SkullNPC : DunNPC
 
     IEnumerator MessageTimer()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         messageToggle = true;
         string whisper = "You hear a voice in your head:\n...On The Table...";
@@ -39,8 +39,8 @@ public class SkullNPC : DunNPC
     IEnumerator WarningTimer()
     {
         warning = true;
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         player.enabled = false;
         if (activeTemplar != null)
         {

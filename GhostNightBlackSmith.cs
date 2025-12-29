@@ -10,7 +10,7 @@ public class GhostNightBlackSmith : BlacksmithNPC
 
     public override void NPCTrigger()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         string mss = "Interact with Ghost Knight?\n(DiceRoll)";
         uiController.confirmUI.ConfirmMessageNPC(mss, this);
     }
@@ -25,7 +25,7 @@ public class GhostNightBlackSmith : BlacksmithNPC
         }
        if (diceRoll == 1)
         {
-            PartyController party = FindObjectOfType<PartyController>();
+            PartyController party = FindAnyObjectByType<PartyController>();
             party.AssignCamBrain(knightModel.battlePlayable);
             StartCoroutine(CombatTimer());
 
@@ -35,8 +35,8 @@ public class GhostNightBlackSmith : BlacksmithNPC
 
     IEnumerator CombatTimer()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        BattleController battleC = FindObjectOfType<BattleController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
 
         player.enabled = false;
         knightModel.battlePlayable.Play();
@@ -44,7 +44,7 @@ public class GhostNightBlackSmith : BlacksmithNPC
 
         battleC.SetBattle(8);
 
-        InteractUI interact = FindObjectOfType<InteractUI>();
+        InteractUI interact = FindAnyObjectByType<InteractUI>();
         if (interact != null)
         {
             if (interact.gameObject.activeSelf)

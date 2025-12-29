@@ -23,7 +23,7 @@ public class ArmorStandNPC : BlacksmithNPC
     {
         if (!upgraded)
         {
-            DunUIController uicontroller = FindObjectOfType<DunUIController>();
+            DunUIController uicontroller = FindAnyObjectByType<DunUIController>();
             BlacksmithUI blackUI = uicontroller.blackSmithUI;
             if (uiObject = null)
             {
@@ -53,8 +53,8 @@ public class ArmorStandNPC : BlacksmithNPC
     public void UpgradeAllArmor()
     {
         upgraded = true;
-        PartyController party = FindObjectOfType<PartyController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         float increaseAmount = 4.5f;
         float currentpercent = 0;
@@ -62,7 +62,7 @@ public class ArmorStandNPC : BlacksmithNPC
         foreach (BattleModel character in party.combatParty)
         {
             currentpercent = EnhancedPrefs.GetPlayerPref(character.modelName + "DefPercent", 0f);
-            PlayerController player = FindObjectOfType<PlayerController>();
+            PlayerController player = FindAnyObjectByType<PlayerController>();
 
             player.vfxLIST[0].gameObject.SetActive(true);
             player.vfxLIST[0].Play();
@@ -104,7 +104,7 @@ public class ArmorStandNPC : BlacksmithNPC
         }
         IEnumerator MessageTimer()
         {
-            DunUIController uiController = FindObjectOfType<DunUIController>();
+            DunUIController uiController = FindAnyObjectByType<DunUIController>();
             yield return new WaitForSeconds(3);
             uiController.messagePanelUI.gameObject.SetActive(false);            
         } StartCoroutine(MessageTimer());

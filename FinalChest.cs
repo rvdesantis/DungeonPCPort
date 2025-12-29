@@ -7,7 +7,7 @@ public class FinalChest : DunChest
     public VictoryUI victorUI;
     public override void OpenChest()
     {
-        victorUI = FindObjectOfType<BattleController>().battleUI.victoryUI;
+        victorUI = FindAnyObjectByType<BattleController>().battleUI.victoryUI;
         if (victorUI != null)
         {
             StartCoroutine(OpenEndSequence());

@@ -28,7 +28,7 @@ public class BossCube : Cube
 
     public virtual void StartBossBattle()
     {
-        BattleController battleC = FindObjectOfType<BattleController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
 
         Debug.Log("Starting Boss Battle (TEST)");
     }
@@ -54,7 +54,7 @@ public class BossCube : Cube
         Debug.Log("Starting Boss Battle");
 
 
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
 
 
         controller.activePlayable = bossStartPlayable;
@@ -89,7 +89,7 @@ public class BossCube : Cube
         {
             if (controller == null)
             {
-                controller = FindObjectOfType<SceneController>();
+                controller = FindAnyObjectByType<SceneController>();
             }
             if (confirmUI == null)
             {

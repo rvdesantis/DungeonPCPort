@@ -1,16 +1,14 @@
+using Cinemachine;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Cinemachine;
+using UnityEngine.Audio;
 using UnityEngine.Playables;
 
 
 public class SceneController : MonoBehaviour
 {
-    public static bool cleared;
-
-
     public SceneBuilder builder;
     public InputController inputController;
     public Cube sanctuary;
@@ -33,6 +31,8 @@ public class SceneController : MonoBehaviour
     public GameState gameState;
     public BattleController battleController;
     public StatsTracker statsTimer;
+
+    [SerializeField] private AudioMixer masterMixer;
 
     public void SceneStart()
     {
@@ -292,27 +292,32 @@ public class SceneController : MonoBehaviour
                     if (zz == (builder.createdHallCubes.Count / 30))
                     {
                         Debug.Log("Trap Swap Finished");
-                        uiController.loadingBar.skullSlider.value = 1;
-                        uiController.loadingBar.text.text = "Opening..."; // ends here
-
-                        foreach (GameObject fog in sanctuary.fogWalls)
-                        {
-                            fog.GetComponent<ParticleSystem>().Stop();
-                            fog.GetComponent<BoxCollider>().enabled = false;
-                            playerController.audioSource.PlayOneShot(playerController.audioClips[0]);
-                        }
-                        dunFull = true;
-                        MusicController musicC = FindObjectOfType<MusicController>();
-                        musicC.CrossfadeToNextClip(musicC.dungeonMusicClips[UnityEngine.Random.Range(0, musicC.dungeonMusicClips.Count)]);
-
-                        yield return new WaitForSeconds(1);
-                        statsTimer.StartTimer();
-                        uiController.loadingBar.gameObject.SetActive(false);
+                         StartCoroutine(FinalizeDungeon());
                     }
                   
                 }
             }
         }
+    }
+
+    public IEnumerator FinalizeDungeon()
+    {
+        uiController.loadingBar.skullSlider.value = 1;
+        uiController.loadingBar.text.text = "Opening..."; // ends here
+
+        foreach (GameObject fog in sanctuary.fogWalls)
+        {
+            fog.GetComponent<ParticleSystem>().Stop();
+            fog.GetComponent<BoxCollider>().enabled = false;
+            playerController.audioSource.PlayOneShot(playerController.audioClips[0]);
+        }
+        dunFull = true;
+        MusicController musicC = FindAnyObjectByType<MusicController>();
+        musicC.CrossfadeToNextClip(musicC.dungeonMusicClips[UnityEngine.Random.Range(0, musicC.dungeonMusicClips.Count)]);
+
+        yield return new WaitForSeconds(1);
+        statsTimer.StartTimer();
+        uiController.loadingBar.gameObject.SetActive(false);
     }
 
     private IEnumerator SwapHallwayCubes() 

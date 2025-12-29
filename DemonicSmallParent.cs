@@ -14,8 +14,8 @@ public class DemonicSmallParent : RoomPropParent
 
     public override void AfterBattle()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
@@ -23,9 +23,9 @@ public class DemonicSmallParent : RoomPropParent
     public void AfterEnter()
     {
         Debug.Log("Starting Gargoyle Battle");
-        PartyController party = FindObjectOfType<PartyController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        BattleController battleC = FindObjectOfType<BattleController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
 
         controller.endAction = null;
         controller.activePlayable = null;
@@ -50,11 +50,11 @@ public class DemonicSmallParent : RoomPropParent
     IEnumerator FirstEnterENV()
     {
         Debug.Log("Garg Room Enter Trigger");
-        SceneController controller = FindObjectOfType<SceneController>();
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        MonsterController monsters = FindObjectOfType<MonsterController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         controller.activePlayable = gargEnterPlayable;
         controller.endAction += AfterEnter;

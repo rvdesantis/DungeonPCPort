@@ -24,11 +24,11 @@ public class DemonicStatueRoomSwitch : DunSwitch
         string orbMSS = "There appears to be a slot to insert an orb";
         if (inventory == null)
         {
-            inventory = FindObjectOfType<InventoryController>();
+            inventory = FindAnyObjectByType<InventoryController>();
         }
         if (uiController == null)
         {
-            uiController = FindObjectOfType<DunUIController>();
+            uiController = FindAnyObjectByType<DunUIController>();
         }
         OrbChecker();
         if (!orbCheck)
@@ -69,12 +69,12 @@ public class DemonicStatueRoomSwitch : DunSwitch
     {
         inventory.keyItems[0].itemCount--;
 
-        DistanceController distanceController = FindObjectOfType<DistanceController>();
-        DunUIController uIController = FindObjectOfType<DunUIController>();
+        DistanceController distanceController = FindAnyObjectByType<DistanceController>();
+        DunUIController uIController = FindAnyObjectByType<DunUIController>();
         uIController.ToggleKeyUI(gameObject, false);
         if (distanceController == null)
         {
-            distanceController = FindObjectOfType<DistanceController>();
+            distanceController = FindAnyObjectByType<DistanceController>();
         }
         yield return new WaitForSeconds(.05f);
         armorStand.gameObject.SetActive(true);

@@ -12,7 +12,7 @@ public class BugTrapNPC : DunNPC
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         Debug.Log("Trigger Bomber Bug Battle");
         // Launch Battle
@@ -26,8 +26,11 @@ public class BugTrapNPC : DunNPC
     IEnumerator LaunchBattle()
     {
         PlayerController player = battleC.sceneController.playerController;
+        StatsTracker statsT = FindAnyObjectByType<StatsTracker>();
+
         player.controller.enabled = false;
         battleC.SetBattle(24);
+        statsT.trapsTotal++;
         yield return new WaitForSeconds(3);
         gameObject.SetActive(false);
     }

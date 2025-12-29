@@ -33,7 +33,7 @@ public class LibraryRoomParent : RoomPropParent
                 distanceController = FindAnyObjectByType<DistanceController>();
             }
             distanceController.npcS.Add(skull);
-            skull.player = FindObjectOfType<PlayerController>();
+            skull.player = FindAnyObjectByType<PlayerController>();
             skull.activeTarget = skull.player.transform;
             skull.eyeTracking = true;
             skull.roomParent = roomParent;
@@ -43,8 +43,8 @@ public class LibraryRoomParent : RoomPropParent
         {
             if (!vMageUnlocked)
             {
-                NPCController npcController = FindObjectOfType<NPCController>();
-                DistanceController distance = FindObjectOfType<DistanceController>();
+                NPCController npcController = FindAnyObjectByType<NPCController>();
+                DistanceController distance = FindAnyObjectByType<DistanceController>();
                 bool inDun = false;
                 foreach (DunNPC npc in distance.npcS)
                 {
@@ -75,7 +75,7 @@ public class LibraryRoomParent : RoomPropParent
             if (vMageUnlocked)
             {
                 SummonTemplarGang();
-                PartyController party = FindObjectOfType<PartyController>();
+                PartyController party = FindAnyObjectByType<PartyController>();
                 bool inParty = false;
                 foreach (DunModel partyMem in party.activeParty)
                 {
@@ -96,7 +96,7 @@ public class LibraryRoomParent : RoomPropParent
             if (vMageUnlocked)
             {
                 SummonTemplarGang();
-                PartyController party = FindObjectOfType<PartyController>();
+                PartyController party = FindAnyObjectByType<PartyController>();
                 bool inParty = false;
 
                 foreach (DunModel partyMem in party.activeParty)
@@ -125,7 +125,7 @@ public class LibraryRoomParent : RoomPropParent
 
     public void SummonTemplarGang()
     {
-        MonsterController monsters = FindObjectOfType<MonsterController>();
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
         DunModel tempA = monsters.enemyMasterList[11]; //x2
         DunModel tempB = monsters.enemyMasterList[12];
       
@@ -149,7 +149,7 @@ public class LibraryRoomParent : RoomPropParent
         TemplarDunModels tempNPC = templar2.GetComponent<TemplarDunModels>();
         if (distanceController == null)
         {
-            distanceController = FindObjectOfType<DistanceController>();
+            distanceController = FindAnyObjectByType<DistanceController>();
         }
         distanceController.npcS.Add(tempNPC);
         tempNPC.attachedLibrary = this;
@@ -164,7 +164,7 @@ public class LibraryRoomParent : RoomPropParent
     public override void AfterBattle()
     {
         base.AfterBattle();
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         foreach (DunModel mod in party.activeParty)
         {
             mod.gameObject.SetActive(false);
@@ -173,9 +173,9 @@ public class LibraryRoomParent : RoomPropParent
 
     public void UnlockTemplarEnemies()
     {
-        UnlockController unlock = FindObjectOfType<UnlockController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        UnlockController unlock = FindAnyObjectByType<UnlockController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         unlock.unlockUI.nextUnlockAction = null; 
         unlock.UnlockEnemy(0);
         player.controller.enabled = true;
@@ -184,10 +184,10 @@ public class LibraryRoomParent : RoomPropParent
     IEnumerator VoidMageUnlock()
     {
         Debug.Log("Trigger vMage Unlock Summon");
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
 
         yield return new WaitForSeconds(.5f);
         controller.activePlayable = vMageUnlockPlayable;
@@ -227,11 +227,11 @@ public class LibraryRoomParent : RoomPropParent
 
     public void EndVoidMageSummon()
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        UnlockController unlock = FindObjectOfType<UnlockController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        UnlockController unlock = FindAnyObjectByType<UnlockController>();
 
         foreach (DunModel model in party.activeParty)
         {
@@ -260,7 +260,7 @@ public class LibraryRoomParent : RoomPropParent
             }
         }
 
-        MusicController music = FindObjectOfType<MusicController>();
+        MusicController music = FindAnyObjectByType<MusicController>();
         music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
 
     }

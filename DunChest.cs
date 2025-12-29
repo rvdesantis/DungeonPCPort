@@ -24,7 +24,7 @@ public class DunChest : MonoBehaviour
 
     public IEnumerator OpenSequence()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         InventoryController inventory = FindFirstObjectByType<InventoryController>();
 
         float waitTime = 0;

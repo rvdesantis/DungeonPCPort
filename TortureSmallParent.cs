@@ -11,10 +11,12 @@ public class TortureSmallParent : RoomPropParent
     public List<DunModel> activeModels;
 
 
+    // set up for Question room, if second tortuneRoom exists, add cage with NPC, and Jailer in other room drops key to cage.  Reward with Chaos Orb?
+
     public override void AfterBattle()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PlayerController player = FindFirstObjectByType<PlayerController>();
+        DunUIController uiController = FindFirstObjectByType<DunUIController>();
 
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
@@ -22,9 +24,9 @@ public class TortureSmallParent : RoomPropParent
     public void AfterEnter()
     {
         Debug.Log("Starting Gargoyle Battle");
-        PartyController party = FindObjectOfType<PartyController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        BattleController battleC = FindObjectOfType<BattleController>();
+        PartyController party = FindFirstObjectByType<PartyController>();
+        SceneController controller = FindFirstObjectByType<SceneController>();
+        BattleController battleC = FindFirstObjectByType<BattleController>();
 
         controller.endAction = null;
         controller.activePlayable = null;
@@ -49,12 +51,12 @@ public class TortureSmallParent : RoomPropParent
     IEnumerator FirstEnterENV()
     {
         Debug.Log("Troll Room Enter Trigger");
-        SceneController controller = FindObjectOfType<SceneController>();
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        MonsterController monsters = FindObjectOfType<MonsterController>();
-        NPCController NPCs = FindObjectOfType<NPCController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        SceneController controller = FindFirstObjectByType<SceneController>();
+        PartyController party = FindFirstObjectByType<PartyController>();
+        PlayerController player = FindFirstObjectByType<PlayerController>();
+        MonsterController monsters = FindFirstObjectByType<MonsterController>();
+        NPCController NPCs = FindFirstObjectByType<NPCController>();
+        DunUIController uiController = FindFirstObjectByType<DunUIController>();
 
         controller.activePlayable = trollEnterPlayable;
         controller.endAction += AfterEnter;

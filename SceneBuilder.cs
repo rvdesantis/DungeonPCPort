@@ -1,14 +1,18 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.Playables;
-using Unity.VisualScripting;
 using System.Linq.Expressions;
+using Unity.VisualScripting;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 public class SceneBuilder : MonoBehaviour
 {
+
+
     public int targetSize;
     public int currentSize;
 
@@ -59,8 +63,25 @@ public class SceneBuilder : MonoBehaviour
     public bool frameBuild;
     public int bossHallNum;
     public List<PlayableDirector> openingPlayables;
+    [SerializeField] private CanvasScaler canvasScaler;
 
-    
+
+    void Awake()
+    {
+        int resIndex = PlayerPrefs.GetInt("resolutionIndex", -1);
+        bool fullscreen = PlayerPrefs.GetInt("fullscreen", 1) == 1;
+
+        if (resIndex >= 0 && resIndex < Screen.resolutions.Length)
+        {
+            Resolution res = Screen.resolutions[resIndex];
+            Screen.SetResolution(res.width, res.height, fullscreen);
+        }
+        else
+        {
+            Screen.fullScreen = fullscreen;
+        }
+        AdjustUIScaling();
+    }
 
     private void Start()
     {
@@ -1869,6 +1890,39 @@ public class SceneBuilder : MonoBehaviour
         }
         loadingBar.text.text = "Building Dungeon...";
         //StartCoroutine(StarterCubeCheck());
+    }
+
+    private void AdjustUIScaling()
+    {
+        if (canvasScaler == null)
+        {
+            Debug.LogWarning("CanvasScaler reference not assigned!");
+            return;
+        }
+
+        float aspect = (float)Screen.width / Screen.height;
+
+        // Adjust scaling based on aspect ratio
+        if (aspect > 3.0f)
+        {
+            // 32:9 or wider
+            canvasScaler.matchWidthOrHeight = 0.8f;
+            Debug.Log($"[ResolutionManager] Super Ultrawide detected ({aspect:F2}) → scaling = 0.8");
+        }
+        else if (aspect > 2.3f)
+        {
+            // 21:9
+            canvasScaler.matchWidthOrHeight = 0.65f;
+            Debug.Log($"[ResolutionManager] Ultrawide detected ({aspect:F2}) → scaling = 0.65");
+        }
+        else
+        {
+            // Standard 16:9 or 16:10
+            canvasScaler.matchWidthOrHeight = 0.5f;
+            Debug.Log($"[ResolutionManager] Standard aspect ({aspect:F2}) → scaling = 0.5");
+        }
+
+        Canvas.ForceUpdateCanvases();
     }
 
 }

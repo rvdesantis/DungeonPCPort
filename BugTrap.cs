@@ -14,12 +14,12 @@ public class BugTrap : DunTrap
 
     public override void SetSideTrap(SideExtenderCube sideCube)
     {
-        MonsterController monsterController = FindObjectOfType<MonsterController>();    
+        MonsterController monsterController = FindAnyObjectByType<MonsterController>();    
         bugModel0 = Instantiate(monsterController.enemyMasterList[24], sideCube.floorPoint.transform);
         bugModel1 = Instantiate(monsterController.enemyMasterList[24], sideCube.floorPoint.transform);
         bugModel2 = Instantiate(monsterController.enemyMasterList[24], sideCube.floorPoint.transform);
         base.SetSideTrap(sideCube);
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         distance.npcS.Add(bugNPC);
         bugModel0.AssignSpecificDirector(bugIdlePlayable, 0);
         bugModel1.AssignSpecificDirector(bugIdlePlayable, 1);

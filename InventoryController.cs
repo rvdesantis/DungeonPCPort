@@ -86,7 +86,7 @@ public class InventoryController : MonoBehaviour
     public void AddGold(int goldAdd)
     {
         gold = gold + goldAdd;
-        StatsTracker stats = FindObjectOfType<StatsTracker>();
+        StatsTracker stats = FindAnyObjectByType<StatsTracker>();
         stats.totalGold = stats.totalGold + goldAdd;
 
         EnhancedPrefs.SetPlayerPref("goldBank", gold); EnhancedPrefs.SavePlayerPrefs();

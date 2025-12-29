@@ -448,6 +448,7 @@ public class DistanceController : MonoBehaviour
                         if (Vector3.Distance(playerPosition, side.triggerSpot.transform.position) < 4)
                         {
                             playerController.controller.enabled = false;
+                            Debug.Log("Triggering Enemy Spawn from DistanceController()", side.triggerSpot);
                             side.TriggerEnemy();
                         }
                     }
@@ -455,7 +456,8 @@ public class DistanceController : MonoBehaviour
                     {
                         if (Vector3.Distance(playerPosition, side.triggerSpot.transform.position) < 4)
                         {
-                            playerController.controller.enabled = false;
+                            // playerController.controller.enabled = false;
+                            Debug.Log("Triggering Trap from DistanceController()", side.triggerSpot);
                             side.TriggerTrap();
                         }
                     }
@@ -483,7 +485,7 @@ public class DistanceController : MonoBehaviour
                     else
                     {
                         dunSwit.inRange = true;
-                        uiController.rangeImage.sprite = uiController.rangeSprites[1];
+                        uiController.rangeImage.sprite = uiController.customSprites[6];
                         uiController.rangeImage.gameObject.SetActive(true);
                         uiController.ToggleKeyUI(dunSwit.gameObject, false);
                     }

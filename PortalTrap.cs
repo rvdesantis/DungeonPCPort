@@ -15,10 +15,10 @@ public class PortalTrap : MonoBehaviour
 
     void Start()
     {
-        controller = FindObjectOfType<SceneController>();
-        builder = FindObjectOfType<SceneBuilder>();
+        controller = FindAnyObjectByType<SceneController>();
+        builder = FindAnyObjectByType<SceneBuilder>();
         sanct = controller.sanctuary.GetComponent<SanctuaryCube>();
-        distance = FindObjectOfType<DistanceController>();
+        distance = FindAnyObjectByType<DistanceController>();
 
         foreach(HallStarterCube starter in builder.createdStarters)
         {
@@ -32,10 +32,10 @@ public class PortalTrap : MonoBehaviour
 
     public void AssignPortals()
     {
-        controller = FindObjectOfType<SceneController>();
-        builder = FindObjectOfType<SceneBuilder>();
+        controller = FindAnyObjectByType<SceneController>();
+        builder = FindAnyObjectByType<SceneBuilder>();
         sanct = controller.sanctuary.GetComponent<SanctuaryCube>();
-        distance = FindObjectOfType<DistanceController>();
+        distance = FindAnyObjectByType<DistanceController>();
         foreach (HallStarterCube starter in builder.createdStarters)
         {
             if (starter.hallType == HallStarterCube.HallType.boss)

@@ -35,7 +35,7 @@ public class DunItem : MonoBehaviour
     }
     public virtual void PickUp()
     {
-        InventoryController inventory = FindObjectOfType<InventoryController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
         if (!trinket)
         {
             if (itemType == ItemType.gold)
@@ -155,7 +155,7 @@ public class DunItem : MonoBehaviour
             }
         }
         Debug.Log(itemCount + " " + itemName + " picked up");
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         if (pickUpMessage)
         {
             uiController.rangeImage.gameObject.SetActive(false);

@@ -26,8 +26,8 @@ public class CrystalLampRoomParent : RoomPropParent
 
     public override void AfterBattle()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         if (gKnightBattle)
         {
@@ -47,7 +47,7 @@ public class CrystalLampRoomParent : RoomPropParent
 
     private void Start()
     {
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         distance.switches.Add(scorpionSwitch);
         foreach (DunSwitch lampSw in lampSwitches)
         {
@@ -57,11 +57,11 @@ public class CrystalLampRoomParent : RoomPropParent
 
     public void SummonEEnd()
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        MusicController music = FindObjectOfType<MusicController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        MusicController music = FindAnyObjectByType<MusicController>();
         BattleController battleC = controller.battleController;
 
         scorpSummonPlayable.time = scorpSummonPlayable.duration;
@@ -80,11 +80,11 @@ public class CrystalLampRoomParent : RoomPropParent
 
     public void SummonGEnd()
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        MusicController music = FindObjectOfType<MusicController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        MusicController music = FindAnyObjectByType<MusicController>();
 
         activeModel.gameObject.SetActive(false);
         controller.activePlayable = null;
@@ -108,11 +108,11 @@ public class CrystalLampRoomParent : RoomPropParent
     IEnumerator SummonETimer()
     {
         Debug.Log("Trigger Scorpion Summon");
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
         MonsterController monsters = FindAnyObjectByType<MonsterController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
 
         controller.activePlayable = scorpSummonPlayable;
         controller.endAction += SummonEEnd;
@@ -158,7 +158,7 @@ public class CrystalLampRoomParent : RoomPropParent
         scorp.gameObject.SetActive(false);
         if (distanceController == null)
         {
-            distanceController = FindObjectOfType<DistanceController>();
+            distanceController = FindAnyObjectByType<DistanceController>();
         }
         distanceController.switches.Remove(scorpionSwitch);
         distanceController.switches.Remove(lampSwitches[0]);
@@ -174,11 +174,11 @@ public class CrystalLampRoomParent : RoomPropParent
     IEnumerator SummonGobTimer()
     {
         Debug.Log("Trigger Goblin Summon");
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        NPCController npcS = FindObjectOfType<NPCController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        NPCController npcS = FindAnyObjectByType<NPCController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
 
         controller.activePlayable = gobChestPlayable;
         controller.endAction += SummonGEnd;
@@ -223,7 +223,7 @@ public class CrystalLampRoomParent : RoomPropParent
         yield return new WaitForSeconds(clipTime);
         if (distanceController == null)
         {
-            distanceController = FindObjectOfType<DistanceController>();
+            distanceController = FindAnyObjectByType<DistanceController>();
         }
         distanceController.chests.Add(gobChest);
         distanceController.switches.Remove(scorpionSwitch);
@@ -240,11 +240,11 @@ public class CrystalLampRoomParent : RoomPropParent
     IEnumerator SummonKnightTimer()
     {
         Debug.Log("Trigger Knight Summon");
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        MonsterController monster = FindObjectOfType<MonsterController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        MonsterController monster = FindAnyObjectByType<MonsterController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
         BattleController battleC = controller.battleController;
 
         knightPlayable.gameObject.SetActive(true);
@@ -270,7 +270,7 @@ public class CrystalLampRoomParent : RoomPropParent
 
         if (distanceController == null)
         {
-            distanceController = FindObjectOfType<DistanceController>();
+            distanceController = FindAnyObjectByType<DistanceController>();
         }
         GhostNightBlackSmith GNblackSmith = knight.GetComponent<GhostNightBlackSmith>();
         distanceController.npcS.Add(GNblackSmith);
@@ -292,10 +292,10 @@ public class CrystalLampRoomParent : RoomPropParent
     IEnumerator ChaosOrbTimer()
     {
         Debug.Log("Trigger Orb Summon");
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        PartyController party = FindObjectOfType<PartyController>();
-        DistanceController distanceController = FindObjectOfType<DistanceController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        DistanceController distanceController = FindAnyObjectByType<DistanceController>();
 
         
         distanceController.dunItems.Add(cOrb);
@@ -317,7 +317,7 @@ public class CrystalLampRoomParent : RoomPropParent
         yield return new WaitForSeconds(clipTime);
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
-        MusicController music = FindObjectOfType<MusicController>();
+        MusicController music = FindAnyObjectByType<MusicController>();
         music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
 

@@ -24,7 +24,7 @@ public class TemplarNPC : DunNPC
     {
         if (uiController == null)
         {
-            uiController = FindObjectOfType<DunUIController>();
+            uiController = FindAnyObjectByType<DunUIController>();
         }
         if (confirmUI == null)
         {
@@ -32,7 +32,7 @@ public class TemplarNPC : DunNPC
         }
         if (playerController == null)
         {
-            playerController = FindObjectOfType<PlayerController>();
+            playerController = FindAnyObjectByType<PlayerController>();
         }
         if (messagePanel == null)
         {
@@ -58,7 +58,7 @@ public class TemplarNPC : DunNPC
     public void TriggerAttackConf()
     {
         Debug.Log("Templar Attacked", gameObject);
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
 
         distance.npcS.Remove(this);
         uiController.interactUI.gameObject.SetActive(false);
@@ -71,8 +71,8 @@ public class TemplarNPC : DunNPC
     }
     public void StartTemplarBossFight()
     {
-        SceneController controller = FindObjectOfType<SceneController>();
-        BattleController battleC = FindObjectOfType<BattleController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
         controller.endAction = null;
         controller.activePlayable = null;
 
@@ -85,7 +85,7 @@ public class TemplarNPC : DunNPC
 
     public void AfterBattle()
     {
-        SceneController controller = FindObjectOfType<SceneController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
 
         bool vMageCheck = EnhancedPrefs.GetPlayerPref("voidMageUnlock", false);
         if (!vMageCheck)

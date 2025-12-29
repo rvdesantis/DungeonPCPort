@@ -20,11 +20,11 @@ public class TemplarMonkLeaderNPC : DunNPC
     {
         if (party == null)
         {
-            party = FindObjectOfType<PartyController>();
+            party = FindAnyObjectByType<PartyController>();
         }
         if (uiController == null)
         {
-            uiController = FindObjectOfType<DunUIController>();
+            uiController = FindAnyObjectByType<DunUIController>();
         }
         foreach (DunModel hero in party.activeParty)
         {
@@ -37,7 +37,7 @@ public class TemplarMonkLeaderNPC : DunNPC
 
     public override void NPCTrigger()
     {
-        MonsterController monster = FindObjectOfType<MonsterController>();
+        MonsterController monster = FindAnyObjectByType<MonsterController>();
        
         
         if (!vMagic)
@@ -51,7 +51,7 @@ public class TemplarMonkLeaderNPC : DunNPC
     {
         if (uiController == null)
         {
-            uiController = FindObjectOfType<DunUIController>();
+            uiController = FindAnyObjectByType<DunUIController>();
         }
         if (uiController != null)
         {  
@@ -74,7 +74,7 @@ public class TemplarMonkLeaderNPC : DunNPC
                     isToggling = true;
                     if (messagePanel == null)
                     {
-                        messagePanel = FindObjectOfType<DunUIController>().messagePanelUI;
+                        messagePanel = FindAnyObjectByType<DunUIController>().messagePanelUI;
                     }
                     StartCoroutine(MessageTimer());
                 }
@@ -114,7 +114,7 @@ public class TemplarMonkLeaderNPC : DunNPC
         yield return new WaitForSeconds(.5f);
         if (bController == null)
         {
-            bController = FindObjectOfType<BattleController>();
+            bController = FindAnyObjectByType<BattleController>();
         }
         bController.afterBattleAction = null;  // set after action
         bController.SetBattle(21);

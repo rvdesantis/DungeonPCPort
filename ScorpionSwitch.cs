@@ -16,7 +16,7 @@ public class ScorpionSwitch : DunSwitch
 
     IEnumerator SFlipTimer()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         uiController.rangeImage.gameObject.SetActive(false);
         uiController.customImage.gameObject.SetActive(false);
         flipping = true;

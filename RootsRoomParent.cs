@@ -18,7 +18,7 @@ public class RootsRoomParent : RoomPropParent
         
         if (roomParent.roomType == CubeRoom.RoomType.battle || roomParent.roomType == CubeRoom.RoomType.chest || roomParent.roomType == CubeRoom.RoomType.quest)
         {
-            MonsterController monsters = FindObjectOfType<MonsterController>();
+            MonsterController monsters = FindAnyObjectByType<MonsterController>();
             DunModel targetTree = null;
 
             foreach (DunModel monster in monsters.enemyMasterList)
@@ -46,9 +46,9 @@ public class RootsRoomParent : RoomPropParent
 
     public void StartTreantAttack()
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
 
         controller.activePlayable = treantAttackPlayable;
         controller.endAction = AttackFinish;
@@ -82,7 +82,7 @@ public class RootsRoomParent : RoomPropParent
 
     IEnumerator AttackTimer()
     {
-        SceneController controller = FindObjectOfType<SceneController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
         treantAttackPlayable.Play();        
         yield return new WaitForSeconds((float)treantAttackPlayable.duration);
         if (controller.activePlayable == treantAttackPlayable)
@@ -93,10 +93,10 @@ public class RootsRoomParent : RoomPropParent
 
     public void AttackFinish()
     {
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
      
-        SceneController controller = FindObjectOfType<SceneController>();
-        BattleController battleC = FindObjectOfType<BattleController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
 
         controller.activePlayable = null;
         controller.endAction = null;
@@ -126,7 +126,7 @@ public class RootsRoomParent : RoomPropParent
 
     public void BattleFinish()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
         player.enabled = true;
     }
 

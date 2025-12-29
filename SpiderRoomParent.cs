@@ -21,11 +21,11 @@ public class SpiderRoomParent : RoomPropParent
     {
         Debug.Log("Room ENV Enter Trigger");
 
-        SceneController controller = FindObjectOfType<SceneController>();
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        MonsterController monsters = FindObjectOfType<MonsterController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         if (roomParent.roomType == CubeRoom.RoomType.battle || roomParent.roomType == CubeRoom.RoomType.chest || roomParent.roomType == CubeRoom.RoomType.quest)
         {
@@ -64,9 +64,9 @@ public class SpiderRoomParent : RoomPropParent
 
     public void AfterEnter()
     {
-        BattleController battleC = FindObjectOfType<BattleController>();
-        PartyController party = FindObjectOfType<PartyController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
     
 
         controller.endAction = null;
@@ -81,8 +81,8 @@ public class SpiderRoomParent : RoomPropParent
 
     public void AfterSpider()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        MusicController music = FindObjectOfType<MusicController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        MusicController music = FindAnyObjectByType<MusicController>();
         music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
         player.enabled = true;
         activeQ.gameObject.SetActive(false);

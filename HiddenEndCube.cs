@@ -18,7 +18,7 @@ public class HiddenEndCube : DeadEndCube
     {
         if (distanceC == null)
         {
-            distanceC = FindObjectOfType<DistanceController>();
+            distanceC = FindAnyObjectByType<DistanceController>();
         }
         if (fakeWall != null)
         {

@@ -10,7 +10,7 @@ public class HiddenForge : HiddenEndCube
     {
         if (distanceC == null)
         {
-            distanceC = FindObjectOfType<DistanceController>();
+            distanceC = FindAnyObjectByType<DistanceController>();
         }
         distanceC.npcS.Add(forgeNPC);
         distanceC.fakeWalls.Add(fakeWall);

@@ -16,7 +16,8 @@ public class SideExtenderCube : Cube
     public FakeWall rFakeWall;
     public GameObject lSmall;
     public GameObject rSmall;
-    
+    public GameObject lSmallSpawn;
+    public GameObject rSmallSpawn;
     public DunPortal lPortal;
     public DunPortal rPortal;
     public DunChest lChest;
@@ -35,7 +36,7 @@ public class SideExtenderCube : Cube
 
     public void SetWalls(bool left = true)
     {
-        DistanceController distanceC = FindObjectOfType<DistanceController>();
+        DistanceController distanceC = FindAnyObjectByType<DistanceController>();
         if (left)
         {
             foreach(GameObject wall in lWalls)
@@ -61,68 +62,19 @@ public class SideExtenderCube : Cube
     }
     public void FillCube(bool left)
     {
-        List<GameObject> spawnableList = new List<GameObject>();
-        GameObject enemyObject = null;
-        DistanceController distance = FindObjectOfType<DistanceController>(); 
-        MonsterController monsters = FindObjectOfType<MonsterController>();
-        int monsterCount = 0;
-
-
+        DistanceController distance = FindAnyObjectByType<DistanceController>(); 
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        int fillTypeNum = Random.Range(0, 4); // 0-enemy, 1-chest, 2-NPC, 3-portal, 4-trap
         if (left)
         {
-            // add Enemy chance
-            foreach (DunModel enemy in monsters.enemyMasterList)
-            {
-                if (enemy.spawnArea == DunModel.SpawnArea.sideHall)
-                {
-                    monsterCount++;
-                }
-            }
-            if (monsterCount > 0)
-            {
-                spawnableList.Add(enemyObject);
-            }
-
-            if (lChest != null)
-            {
-                spawnableList.Add(lChest.gameObject);
-            }
-            // add NPC chance
-            if (lPortal != null)
-            {
-                spawnableList.Add(lPortal.gameObject);
-            }
-            int objectPick = Random.Range(0, spawnableList.Count);  
-            if (spawnableList[objectPick] == lChest.gameObject)
-            {
-                sideType = SideType.chest;
-                lFakeWall.hideType = FakeWall.HideType.treasure;
-                distance.chests.Add(lChest);
-                lChest.gameObject.SetActive(true);
-            }
-            if (spawnableList[objectPick] == lPortal.gameObject)
-            {
-                sideType = SideType.portal;
-                lFakeWall.hideType = FakeWall.HideType.treasure;
-            }
-            // add NPC Spawn
-
-            if (spawnableList[objectPick] == enemyObject)
+            if (fillTypeNum == 0)
             {
                 lFakeWall.locked = true;
                 lFakeWall.hideType = FakeWall.HideType.monster;
                 List<DunModel> availableEnemies = new List<DunModel>();
+                // add Minotaur chance
+                availableEnemies.Add(monsters.enemyMasterList[4]);
 
-                foreach (DunModel enemy in monsters.enemyMasterList)
-                {
-                    if (enemy.spawnArea == DunModel.SpawnArea.sideHall)
-                    {
-                        if (enemy.spawnPlayableInt % 2 == 0) // adds even numbered only
-                        {
-                            availableEnemies.Add(enemy);
-                        }
-                    }
-                }
                 if (availableEnemies.Count > 0)
                 {
                     lMonster = availableEnemies[Random.Range(0, availableEnemies.Count)];
@@ -130,60 +82,48 @@ public class SideExtenderCube : Cube
                     sideType = SideType.enemy;
                 }
             }
+
+            if (fillTypeNum == 1) // chest
+            {
+                sideType = SideType.chest;
+                lFakeWall.hideType = FakeWall.HideType.treasure;
+                distance.chests.Add(lChest);
+                lChest.gameObject.SetActive(true);
+                Debug.Log("Added Left Chest to Side Extender, Index " + distance.chests.IndexOf(lChest) + " in DistanceController");
+            }
+            if (fillTypeNum == 2) 
+            {
+                NPCController npcC = FindAnyObjectByType<NPCController>();
+                sideType = SideType.NPC;
+                List<DunNPC> dunNPCs = new List<DunNPC>();
+                dunNPCs.Add(npcC.npcMasterList[0].GetComponent<DunNPC>()); // Map Vendor
+                dunNPCs.Add(npcC.npcMasterList[2].GetComponent<DunNPC>()); // BattleShop
+                dunNPCs.Add(npcC.npcMasterList[3].GetComponent<DunNPC>()); // Necro 
+
+                DunNPC targetNPC = dunNPCs[Random.Range(0, dunNPCs.Count)];
+
+                DunNPC spawnedNPC = Instantiate(targetNPC, lSmallSpawn.transform, false);
+                distance.npcS.Add(spawnedNPC);
+                Debug.Log("Added " + spawnedNPC.name + " to Side Extender, Index " + distance.npcS.IndexOf(spawnedNPC) + " in DistanceController");
+
+            }
+            if (fillTypeNum == 3)
+            {
+                sideType = SideType.portal;
+                lFakeWall.hideType = FakeWall.HideType.treasure;
+            }
+            // Traps are handled separately
         }
         else
         {
-            foreach (DunModel enemy in monsters.enemyMasterList)
+            if (fillTypeNum == 0)
             {
-                if (enemy.spawnArea == DunModel.SpawnArea.sideHall)
-                {
-                    monsterCount++;
-                }
-            }
-            if (monsterCount > 0)
-            {
-                spawnableList.Add(enemyObject);
-            }
-
-            if (rChest != null)
-            {
-                spawnableList.Add(rChest.gameObject);
-            }
-            // add NPC chance
-            if (rPortal != null)
-            {
-                spawnableList.Add(rPortal.gameObject);
-            }
-            int objectPick = Random.Range(0, spawnableList.Count);
-            if (spawnableList[objectPick] == rChest.gameObject)
-            {
-                rFakeWall.hideType = FakeWall.HideType.treasure;
-                sideType = SideType.chest;
-                distance.chests.Add(rChest);
-                rChest.gameObject.SetActive(true);
-            }
-            if (spawnableList[objectPick] == rPortal.gameObject)
-            {
-                rFakeWall.hideType = FakeWall.HideType.treasure;
-                sideType = SideType.portal;
-              
-            }
-            // add NPC Spawn
-            if (spawnableList[objectPick] == enemyObject)
-            {
-                rFakeWall.hideType = FakeWall.HideType.monster;
                 rFakeWall.locked = true;
+                rFakeWall.hideType = FakeWall.HideType.monster;
                 List<DunModel> availableEnemies = new List<DunModel>();
-                foreach (DunModel enemy in monsters.enemyMasterList)
-                {
-                    if (enemy.spawnArea == DunModel.SpawnArea.sideHall)
-                    {
-                        if (enemy.spawnPlayableInt % 2 != 0) // adds odd numbered only
-                        {
-                            availableEnemies.Add(enemy);
-                        }
-                    }
-                }
+                // add Jelly chance
+                availableEnemies.Add(monsters.enemyMasterList[5]);
+
                 if (availableEnemies.Count > 0)
                 {
                     rMonster = availableEnemies[Random.Range(0, availableEnemies.Count)];
@@ -191,6 +131,36 @@ public class SideExtenderCube : Cube
                     sideType = SideType.enemy;
                 }
             }
+
+            if (fillTypeNum == 1) // chest
+            {
+                sideType = SideType.chest;
+                rFakeWall.hideType = FakeWall.HideType.treasure;
+                distance.chests.Add(rChest);
+                rChest.gameObject.SetActive(true);
+                Debug.Log("Added Right Chest to Side Extender, Index " + distance.chests.IndexOf(rChest) + " in DistanceController");
+            }
+            if (fillTypeNum == 2) 
+            {
+                NPCController npcC = FindAnyObjectByType<NPCController>();
+                sideType = SideType.NPC;
+                List<DunNPC> dunNPCs = new List<DunNPC>();
+                dunNPCs.Add(npcC.npcMasterList[0].GetComponent<DunNPC>()); // Map Vendor
+                dunNPCs.Add(npcC.npcMasterList[2].GetComponent<DunNPC>()); // BattleShop
+                dunNPCs.Add(npcC.npcMasterList[3].GetComponent<DunNPC>()); // Necro 
+
+                DunNPC targetNPC = dunNPCs[Random.Range(0, dunNPCs.Count)];
+
+                DunNPC spawnedNPC = Instantiate(targetNPC, rSmallSpawn.transform, false);
+                distance.npcS.Add(spawnedNPC);
+                Debug.Log("Added " + spawnedNPC.name + " to Side Extender, Index " + distance.npcS.IndexOf(spawnedNPC) + " in DistanceController");
+            }
+            if (fillTypeNum == 3)
+            {
+                sideType = SideType.portal;
+                rFakeWall.hideType = FakeWall.HideType.treasure;
+            }
+            // Traps are handled separately
         }
     }
 
@@ -200,7 +170,7 @@ public class SideExtenderCube : Cube
         portal.gameObject.SetActive(true);
 
         List<DunPortal> availablePort = new List<DunPortal>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
         SanctuaryCube sact = controller.sanctuary.GetComponent<SanctuaryCube>();
 
         availablePort.Add(sact.returnPortal);
@@ -239,8 +209,8 @@ public class SideExtenderCube : Cube
 
     public void TriggerEnemy()
     {
-        MonsterController monsters = FindObjectOfType<MonsterController>();
-        StatsTracker stats = FindObjectOfType<StatsTracker>();
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        StatsTracker stats = FindAnyObjectByType<StatsTracker>();
         bool left = lSmall.gameObject.activeSelf;
         triggered = true;
         stats.trapsTotal++;
@@ -293,11 +263,11 @@ public class SideExtenderCube : Cube
 
     IEnumerator MonsterEventTimer(DunModel monster, PlayableDirector monsterDir, bool torch = false)
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        BattleUIController battleUI = FindObjectOfType<BattleUIController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        BattleUIController battleUI = FindAnyObjectByType<BattleUIController>();
   
         player.controller.enabled = false;  
         player.cinPersonCam.m_Priority = -1;
@@ -355,11 +325,11 @@ public class SideExtenderCube : Cube
 
     public void EndMonster()
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        SceneController controller = FindObjectOfType<SceneController>();        
-        BattleController battleController = FindObjectOfType<BattleController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();        
+        BattleController battleController = FindAnyObjectByType<BattleController>();
         battleController.SetBattle(monsterNum);
         foreach (PlayableDirector monPlayable in monsterPlayables)
         {

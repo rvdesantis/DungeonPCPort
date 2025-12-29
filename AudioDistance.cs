@@ -17,7 +17,7 @@ public class AudioDistance : MonoBehaviour
     {
         if (distance == null)
         {
-            distance = FindObjectOfType<DistanceController>();
+            distance = FindAnyObjectByType<DistanceController>();
             if (!distance.audioDistanceControllers.Contains(this))
             {
                 distance.audioDistanceControllers.Add(this);

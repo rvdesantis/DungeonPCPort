@@ -11,15 +11,17 @@ public class HornRoomParent : RoomPropParent
     public bool skippedTrigger;
     public GameObject afterPlaySpawnPoint;
     public DunModel demonessMod;
+    public bool portalOpen = true;
+    public DemonPortal demonPortal;
    
     IEnumerator FirstEnterENV()
     {
         Debug.Log("Room ENV Enter Trigger");
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        MonsterController monsters = FindObjectOfType<MonsterController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         if (roomParent.roomType == CubeRoom.RoomType.battle)
         {
@@ -73,7 +75,7 @@ public class HornRoomParent : RoomPropParent
             DunModel demoness = Instantiate(monsters.enemyMasterList[0], demonessPlayable.transform, false);
             demoness.transform.position = demonessPlayable.transform.position;
             demoness.AssignToDirector(demonessPlayable, 4);
-
+            demonessMod = demoness;
 
             float clipTime = (float)demonessPlayable.duration;
 
@@ -81,7 +83,7 @@ public class HornRoomParent : RoomPropParent
 
             uiController.compassObj.SetActive(false);
             demonessPlayable.Play();
-            yield return new WaitForSeconds(clipTime);
+            yield return new WaitForSeconds(clipTime + .1f);
             if (controller.activePlayable == demonessPlayable)
             {
                 EndEnter();
@@ -91,8 +93,8 @@ public class HornRoomParent : RoomPropParent
 
     public void EndEnter()
     {
-        PartyController party = FindObjectOfType<PartyController>();  
-        SceneController controller = FindObjectOfType<SceneController>();
+        PartyController party = FindAnyObjectByType<PartyController>();  
+        SceneController controller = FindAnyObjectByType<SceneController>();
         controller.activePlayable = null;
         controller.endAction = null;
         party.activeParty[0].torch.SetActive(false);
@@ -101,20 +103,21 @@ public class HornRoomParent : RoomPropParent
             model.gameObject.SetActive(false);
         }
         StartDemonessBattle();
+        demonessMod.gameObject.SetActive(false);
     }
 
 
     public void StartDemonessBattle()
     {
-        BattleController battleC = FindObjectOfType<BattleController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
         battleC.afterBattleAction = DemonessBattleReturn;
         battleC.SetBattle(0);
     }
 
     public void DemonessBattleReturn()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         if (demonessMod != null)
         {
             demonessMod.gameObject.SetActive(false);
@@ -123,6 +126,9 @@ public class HornRoomParent : RoomPropParent
         player.transform.rotation = afterPlaySpawnPoint.transform.rotation;
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
+        portalOpen = true;
+        demonPortal.player = FindAnyObjectByType<PlayerController>();
+        demonPortal.isOpen = true;
     }
 
     private void Update()

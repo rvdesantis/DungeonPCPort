@@ -8,8 +8,8 @@ public class MapItem : DunItem
 
     public override void PickUp()
     {
-        InventoryController inventory = FindObjectOfType<InventoryController>();
-        MapController map = FindObjectOfType<MapController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
+        MapController map = FindAnyObjectByType<MapController>();
 
         Debug.Log(itemCount + " " + itemName + " picked up");
 

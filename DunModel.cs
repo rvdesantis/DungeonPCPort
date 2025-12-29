@@ -27,7 +27,7 @@ public class DunModel : MonoBehaviour
 
     public void AssignToDirector(PlayableDirector dir, int pos = 0, bool activeTorch = false, bool weapon = false) 
     {
-        PartyController partyController = FindObjectOfType<PartyController>();
+        PartyController partyController = FindAnyObjectByType<PartyController>();
         int posNum = 0;
         if (pos == 0)
         {
@@ -60,7 +60,7 @@ public class DunModel : MonoBehaviour
 
     public void AssignSpecificDirector(PlayableDirector dir, int pos = 0, bool activeTorch = false, bool weapon = false)
     {
-        PartyController partyController = FindObjectOfType<PartyController>();
+        PartyController partyController = FindAnyObjectByType<PartyController>();
         int posNum = pos;
         Debug.Log("Assigning " + modelName + " to position " + posNum);
 

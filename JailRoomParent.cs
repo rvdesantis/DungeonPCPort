@@ -24,7 +24,7 @@ public class JailRoomParent : RoomPropParent
     {
         if (distanceController == null)
         {
-            distanceController = FindObjectOfType<DistanceController>();
+            distanceController = FindAnyObjectByType<DistanceController>();
         }
         AvailableWall();
         foreach (GameObject obj in inactiveList)
@@ -48,7 +48,7 @@ public class JailRoomParent : RoomPropParent
 
         if (roomParent.roomType == CubeRoom.RoomType.quest)
         {
-            SceneBuilder builder = FindObjectOfType<SceneBuilder>();
+            SceneBuilder builder = FindAnyObjectByType<SceneBuilder>();
             bool inDun = false;
             foreach (CubeRoom room in builder.createdRooms)
             {
@@ -97,7 +97,7 @@ public class JailRoomParent : RoomPropParent
         {
             if (!rogueCheck)
             {
-                PartyController party = FindObjectOfType<PartyController>();
+                PartyController party = FindAnyObjectByType<PartyController>();
                 prisoner = party.masterParty[4];
                 prisoner.AssignToDirector(idlePrisoner, 4, false, false);
                 prisoner.gameObject.SetActive(true);
@@ -116,11 +116,11 @@ public class JailRoomParent : RoomPropParent
     IEnumerator JailerTimer()
     {
         Debug.Log("Jailer Has Returned");
-        PartyController party = FindObjectOfType<PartyController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        MonsterController monsters = FindObjectOfType<MonsterController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         controller.activePlayable = jailerReturn;
         controller.endAction = JailerReturnEnd;
@@ -173,9 +173,9 @@ public class JailRoomParent : RoomPropParent
     }
     public void JailerReturnEnd()
     {
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         BattleController battleC = FindAnyObjectByType<BattleController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
 
         controller.activePlayable = null;
         controller.endAction = null;
@@ -191,12 +191,12 @@ public class JailRoomParent : RoomPropParent
 
     public void AfterJailerBattle()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         if (prisoner != null)
         {
-            UnlockController unlockables = FindObjectOfType<UnlockController>();
+            UnlockController unlockables = FindAnyObjectByType<UnlockController>();
             if (!unlockables.rogueUnlock)
             {
                 unlockables.UnlockCharacter(4);
@@ -207,7 +207,7 @@ public class JailRoomParent : RoomPropParent
         controller.endAction = null;
         player.controller.enabled = true;
         uiController.compassObj.SetActive(true);
-        MusicController music = FindObjectOfType<MusicController>();
+        MusicController music = FindAnyObjectByType<MusicController>();
         music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
 

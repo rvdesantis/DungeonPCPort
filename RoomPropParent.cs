@@ -49,8 +49,8 @@ public class RoomPropParent : MonoBehaviour
         GameObject randomPortal = null;
         List<GameObject> openPorts = new List<GameObject>();
         HallStarterCube bossStarter = null;
-        SceneController controller = FindObjectOfType<SceneController>();
-        SceneBuilder builder = FindObjectOfType<SceneBuilder>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        SceneBuilder builder = FindAnyObjectByType<SceneBuilder>();
         SanctuaryCube sanct = builder.sanctuary.GetComponent<SanctuaryCube>();
 
 
@@ -150,7 +150,7 @@ public class RoomPropParent : MonoBehaviour
     public virtual void AddShop() // disables from above, and JailRoomParent scriptdue to wall disappearing
     {
         Debug.Log("Adding Shop To Room", roomParent.gameObject);
-        NPCController NPCs = FindObjectOfType<NPCController>();
+        NPCController NPCs = FindAnyObjectByType<NPCController>();
 
         List<DeadEndCube> roomDeadEnds = new List<DeadEndCube>();
         foreach (HallStarterCube starter in roomParent.starterCubes)
@@ -186,7 +186,7 @@ public class RoomPropParent : MonoBehaviour
     public virtual void AddNecro()
     {
         Debug.Log("Adding Shop To Room", roomParent.gameObject);
-        NPCController NPCs = FindObjectOfType<NPCController>();
+        NPCController NPCs = FindAnyObjectByType<NPCController>();
 
         List<DeadEndCube> roomDeadEnds = new List<DeadEndCube>();
         foreach (HallStarterCube starter in roomParent.starterCubes)

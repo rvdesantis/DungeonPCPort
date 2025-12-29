@@ -8,13 +8,13 @@ public class MedusaTrap : DunTrap
 
     public override void SetSideTrap(SideExtenderCube sideCube)
     {
-        MonsterController monsterController = FindObjectOfType<MonsterController>();
+        MonsterController monsterController = FindAnyObjectByType<MonsterController>();
         DunModel medusaModel = null;
         medusaModel = Instantiate(monsterController.enemyMasterList[23], sideCube.floorPoint.transform);
         medusaNPC = medusaModel.GetComponent<MedusaDunModel>();
 
         base.SetSideTrap(sideCube);
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         medusaNPC.gameObject.SetActive(true);
         distance.npcS.Add(medusaNPC);
         medusaNPC.hallPointA = sideCube.starter.generatedHallway[0].floorPoint.transform;

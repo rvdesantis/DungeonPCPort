@@ -15,7 +15,7 @@ public class WellNPC : DunNPC
         bool funds = false;
         if (inventory == null)
         {
-            inventory = FindObjectOfType<InventoryController>();
+            inventory = FindAnyObjectByType<InventoryController>();
         }
         int goldAmount = inventory.GetAvailableGold();
         if (goldAmount > 0)
@@ -36,7 +36,7 @@ public class WellNPC : DunNPC
             }
             else
             {
-                DunUIController uiController = FindObjectOfType<DunUIController>();
+                DunUIController uiController = FindAnyObjectByType<DunUIController>();
                 string goldString = "1 gold required to throw down well";
                 uiController.messagePanelUI.OpenMessage(goldString);
                 uiController.messagePanelUI.CloseMessageTimer(4);
@@ -46,7 +46,7 @@ public class WellNPC : DunNPC
 
     IEnumerator WellTimer()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         uiController.messagePanelUI.OpenMessage("you throw a coin down the well (-1 Gold)");
         inventory.ReduceGold(1);
         audioSource.PlayOneShot(audioClips[0]);

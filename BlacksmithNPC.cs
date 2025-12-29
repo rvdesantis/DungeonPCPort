@@ -19,7 +19,7 @@ public class BlacksmithNPC : DunNPC
 
     public override void OpenUI()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         if (!uiController.isToggling && !uiController.uiActive)
         {
             opened = true;
@@ -39,15 +39,15 @@ public class BlacksmithNPC : DunNPC
 
     public void UpgradePower(DunModel character = null, float newPercent = 0, int cost = 0, int currencyIndex = 0) // currency checked in confirm UI
     {
-        InventoryController inventory = FindObjectOfType<InventoryController>();
-        PartyController party = FindObjectOfType<PartyController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
 
         EnhancedPrefs.SetPlayerPref(character.modelName + "PowPercent", newPercent);
         EnhancedPrefs.SavePlayerPrefs();
 
         Debug.Log(character.modelName + " Power ugraded to " + newPercent);
 
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
 
         player.vfxLIST[0].gameObject.SetActive(true);
         player.vfxLIST[0].Play();
@@ -92,15 +92,15 @@ public class BlacksmithNPC : DunNPC
 
     public void UpgradeArmor(DunModel character = null, float newPercent = 0, int cost = 0, int currencyIndex = 0)
     {
-        InventoryController inventory = FindObjectOfType<InventoryController>();
-        PartyController party = FindObjectOfType<PartyController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
 
         EnhancedPrefs.SetPlayerPref(character.modelName + "DefPercent", newPercent);
         EnhancedPrefs.SavePlayerPrefs();
 
         Debug.Log(character.modelName + " DEF ugraded to " + newPercent);
 
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
 
         player.vfxLIST[0].gameObject.SetActive(true);
         player.vfxLIST[0].Play();

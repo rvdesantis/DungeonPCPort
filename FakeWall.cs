@@ -53,7 +53,7 @@ public class FakeWall : MonoBehaviour
         {
             if (controller == null)
             {
-                controller = FindObjectOfType<SceneController>();
+                controller = FindAnyObjectByType<SceneController>();
             }
             if (controller.gameState == SceneController.GameState.Dungeon && controller.playerController.enabled && !controller.uiController.uiActive)
             {

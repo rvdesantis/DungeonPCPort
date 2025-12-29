@@ -10,7 +10,7 @@ public class ShopNPC : DunNPC
 
     public override void NPCTrigger()
     {
-        SceneController controller = FindObjectOfType<SceneController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
         if (controller.gameState == SceneController.GameState.Dungeon)
         {
             if (controller.dunFull)
@@ -28,8 +28,8 @@ public class ShopNPC : DunNPC
     }
     public override void OpenUI()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
 
         if (!uiController.isToggling && !uiController.uiActive)
         {

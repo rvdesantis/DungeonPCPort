@@ -12,7 +12,7 @@ public class EventCube : MonoBehaviour
 
     public void SetTreasureRoom(DunPortal fromPortal, bool closeOnJump = true)
     {
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         treasureParent.SetActive(true);
     
         enterPortalSMRoom.ConnectPortals(fromPortal);

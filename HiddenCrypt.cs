@@ -11,7 +11,7 @@ public class HiddenCrypt : HiddenEndCube
     public override void SecretSetUp()
     {
         enterPortal.ConnectPortals(exitPortal);
-        SceneBuilder builder = FindObjectOfType<SceneBuilder>();
+        SceneBuilder builder = FindAnyObjectByType<SceneBuilder>();
         if (distanceC == null)
         {
             distanceC = builder.sceneController.distance;

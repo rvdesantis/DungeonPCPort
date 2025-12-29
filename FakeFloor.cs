@@ -29,7 +29,7 @@ public class FakeFloor : MonoBehaviour
 
     public void StartBreak(bool back)
     {
-        StatsTracker stats = FindObjectOfType<StatsTracker>();
+        StatsTracker stats = FindAnyObjectByType<StatsTracker>();
         stats.trapsTotal++;
         if (back)
         {
@@ -39,6 +39,13 @@ public class FakeFloor : MonoBehaviour
         Fall();
     }
 
+    public int RandomMonsterNumber()
+    {
+        int randomNum = Random.Range(0, trapCube.monsterDirectors.Count);
+
+        int monsterNum = randomNum;
+        return monsterNum;
+    }
 
     public void Fall()
     {
@@ -48,23 +55,8 @@ public class FakeFloor : MonoBehaviour
             StandardFall();
         }
         if (trapCube.trapType == TrapHallCube.TrapType.enemy)
-        {
-            List<DunModel> pitList = new List<DunModel>();
-            MonsterController monsters = FindObjectOfType<MonsterController>();
-
-            foreach (DunModel monster in monsters.enemyMasterList)
-            {
-                if (monster.spawnArea == DunModel.SpawnArea.fallRoom)
-                {
-                    pitList.Add(monster);
-                }
-            }
-
-            int listPick = Random.Range(0, pitList.Count);
-            DunModel selectedMonster = pitList[listPick];
-
-            int monsterNum = selectedMonster.spawnPlayableInt;
-           
+        {            
+            int monsterNum = RandomMonsterNumber();
             MonsterFall(monsterNum);
         }
         if (trapCube.trapType == TrapHallCube.TrapType.other)
@@ -82,9 +74,9 @@ public class FakeFloor : MonoBehaviour
     public void EndFall()
     {
         Debug.Log("ending fall");
-        SceneController controller = FindObjectOfType<SceneController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        PartyController party = FindObjectOfType<PartyController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         PlayerController player = controller.playerController;
 
         controller.activePlayable = null;
@@ -145,10 +137,10 @@ public class FakeFloor : MonoBehaviour
 
     public void MonsterEndFall()
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
         PlayerController player = FindAnyObjectByType<PlayerController>();
-        BattleController battleC = FindObjectOfType<BattleController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
 
 
         foreach (DunModel activeModel in party.activeParty)
@@ -178,7 +170,7 @@ public class FakeFloor : MonoBehaviour
     {
         PlayerController player = FindAnyObjectByType<PlayerController>();
         DistanceController distance = FindAnyObjectByType<DistanceController>();
-        SceneController sceneController = FindObjectOfType<SceneController>();
+        SceneController sceneController = FindAnyObjectByType<SceneController>();
         if (fallRoom != null)
         {            
             fallRoom.exitPortal.sceneController = sceneController;
@@ -195,7 +187,7 @@ public class FakeFloor : MonoBehaviour
         DistanceController distance = FindAnyObjectByType<DistanceController>();
         if (fallRoom != null)
         {
-            SceneController sceneController = FindObjectOfType<SceneController>();
+            SceneController sceneController = FindAnyObjectByType<SceneController>();
             fallRoom.exitPortal.sceneController = sceneController;
             fallRoom.returnPortal.sceneController = sceneController;
             distance.portals.Add(fallRoom.exitPortal);
@@ -208,7 +200,7 @@ public class FakeFloor : MonoBehaviour
     {
         PlayerController player = FindAnyObjectByType<PlayerController>();
         DistanceController distance = FindAnyObjectByType<DistanceController>();
-        SceneController sceneController = FindObjectOfType<SceneController>();
+        SceneController sceneController = FindAnyObjectByType<SceneController>();
         if (fallRoom != null)
         {
 
@@ -221,9 +213,9 @@ public class FakeFloor : MonoBehaviour
     }
     private IEnumerator MysteryFallTimer(PlayerController player, int mysteryNumber)
     {
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         PlayableDirector recoverDir = trapCube.landingDirectors[0];
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         float gravX = player.gravity;
         player.gravity = 0;
         player.controller.enabled = false;
@@ -255,9 +247,9 @@ public class FakeFloor : MonoBehaviour
     }
     private IEnumerator MysterActivation(PlayerController player, int mysteryNumber, float gravity)
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
 
         PlayableDirector recoverDir = null;
         if (mysteryNumber == 0)
@@ -318,16 +310,16 @@ public class FakeFloor : MonoBehaviour
 
             controller.activePlayable = null;
             controller.endAction = null;
-            MusicController music = FindObjectOfType<MusicController>();
+            MusicController music = FindAnyObjectByType<MusicController>();
             music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
         }        
     }
     private IEnumerator StandardFallTimer(PlayerController player)
     {
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         PlayableDirector recoverDir = trapCube.landingDirectors[0];
-        SceneController controller = FindObjectOfType<SceneController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         float gravX = player.gravity;
         player.gravity = 0;
@@ -381,17 +373,17 @@ public class FakeFloor : MonoBehaviour
         {
             EndFall();
         }
-        MusicController music = FindObjectOfType<MusicController>();
+        MusicController music = FindAnyObjectByType<MusicController>();
         music.CrossfadeToNextClip(music.dungeonMusicClips[Random.Range(0, music.dungeonMusicClips.Count)]);
     }
     private IEnumerator MonsterFallTimer(PlayerController player, int monsterNum)
     {
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         PlayableDirector monsterDir = trapCube.monsterDirectors[monsterNum];
-        MonsterController monsters = FindObjectOfType<MonsterController>();
-        SceneController controller = FindObjectOfType<SceneController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        BattleController battleC = FindObjectOfType<BattleController>();
+        MonsterController monsters = FindAnyObjectByType<MonsterController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
 
         float gravX = player.gravity;
         player.gravity = 0;
@@ -406,21 +398,46 @@ public class FakeFloor : MonoBehaviour
         }
         party.AssignCamBrain(monsterDir, 3);
 
+       
+        standardBreak.Play();
+        yield return new WaitForSeconds((float)standardBreak.duration / 2);
+        player.playerLight.enabled = false;
+
         DunModel activeMonster = null;
+        List<DunModel> spawnedMonsters = new List<DunModel>();
 
         if (monsterNum == 0)
         {
             DunModel boneDragon = Instantiate(monsters.enemyMasterList[1], monsterDir.transform, false);
-            boneDragon.gameObject.SetActive(false);
             boneDragon.transform.position = monsterDir.transform.position;
             boneDragon.AssignToDirector(monsterDir, 4);
 
             activeMonster = boneDragon;
+            spawnedMonsters.Add(boneDragon);
             launchNum = 1;
         }
-        standardBreak.Play();
-        yield return new WaitForSeconds((float)standardBreak.duration / 2);
-        player.playerLight.enabled = false;
+        if (monsterNum == 1)
+        {
+            DunModel pitImp = Instantiate(monsters.enemyMasterList[26], monsterDir.transform, false);
+            pitImp.transform.position = monsterDir.transform.position;
+            pitImp.AssignToDirector(monsterDir, 4);
+
+            DunModel pitImp2 = Instantiate(monsters.enemyMasterList[26], monsterDir.transform, false);
+            pitImp2.transform.position = monsterDir.transform.position;
+            pitImp2.AssignToDirector(monsterDir, 5);
+
+            DunModel pitImp3 = Instantiate(monsters.enemyMasterList[26], monsterDir.transform, false);
+            pitImp3.transform.position = monsterDir.transform.position;
+            pitImp3.AssignToDirector(monsterDir, 6);
+
+            activeMonster = pitImp;
+            spawnedMonsters.Add(pitImp);
+            spawnedMonsters.Add(pitImp2);
+            spawnedMonsters.Add(pitImp3);
+
+            launchNum = 26;
+        }
+
         yield return new WaitForSeconds((float)standardBreak.duration / 2);
         repairFloor.SetActive(true);
 
@@ -464,26 +481,26 @@ public class FakeFloor : MonoBehaviour
                 }
             }
             activeMonster.gameObject.SetActive(false);
+            foreach (DunModel mon in spawnedMonsters)
+            {
+                mon.gameObject.SetActive(false);
+                Destroy(mon.gameObject);
+            }
 
             controller.activePlayable = null;
             controller.endAction = null;
 
-
-
             player.transform.position = trapCube.fallRoomSpawnPoint.transform.position;
             player.transform.rotation = trapCube.fallRoomSpawnPoint.transform.rotation;
-            if (monsterNum == 0)
-            {
-                battleC.afterBattleAction = PitBattleReturn;
-                battleC.SetBattle(1);                
-            }
+            battleC.afterBattleAction = PitBattleReturn;
+            battleC.SetBattle(launchNum);
         }
     }
 
     public void PitBattleReturn()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         player.controller.enabled = true;
         player.gravity = 9.5f;

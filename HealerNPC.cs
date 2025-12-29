@@ -20,7 +20,7 @@ public class HealerNPC : DunNPC
 
     IEnumerator HealTimer()
     {
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         opened = true;
         healingCupPlayable.Play();
         float duration = (float)healingCupPlayable.duration;
