@@ -12,15 +12,15 @@ public class SpellNPC : DunNPC
 
     public void UpgradeSpellPower(DunModel character = null, float newPercent = 0, int cost = 0, int currencyIndex = 0) // currency checked in confirm UI
     {
-        InventoryController inventory = FindObjectOfType<InventoryController>();
-        PartyController party = FindObjectOfType<PartyController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
 
         EnhancedPrefs.SetPlayerPref(character.modelName + "SpellPercent", newPercent);
         EnhancedPrefs.SavePlayerPrefs();
 
         Debug.Log(character.modelName + " Spell Power ugraded to " + newPercent);
 
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
 
         player.vfxLIST[0].gameObject.SetActive(true);
         player.vfxLIST[0].Play();
@@ -70,7 +70,7 @@ public class SpellNPC : DunNPC
 
     public override void OpenUI()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         if (!uiController.isToggling && !uiController.uiActive)
         {
             opened = true;

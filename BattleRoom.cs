@@ -31,7 +31,7 @@ public class BattleRoom : MonoBehaviour
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         mainCam.m_Priority = 20;
         if (introPlayable != null)

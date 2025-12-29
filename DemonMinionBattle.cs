@@ -49,7 +49,7 @@ public class DemonMinionBattle : EnemyBattleModel
         Debug.Log("Starting Demon Start Action", gameObject);
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
 
        
@@ -73,6 +73,13 @@ public class DemonMinionBattle : EnemyBattleModel
             battleC.enemyIndex++;
             afterAction.Invoke();
             afterAction = null;
+            if (dead)
+            {
+                foreach (GameObject bodyPart in bodyObjects)
+                {
+                    bodyPart.SetActive(false);
+                }
+            }
             return;
         }
         if (!skip && !dead)

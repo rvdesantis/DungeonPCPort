@@ -50,7 +50,7 @@ public class BattleModel : DunModel
 
     public List<CinemachineVirtualCamera> actionCams; // 0 - attack, 1 - cast, 2, item 
     public Vector3 spawnPoint;
-
+    public List<GameObject> bodyObjects;
     public List<AudioClip> actionSounds;
     public List<GameObject> weaponAuras;
     public BattleModel frozenSelf;
@@ -103,7 +103,7 @@ public class BattleModel : DunModel
         Debug.Log("Starting " + modelName + " Action");
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         if (battleC.heroIndex == 0) // works for Hero side
         {
@@ -129,11 +129,11 @@ public class BattleModel : DunModel
             {
                 actionTarget = battleC.enemyParty[0];               
             }
-            if (actionTarget.dead && actionType != ActionType.item)
+            if ((actionTarget.dead && actionType != ActionType.item) || actionTarget.statusC.shadow)
             {
                 foreach (BattleModel enemy in battleC.enemyParty)
                 {
-                    if (!enemy.dead)
+                    if (!enemy.dead && !enemy.statusC.shadow)
                     {
                         actionTarget = enemy;
                         break;
@@ -221,7 +221,7 @@ public class BattleModel : DunModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         DamageMSS damCan = Instantiate(battleC.damageCanvas, hitTarget.transform.position, Quaternion.identity);   
         damCan.activeCam = battleC.bCamController.activeCam;
@@ -424,7 +424,7 @@ public class BattleModel : DunModel
 
     public void AssignBattleDirector(PlayableDirector dir, int pos = 0, bool activeTorch = false, bool weapon = false)
     {
-        BattleController battleC = FindObjectOfType<BattleController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
         int posNum = 0;
         if (pos == 0)
         {

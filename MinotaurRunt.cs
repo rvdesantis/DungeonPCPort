@@ -42,7 +42,7 @@ public class MinotaurRunt : EnemyBattleModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
 
         if (battleC.enemyIndex == 0) // works for Enemy side
@@ -63,6 +63,13 @@ public class MinotaurRunt : EnemyBattleModel
 
         if (skip || dead || DeadEnemiesCheck())
         {
+            if (dead)
+            {
+                foreach (GameObject bodyPart in bodyObjects)
+                {
+                    bodyPart.SetActive(false);
+                }
+            }
             skip = false;
             battleC.enemyIndex++;
             afterAction.Invoke();

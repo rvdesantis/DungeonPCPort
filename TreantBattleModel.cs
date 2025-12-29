@@ -18,7 +18,7 @@ public class TreantBattleModel : EnemyBattleModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         if (throwCam == null)
         {
@@ -43,6 +43,13 @@ public class TreantBattleModel : EnemyBattleModel
 
         if (skip || dead || DeadEnemiesCheck())
         {
+            if (dead)
+            {
+                foreach (GameObject bodyPart in bodyObjects)
+                {
+                    bodyPart.SetActive(false);
+                }
+            }
             skip = false;
             battleC.enemyIndex++;
             afterAction.Invoke();

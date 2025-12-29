@@ -55,7 +55,7 @@ public class PartyController : MonoBehaviour
 
     public void DungeonHeal(int healAmount = 0, bool healAll = false, int healPosition = 0)
     {
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         if (healAll)
         {
             foreach (BattleModel battleModel in combatParty)

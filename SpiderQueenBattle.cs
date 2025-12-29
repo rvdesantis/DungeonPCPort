@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -9,11 +10,12 @@ public class SpiderQueenBattle : EnemyBattleModel
     public PlayableDirector eggsHatchPlayable;
 
 
+
     public override void StartAction()
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
 
         if (battleC.enemyIndex == 0) // works for Enemy side
@@ -35,6 +37,13 @@ public class SpiderQueenBattle : EnemyBattleModel
         if (skip || dead || DeadEnemiesCheck())
         {
             skip = false;
+            if (dead)
+            {
+                foreach (GameObject bodyPart in bodyObjects)
+                {
+                    bodyPart.SetActive(false);
+                }
+            }
             battleC.enemyIndex++;
             afterAction.Invoke();
             afterAction = null;

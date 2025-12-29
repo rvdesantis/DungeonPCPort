@@ -17,12 +17,12 @@ public class LesserRedDragonBoss : EnemyBattleModel
 
     private void Start()
     {
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         party.AssignCamBrain(fireAllPlayable, 3);
 
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
     }
 
@@ -36,7 +36,7 @@ public class LesserRedDragonBoss : EnemyBattleModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         Debug.Log("StartAction() started for enemy " + battleC.enemyIndex);
         if (battleC.enemyIndex == 0) // works for Enemy side
@@ -306,7 +306,7 @@ public class LesserRedDragonBoss : EnemyBattleModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         DamageMSS damCan = Instantiate(battleC.damageCanvas, hitTarget.transform.position, Quaternion.identity);
         damCan.activeCam = battleC.bCamController.activeCam;

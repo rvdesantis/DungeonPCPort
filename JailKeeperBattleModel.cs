@@ -39,7 +39,7 @@ public class JailKeeperBattleModel : EnemyBattleModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         Debug.Log("StartAction() started for enemy " + battleC.enemyIndex);
         if (battleC.enemyIndex == 0) // works for Enemy side
@@ -57,6 +57,13 @@ public class JailKeeperBattleModel : EnemyBattleModel
 
         if (skip || dead || DeadEnemiesCheck())
         {
+            if (dead)
+            {
+                foreach (GameObject bodyPart in bodyObjects)
+                {
+                    bodyPart.SetActive(false);
+                }
+            }
             skip = false;
             battleC.enemyIndex++;
             afterAction.Invoke();

@@ -20,7 +20,7 @@ public class GelCubeBattleScript : EnemyBattleModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
 
         if (battleC.enemyIndex == 0) // works for Enemy side
@@ -41,6 +41,13 @@ public class GelCubeBattleScript : EnemyBattleModel
 
         if (skip || dead || DeadEnemiesCheck())
         {
+            if (dead)
+            {
+                foreach (GameObject bodyPart in bodyObjects)
+                {
+                    bodyPart.SetActive(false);
+                }
+            }
             skip = false;
             battleC.enemyIndex++;
             afterAction.Invoke();
@@ -187,7 +194,7 @@ public class GelCubeBattleScript : EnemyBattleModel
     {    
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         PartyController party = battleC.party;
         party.AssignCamBrain(battleStartPlayable, 3);
@@ -292,6 +299,7 @@ public class GelCubeBattleScript : EnemyBattleModel
         target.transform.position = gulpTransform.position;
         target.transform.parent = gulpTransform;
         trappedPlayer = target;
+        trapped = true;
     }
 
     private void Update()

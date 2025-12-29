@@ -27,7 +27,7 @@ public class DamageMSS : MonoBehaviour
         startTime = Time.time;
         startPos = transform.position;
         targetPos = startPos + (Vector3.up * floatHeight);
-        bCamController = FindObjectOfType<BattleCamController>();
+        bCamController = FindAnyObjectByType<BattleCamController>();
     }
 
     public void ShowDamage(int damage, bool crit = false)

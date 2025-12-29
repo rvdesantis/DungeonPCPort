@@ -102,7 +102,7 @@ public class BattleTester : BattleController
         }
         if (enemyNum == 2)
         {
-            HiddenMeadow meadow = FindObjectOfType<HiddenMeadow>();
+            HiddenMeadow meadow = FindAnyObjectByType<HiddenMeadow>();
             activeRoom = meadow.battleRoom;
 
             BattleModel hero0 = null;
@@ -823,6 +823,45 @@ public class BattleTester : BattleController
             enemyParty.Add(enemy2);
         }
 
+        if (enemyNum == 26) // pit Imps / pit
+        {
+            activeRoom = battleRooms[1];
+            foreach (BattleRoom room in battleRooms)
+            {
+                if (room != battleRooms[1])
+                {
+                    room.gameObject.SetActive(false);
+                }
+            }
+            activeRoom.gameObject.SetActive(true);
+            activeRoom.SetProps(0);
+
+
+            BattleModel hero0 = null;
+            BattleModel hero1 = null;
+            BattleModel hero2 = null;
+
+            BattleModel enemy0 = null;
+            BattleModel enemy1 = null;
+            BattleModel enemy2 = null;
+
+            hero0 = Instantiate(party.combatParty[0], activeRoom.playerSpawnPoints[0].transform);
+            heroParty.Add(hero0);
+            hero1 = Instantiate(party.combatParty[1], activeRoom.playerSpawnPoints[1].transform);
+            heroParty.Add(hero1);
+            hero2 = Instantiate(party.combatParty[2], activeRoom.playerSpawnPoints[2].transform);
+            heroParty.Add(hero2);
+
+
+
+            enemy0 = Instantiate(monsters.battleMasterList[26], activeRoom.enemySpawnPoints[0].transform);
+            enemyParty.Add(enemy0);
+            enemy1 = Instantiate(monsters.battleMasterList[26], activeRoom.enemySpawnPoints[1].transform);
+            enemyParty.Add(enemy1);
+            enemy2 = Instantiate(monsters.battleMasterList[26], activeRoom.enemySpawnPoints[2].transform);
+            enemyParty.Add(enemy2);
+        }
+
         bCamController.activeCam = activeRoom.mainCam;
         bCamController.roomCams = activeRoom.targetingCams;
         bCamController.roomCams.Add(activeRoom.mainCam);
@@ -1055,7 +1094,7 @@ public class BattleTester : BattleController
         }
         if (bossNum == 2)
         {
-            HiddenMeadow meadow = FindObjectOfType<HiddenMeadow>();
+            HiddenMeadow meadow = FindAnyObjectByType<HiddenMeadow>();
             activeRoom = meadow.battleRoom;
 
             BattleModel hero0 = null;

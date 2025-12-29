@@ -20,6 +20,8 @@ public class StatusController : MonoBehaviour
     public bool dark;
     public BattleModel darkModel;
     public int darkCount;
+    public bool shadow;
+    public int shadowCount;
     public List<ParticleSystem> statusCircleFX; // boost - 0, STR - 1, DEF - 2, BURN - 3, FREEZE - 4, POISON - 5, SHOCK - 6, Dark - 7   
     public List<AudioClip> FXSounds;
     public PlayableDirector necroPlayable;

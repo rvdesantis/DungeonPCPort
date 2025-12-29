@@ -145,7 +145,7 @@ public class BoneDragonBattleModel : EnemyBattleModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
 
         if (battleC.enemyIndex == 0) // works for Enemy side

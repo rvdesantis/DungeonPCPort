@@ -85,7 +85,7 @@ public class UnlockController : MonoBehaviour
             mapVendorUnlock = true;
             DunNPC mapGoblin = sanctuary.sanctVendors[2];
             mapGoblin.gameObject.SetActive(true);
-            FindObjectOfType<DistanceController>().npcS.Add(mapGoblin);
+            FindAnyObjectByType<DistanceController>().npcS.Add(mapGoblin);
         }
 
         // character current leveling check

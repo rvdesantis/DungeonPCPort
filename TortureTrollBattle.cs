@@ -8,7 +8,7 @@ public class TortureTrollBattle : EnemyBattleModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         DamageMSS damCan = Instantiate(battleC.damageCanvas, hitTarget.transform.position, Quaternion.identity);
         damCan.activeCam = battleC.bCamController.activeCam;

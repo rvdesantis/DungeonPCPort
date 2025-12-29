@@ -15,7 +15,7 @@ public class SpiderEggsBattle : EnemyBattleModel
 
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         int x = battleC.enemyParty.IndexOf(this);
         if (x == 0) // works for Enemy side
@@ -35,6 +35,13 @@ public class SpiderEggsBattle : EnemyBattleModel
         }
         if (skip || dead || DeadEnemiesCheck())
         {
+            if (dead)
+            {
+                foreach (GameObject bodyPart in bodyObjects)
+                {
+                    bodyPart.SetActive(false);
+                }
+            }
             skip = false;
             battleC.enemyIndex++;
             afterAction.Invoke();

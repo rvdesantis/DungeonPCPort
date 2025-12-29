@@ -24,7 +24,7 @@ public class EnemyBattleModel : BattleModel
         {
             if (battleC == null)
             {
-                battleC = FindObjectOfType<BattleController>();
+                battleC = FindAnyObjectByType<BattleController>();
             }
             PartyController party = battleC.party;
             party.AssignCamBrain(battleStartPlayable, 3);
@@ -56,7 +56,7 @@ public class EnemyBattleModel : BattleModel
         List<BattleModel> available = new List<BattleModel>();
         foreach (BattleModel model in battleC.heroParty)
         {
-            if (!model.dead)
+            if (!model.dead && !model.statusC.shadow)
             {
                 available.Add(model);
             }
@@ -91,7 +91,7 @@ public class EnemyBattleModel : BattleModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         Debug.Log("StartAction() started for enemy " + battleC.enemyIndex);
         if (battleC.enemyIndex == 0) // works for Enemy side
@@ -109,6 +109,13 @@ public class EnemyBattleModel : BattleModel
 
         if (skip || dead || DeadEnemiesCheck())
         {
+            if (dead)
+            {
+                foreach (GameObject bodyPart in bodyObjects)
+                {
+                    bodyPart.SetActive(false);
+                }
+            }
             skip = false;
             battleC.enemyIndex++;
             afterAction.Invoke();
@@ -171,7 +178,6 @@ public class EnemyBattleModel : BattleModel
                 attCam.m_Priority = 20;
             }
             yield return new WaitForSeconds(strikeTimer);
-
             if (attCam != null)
             {
                 attCam.m_Priority = -10;

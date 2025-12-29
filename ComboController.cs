@@ -115,7 +115,7 @@ public class ComboController : MonoBehaviour
 
     public void AssignComboPlayable(BattleModel bModel, PlayableDirector dir, int pos)
     {
-        BattleController battleC = FindObjectOfType<BattleController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
         Debug.Log("Assigning " + bModel.modelName + " to position " + pos);
         PlayableBinding playableBinding = dir.playableAsset.outputs.ElementAt(pos);
         dir.SetGenericBinding(playableBinding.sourceObject, bModel.anim);

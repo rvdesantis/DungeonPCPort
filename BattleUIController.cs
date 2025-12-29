@@ -1354,7 +1354,8 @@ public class BattleUIController : MonoBehaviour
         {
             bt.gameObject.SetActive(false);
         }
-
+        lItemFrame.SetActive(false);
+        rItemFrame.SetActive(false);
         foreach (Button bt in lSpellButtons)
         {
             bt.gameObject.SetActive(false);

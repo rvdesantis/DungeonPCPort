@@ -15,7 +15,7 @@ public class BomberBugBattle : EnemyBattleModel
     {
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         Debug.Log("StartAction() started for enemy " + battleC.enemyIndex);
         if (battleC.enemyIndex == 0) // works for Enemy side
@@ -33,6 +33,13 @@ public class BomberBugBattle : EnemyBattleModel
 
         if (skip || dead || DeadEnemiesCheck())
         {
+            if (dead)
+            {
+                foreach (GameObject bodyPart in bodyObjects)
+                {
+                    bodyPart.SetActive(false);
+                }
+            }
             skip = false;
             battleC.enemyIndex++;
             afterAction.Invoke();
@@ -108,11 +115,13 @@ public class BomberBugBattle : EnemyBattleModel
                 transform.LookAt(actionTarget.transform);
             }
             anim.SetTrigger("attack0");
+            audioSource.PlayOneShot(actionSounds[0]);
             if (attCam != null)
             {
                 attCam.m_Priority = 20;
             }
             yield return new WaitForSeconds(strikeTimer);
+            TriggerTargetHit();
 
             if (attCam != null)
             {
@@ -169,6 +178,7 @@ public class BomberBugBattle : EnemyBattleModel
             {
                 attCam.m_Priority = 20;
             }
+            audioSource.PlayOneShot(actionSounds[3]);
             yield return new WaitForSeconds(3.5f);
 
             if (attCam != null)
@@ -214,16 +224,36 @@ public class BomberBugBattle : EnemyBattleModel
         Destroy(newParticle, 20.0f);
     }
 
+    public override void GetHit(BattleModel modelSource)
+    {
+        if (!dead)
+        {
+            if (!airborn)
+            {
+                anim.SetTrigger("hit");
+                audioSource.PlayOneShot(actionSounds[1]);
+            }
+            if (airborn && !explode)
+            {
+                anim.SetTrigger("flyGotHit");
+                audioSource.PlayOneShot(actionSounds[5]);
+            }
+                
+        }
+    }
+
     public override void Die(BattleModel damSource)
     {
         Debug.Log(modelName + " has Died", gameObject);
         if (!airborn)
         {
             anim.SetTrigger("dead");
+            audioSource.PlayOneShot(actionSounds[4]);
         }
         if (airborn && !explode)
         {
             anim.SetTrigger("flyDead");
+            audioSource.PlayOneShot(actionSounds[6]);
         }
  
         dead = true;
