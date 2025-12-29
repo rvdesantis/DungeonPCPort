@@ -85,7 +85,7 @@ public class InventoryUI : MonoBehaviour
 
     public void BackUseItem()
     {
-        InventoryUI inventoryUI = FindObjectOfType<DunUIController>().inventoryUI;
+        InventoryUI inventoryUI = FindAnyObjectByType<DunUIController>().inventoryUI;
         
         foreach (Button bt in invButtons)
         {

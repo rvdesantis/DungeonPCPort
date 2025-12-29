@@ -72,7 +72,7 @@ public class MapController : MonoBehaviour
             LayerOnMap(trap, 6, false);
         }
 
-        InventoryController inventory = FindObjectOfType<InventoryController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
 
         if (inventory.mapstatus == InventoryController.MapInventoryStatus.sketched)
         {
@@ -111,7 +111,7 @@ public class MapController : MonoBehaviour
             LayerOnMap(boss, 6, true);
         }
 
-        InventoryController inventory = FindObjectOfType<InventoryController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
 
         if (inventory.mapstatus != InventoryController.MapInventoryStatus.secret)
         {

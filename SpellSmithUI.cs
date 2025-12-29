@@ -149,7 +149,7 @@ public class SpellSmithUI : MonoBehaviour
             if (activeSpellSmith.singleUse)
             {
                 activeSpellSmith.remove = true;
-                DistanceController distance = FindObjectOfType<DistanceController>();
+                DistanceController distance = FindAnyObjectByType<DistanceController>();
                 distance.npcS.Remove(activeSpellSmith);
 
                 uiController.interactUI.gameObject.SetActive(false);

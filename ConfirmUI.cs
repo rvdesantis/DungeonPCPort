@@ -31,7 +31,7 @@ public class ConfirmUI : MonoBehaviour
     {
         if (player == null)
         {
-            player = FindObjectOfType<PlayerController>();
+            player = FindAnyObjectByType<PlayerController>();
         }
     }
 
@@ -67,7 +67,7 @@ public class ConfirmUI : MonoBehaviour
 
     public void ConfirmMessageNPC(string mss, BlacksmithNPC blacksmith = null, ShopUI ShopUI = null, TemplarNPC templar = null, GobMapVendorNPC goblin = null, NecromancerNPC necro = null)
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
         player.enabled = false;
     
         if (blacksmith != null)

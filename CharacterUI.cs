@@ -69,7 +69,7 @@ public class CharacterUI : MonoBehaviour
 
     IEnumerator CloseTimer()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
         toggling = true;
         firstOpen = true;
         uiController.isToggling = true;

@@ -18,7 +18,7 @@ public class DefeatUI : MonoBehaviour
         restartButton.Select();
         if (dunUI == null)
         {
-            FindObjectOfType<DunUIController>();
+            FindAnyObjectByType<DunUIController>();
         }
         string lineZero = "You have dropped half your gold: (" + goldLoss + ")";
         if (GoldenChestTrinket.goldenChestActive)

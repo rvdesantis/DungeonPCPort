@@ -367,7 +367,7 @@ public class ShopUI : MonoBehaviour
 
     public void CloseUI()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
         player.controller.enabled = true;
         uiController.isToggling = true;
         uiController.RemoteToggleTimer(.2f);

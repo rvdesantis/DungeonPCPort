@@ -101,7 +101,7 @@ public class VictoryUI : MonoBehaviour
 
     public void OpenDungeonWin()
     {
-        StatsTracker statsTimer = FindObjectOfType<StatsTracker>();
+        StatsTracker statsTimer = FindAnyObjectByType<StatsTracker>();
         string goldString = "";
         string XPString = "";
         string comboString = "";
@@ -125,7 +125,7 @@ public class VictoryUI : MonoBehaviour
     {
         if (controller == null)
         {
-            controller = FindObjectOfType<SceneController>();
+            controller = FindAnyObjectByType<SceneController>();
         }
         rewardItems.Clear();
         controller.playerController.controller.enabled = true;
