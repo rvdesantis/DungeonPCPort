@@ -15,8 +15,8 @@ public class DunPotionItem : DunItem
 
     IEnumerator DunPotionTimer()
     {
-        PartyController party = FindObjectOfType<PartyController>();
-        MessagePanelUI messageUI = FindObjectOfType<DunUIController>().messagePanelUI;
+        PartyController party = FindAnyObjectByType<PartyController>();
+        MessagePanelUI messageUI = FindAnyObjectByType<DunUIController>().messagePanelUI;
         string healMSS = "Party Recovered 20HP";
 
         messageUI.gameObject.SetActive(true);

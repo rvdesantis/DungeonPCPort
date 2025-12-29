@@ -22,7 +22,7 @@ public class CombatBoostTrinket : DunTrinket
 
         if (battleC == null)
         {
-            battleC = FindObjectOfType<BattleController>();
+            battleC = FindAnyObjectByType<BattleController>();
         }
         bool active = false;
         foreach (BattleTrinket battleT in battleC.activeTrinkets)

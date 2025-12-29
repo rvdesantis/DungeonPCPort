@@ -17,7 +17,7 @@ public class MansBestTrinket : DunTrinket
     public override void SetTrinket()
     {
         gameObject.SetActive(true);
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
 
         if (controller.dunFull)
         {
@@ -25,7 +25,7 @@ public class MansBestTrinket : DunTrinket
             {
                 MansBestFriend newPuppy = Instantiate(puppy, fWall.frontSpawnTransform);
                 newPuppy.activeFakeWall = fWall;
-                newPuppy.player = FindObjectOfType<PlayerController>();
+                newPuppy.player = FindAnyObjectByType<PlayerController>();
                 newPuppy.dogBuff = dogBuff;
                 newPuppy.AssignCub(fWall);
             }
@@ -39,8 +39,8 @@ public class MansBestTrinket : DunTrinket
 
     IEnumerator PlayableTimer()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
         if (uiController.shopUI.gameObject.activeSelf)
         {

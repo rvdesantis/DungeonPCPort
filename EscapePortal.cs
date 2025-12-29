@@ -13,8 +13,8 @@ public class EscapePortal : DunItem
 
     IEnumerator Dip()
     {
-        PlayerController player = FindObjectOfType<PlayerController>();
-        SanctuaryCube sanctuary = FindObjectOfType<SanctuaryCube>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        SanctuaryCube sanctuary = FindAnyObjectByType<SanctuaryCube>();
 
         Vector3 currentPos = player.transform.position;
         Vector3 dipPosition = new Vector3(player.transform.position.x, player.transform.position.y - 2, player.transform.position.z);

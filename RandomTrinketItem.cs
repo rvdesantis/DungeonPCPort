@@ -8,8 +8,8 @@ public class RandomTrinketItem : DunItem
 
     public override void PickUp()
     {
-        InventoryController inventory = FindObjectOfType<InventoryController>();
-        SceneController controller = FindObjectOfType<SceneController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
         DunTrinket randomT = null;
 
         List<DunTrinket> availTrinkets = new List<DunTrinket>();

@@ -30,7 +30,7 @@ public class StatueWeeper : DunModel
     {
         if (builder == null)
         {
-            builder = FindObjectOfType<SceneBuilder>();
+            builder = FindAnyObjectByType<SceneBuilder>();
         }
         if (player == null)
         {
@@ -121,8 +121,8 @@ public class StatueWeeper : DunModel
 
     IEnumerator BattleTimer()
     {
-        SceneController controller = FindObjectOfType<SceneController>();
-        BattleController battleC = FindObjectOfType<BattleController>();
+        SceneController controller = FindAnyObjectByType<SceneController>();
+        BattleController battleC = FindAnyObjectByType<BattleController>();
         controller.playerController.controller.enabled = false;
 
         encounterCam.gameObject.SetActive(true);
@@ -147,8 +147,6 @@ public class StatueWeeper : DunModel
         {
             spotlight.gameObject.SetActive(true);
         }
-        Vector3 lookTarget = new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z);
-        transform.LookAt(lookTarget);
         if (Vector3.Distance(transform.position, player.transform.position) < 75)
         {
             audioSource.PlayOneShot(audioClips[0]);
@@ -167,10 +165,9 @@ public class StatueWeeper : DunModel
             {
                 if (player == null)
                 {
-                    player = FindObjectOfType<PlayerController>();
+                    player = FindAnyObjectByType<PlayerController>();
                 }
                 Vector3 playerPosition = player.transform.position;
-                Vector3 lookPosition = new Vector3(playerPosition.x, transform.position.y, playerPosition.z);
                 TrackPlayer(playerPosition);
                 if (stalking)
                 {

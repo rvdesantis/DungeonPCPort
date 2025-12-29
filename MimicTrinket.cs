@@ -12,7 +12,7 @@ public class MimicTrinket : DunTrinket
 
     public override void SetTrinket()
     {
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         foreach (DunChest chest in distance.chests)
         {
             if (chest.GetComponent<DunMimic>() != null)
@@ -31,8 +31,8 @@ public class MimicTrinket : DunTrinket
         }
         IEnumerator PlayableTimer()
         {
-            PlayerController player = FindObjectOfType<PlayerController>();
-            DunUIController uiController = FindObjectOfType<DunUIController>();
+            PlayerController player = FindAnyObjectByType<PlayerController>();
+            DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
             if (uiController.shopUI.gameObject.activeSelf)
             {

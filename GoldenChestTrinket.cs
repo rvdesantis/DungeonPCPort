@@ -24,8 +24,8 @@ public class GoldenChestTrinket : DunTrinket
         }
         IEnumerator PlayableTimer()
         {
-            PlayerController player = FindObjectOfType<PlayerController>();
-            DunUIController uiController = FindObjectOfType<DunUIController>();
+            PlayerController player = FindAnyObjectByType<PlayerController>();
+            DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
             if (uiController.shopUI.gameObject.activeSelf)
             {

@@ -36,7 +36,7 @@ public class ReviveBattlePotion : BattleItem
 
     public override void PickUp()
     {
-        InventoryController inventory = FindObjectOfType<InventoryController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
         bool inList = false;
         foreach (DunItem dunItem in inventory.dungeonItems)
         {

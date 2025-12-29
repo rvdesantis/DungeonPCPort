@@ -22,7 +22,7 @@ public class TrapGhost : MonoBehaviour
     {
         if (player == null)
         {
-            player = FindObjectOfType<PlayerController>();
+            player = FindAnyObjectByType<PlayerController>();
         }
         float distance = Vector3.Distance(player.transform.position, transform.position);
         if (distance < 10)

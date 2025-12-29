@@ -13,8 +13,8 @@ public class ReviveDunItem : DunItem
         {
             gameObject.SetActive(true);
         }
-        party = FindObjectOfType<PartyController>();
-        MessagePanelUI messageUI = FindObjectOfType<DunUIController>().messagePanelUI;
+        party = FindAnyObjectByType<PartyController>();
+        MessagePanelUI messageUI = FindAnyObjectByType<DunUIController>().messagePanelUI;
        
 
         int deadCount = 0;
@@ -44,8 +44,8 @@ public class ReviveDunItem : DunItem
 
     IEnumerator UseTimer()
     {
-        ConfirmUI confirmUI = FindObjectOfType<DunUIController>().confirmUI;
-        PlayerController player = FindObjectOfType<PlayerController>();
+        ConfirmUI confirmUI = FindAnyObjectByType<DunUIController>().confirmUI;
+        PlayerController player = FindAnyObjectByType<PlayerController>();
         yield return new WaitForSeconds(.35f);
         Debug.Log("Revive - Checking Party for 0 health");
         foreach (int health in party.combatHealthTracker)
@@ -71,7 +71,7 @@ public class ReviveDunItem : DunItem
 
     public override void PickUp()
     {
-        InventoryController inventory = FindObjectOfType<InventoryController>();
+        InventoryController inventory = FindAnyObjectByType<InventoryController>();
         bool inList = false;
         foreach (DunItem dunItem in inventory.dungeonItems)
         {
@@ -107,7 +107,7 @@ public class ReviveDunItem : DunItem
     public override void ConfirmItem()
     {
         Debug.Log("Using Revive (DunItem)");
-        PartyController party = FindObjectOfType<PartyController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
         int pos = 0;
         foreach (int health in party.combatHealthTracker)
         {

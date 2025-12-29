@@ -10,7 +10,7 @@ public class NecromancerNPC : DunNPC
     public PlayableDirector resurrectPlayable;
     private void Start()
     {
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
         distance.npcS.Add(this);
         Debug.Log("Necromancer Spawned", gameObject);
         idlePlayableLoop.Play();
@@ -18,9 +18,9 @@ public class NecromancerNPC : DunNPC
 
     public override void OpenUI()
     {
-        DunUIController uiController = FindObjectOfType<DunUIController>();
-        PlayerController player = FindObjectOfType<PlayerController>();
-        PartyController party = FindObjectOfType<PartyController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
+        PlayerController player = FindAnyObjectByType<PlayerController>();
+        PartyController party = FindAnyObjectByType<PartyController>();
 
         if (!uiController.isToggling && !uiController.uiActive && uiController.controller.gameState == SceneController.GameState.Dungeon)
         {

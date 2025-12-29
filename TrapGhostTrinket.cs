@@ -15,7 +15,7 @@ public class TrapGhostTrinket : DunTrinket
     public override void SetTrinket()
     {
         gameObject.SetActive(true);
-        DistanceController distance = FindObjectOfType<DistanceController>();
+        DistanceController distance = FindAnyObjectByType<DistanceController>();
 
         if (controller.dunFull)
         {
@@ -37,8 +37,8 @@ public class TrapGhostTrinket : DunTrinket
 
         IEnumerator PlayableTimer()
         {
-            PlayerController player = FindObjectOfType<PlayerController>();
-            DunUIController uiController = FindObjectOfType<DunUIController>();
+            PlayerController player = FindAnyObjectByType<PlayerController>();
+            DunUIController uiController = FindAnyObjectByType<DunUIController>();
 
             if (uiController.shopUI.gameObject.activeSelf)
             {

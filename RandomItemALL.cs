@@ -101,7 +101,7 @@ public class RandomItemALL : DunItem
         }
         Debug.Log(itemCount + " " + itemName + " picked up");
 
-        DunUIController uiController = FindObjectOfType<DunUIController>();
+        DunUIController uiController = FindAnyObjectByType<DunUIController>();
         uiController.rangeImage.gameObject.SetActive(false);
         uiController.customImage.gameObject.SetActive(false);
         uiController.ToggleKeyUI(gameObject, false);
@@ -116,7 +116,7 @@ public class RandomItemALL : DunItem
         bool full = false;
         if (inventory == null)
         {
-            inventory = FindObjectOfType<InventoryController>();
+            inventory = FindAnyObjectByType<InventoryController>();
         }
 
         if (inventory.mapstatus == InventoryController.MapInventoryStatus.secret)
